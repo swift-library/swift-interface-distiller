@@ -9,6 +9,6 @@ permissions:
   contents: read
 jobs:
   policy:
-    uses: swift-library/.github/.github/workflows/policy.yml@ca05b2c8977799c36abb4fdfb243bcd79e379157
+    uses: swift-library/.github/.github/workflows/policy.yml@bb9aa049802360109e94cef395f7f9e1245c1b4a
   validate:
-    uses: swift-library/.github/.github/workflows/swift-package-ci.yml@ca05b2c8977799c36abb4fdfb243bcd79e379157
+    uses: swift-library/.github/.github/workflows/swift-package-ci.yml@bb9aa049802360109e94cef395f7f9e1245c1b4a
