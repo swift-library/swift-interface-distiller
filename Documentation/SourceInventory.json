@@ -1,0 +1,89 @@
+{
+  "ownerAuthoredSource": "distiller-ultra",
+  "consultedFiles": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "4978450739c1ac9f29ad66a915c48b0a487f2ddf06cabf21025fd9a45f3d51ee"
+    },
+    {
+      "path": "README.md",
+      "sha256": "50db42fbd9e4473592b5b3a1846d3bf90a45665686fcf7f22be3f5ec59fd19ce"
+    },
+    {
+      "path": "Package/Sources/DistillerDocC/SymbolGraphInputLoader.swift",
+      "sha256": "df9008968233a4928469cda4245546f3a0f1b3aef3beaef443a51818ee465739"
+    },
+    {
+      "path": "Package/Sources/DistillerCore/Models/PackageGraph.swift",
+      "sha256": "fdf07fcafc2bae22340bd12e114d96654ded942431f0ea5771f513e9262b8fc4"
+    },
+    {
+      "path": "Package/Sources/DistillerCore/Models/TargetGraph.swift",
+      "sha256": "eb23fe733ec25f32d6af67a03f4d02c2bb2e508c849d83993d878c0a5b650f82"
+    },
+    {
+      "path": "Package/Sources/DistillerCore/Models/SourceFileIndex.swift",
+      "sha256": "6dd384f3f2427f7de4a2446dbd725fbecc287f5c69ec67da0da52a8e0e2a00d8"
+    },
+    {
+      "path": "Package/Sources/DistillerCore/Models/FactGraphInvariantValidator.swift",
+      "sha256": "a92d36351ed0ec03e3c5fb5fdad718a121b0fb412e8243692b9ddf3efbc3cad7"
+    },
+    {
+      "path": "Package/Tests/DistillerDocCTests/SymbolGraphInputLoaderTests.swift",
+      "sha256": "03ee8c0d8223c0a6e61f323285d4aac64a63ccd69a9e5a504ad480b28cb655ee"
+    },
+    {
+      "path": "Package/Tests/DistillerSwiftPMTests/SwiftPMStructuralScannerTests.swift",
+      "sha256": "e7598fe2499f571dfa6a5737a3921cc39574682f89d54166871480a5c8014108"
+    },
+    {
+      "path": "Package/Tests/DistillerSwiftPMTests/SwiftPMGoldenAcceptanceTests.swift",
+      "sha256": "05df4051823ce258f43152cb7006ee3b0f593ebb1e84d40524ce761cb39dd1d2"
+    },
+    {
+      "path": "Package/Tests/DistillerCoreTests/ArtifactEncodingTests.swift",
+      "sha256": "70c8d1ea1e3ea6fcf9d009b0bace705f335a28e65b2ea7c2e57697ad05247afd"
+    },
+    {
+      "path": "Package/Tests/DistillerCoreTests/DistillerFactsTraversalTests.swift",
+      "sha256": "f926e59a00cc382154f6bb3c33f896ade63a5c1991cffaf439663d2ce476ee66"
+    },
+    {
+      "path": "Package/Tests/DistillerCoreTests/GraphProjectionExecutorTests.swift",
+      "sha256": "73bc6bf4f7ecaa1f82b1b1c78be3f6e839fc26160424985af04d6b547f51aca7"
+    },
+    {
+      "path": "Package/Tests/DistillerCoreTests/CoreGraphQueryExecutorRedTests.swift",
+      "sha256": "54198106374e68ade050c52cc9c48743d7bdac9d0faac9835482e4957e4af4f8"
+    },
+    {
+      "path": "Package/Tests/DistillerCoreTests/FactsSummaryReportTests.swift",
+      "sha256": "9e66aa94603eb37a0cea0dc7419014c6ac3c74af08f2252e46d51c78afb635a3"
+    },
+    {
+      "path": "Package/Tests/DistillerCLITests/CLIFailureProbeTests.swift",
+      "sha256": "d141ab2b7d91ef076f6ae278c796d9e1746089debf1d1a3f797f291ed363f1f3"
+    },
+    {
+      "path": "Package/Tests/DistillerCLITests/CLIQueryProjectionTests.swift",
+      "sha256": "e8b2ab2f19a85d6198d9465e0c270a91bacd4c20ad990e37ddbc3ffa1f3144b2"
+    },
+    {
+      "path": "Package/Tests/DistillerSwiftPMTests/Fixtures/StructuralFixture/Package.swift",
+      "sha256": "d6a3fdad3da20484b1a13cecb3d2e958424c3dc44322e4ab47dfb13080919a54"
+    },
+    {
+      "path": "Package/Tests/DistillerSwiftPMTests/Fixtures/DefaultPathFixture/Package.swift",
+      "sha256": "aa6665416216650a914259d2d43ed9c179c29a5f80ea22f78ddc50043cf580ce"
+    },
+    {
+      "path": "Package/Tests/DistillerSwiftPMTests/Fixtures/SpecialTargetKindsFixture/Package.swift",
+      "sha256": "252d8218a932aa5ea40b40bed7bd8f1bc9b1284764f81ced468cea5823dcaea4"
+    },
+    {
+      "path": "Package/Tests/DistillerSwiftPMTests/Fixtures/InvalidManifestFixture/Package.swift",
+      "sha256": "f2c7467897a9b4b0a7d0d62a77aeb59b0466d3334647e0d91618af1d6c31602a"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0 WITH Swift-exception
+# Copyright (c) 2026 Xudong Xu
+set -euo pipefail
+cd "$(dirname "$0")/.."
+mkdir -p .build/documentation
+swift package --build-system native dump-symbol-graph --skip-synthesized-members
+symbol_graph_dir=$(find .build -maxdepth 3 -type d -name symbolgraph | head -1)
+test -n "$symbol_graph_dir"
+python3 - "$symbol_graph_dir" <<'PY'
+import json, pathlib, shutil, sys
+target = pathlib.Path('.build/documentation/graphs')
+if target.exists():
+    shutil.rmtree(target)
+target.mkdir()
+for source in pathlib.Path(sys.argv[1]).glob('*.symbols.json'):
+    if json.loads(source.read_text())['module']['name'] == 'InterfaceDistiller':
+        shutil.copyfile(source, target / source.name)
+assert list(target.glob('*.symbols.json'))
+PY
+if [[ $(uname -s) == Darwin ]]; then
+  docc_command=$(xcrun --find docc)
+else
+  docc_command=$(command -v docc)
+fi
+"$docc_command" convert Sources/InterfaceDistiller/InterfaceDistiller.docc \
+  --additional-symbol-graph-dir .build/documentation/graphs \
+  --output-path .build/documentation/InterfaceDistiller.doccarchive \
+  --fallback-display-name InterfaceDistiller \
+  --fallback-bundle-identifier org.swift-library.interface-distiller \
+  --fallback-bundle-version 0.1.0 --warnings-as-errors
