@@ -1,5 +1,10 @@
 ## Unreleased
 
+## 0.1.2
+
+- Resolve generated and custom C module maps when collecting Swift library interfaces.
+- Keep build-time macro implementations out of the default library interface scope.
+
 ## 0.1.1
 
 - Collect selected library and dependency modules without extracting unbuilt test

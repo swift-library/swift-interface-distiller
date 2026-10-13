@@ -53,6 +53,22 @@ public struct PackageStructure: Codable, Sendable, Equatable {
   public var targets: [TargetStructure]
   public var sourceDigest: String
   public var provenance: ProvenanceKind
+
+  var libraryModules: [String] {
+    var selected = Set(products.filter { $0.kind == "library" }.flatMap(\.targets))
+    var pending = Array(selected)
+    while let name = pending.popLast() {
+      for dependency in targets.first(where: { $0.name == name })?.dependencies ?? []
+      where dependency.kind == "target" || dependency.kind == "byName" {
+        if targets.contains(where: {
+          $0.name == dependency.name && $0.kind == "library" && $0.moduleType == "SwiftTarget"
+        }), selected.insert(dependency.name).inserted {
+          pending.append(dependency.name)
+        }
+      }
+    }
+    return targets.filter { selected.contains($0.name) }.map(\.module).sorted()
+  }
 }
 
 enum PortablePath {

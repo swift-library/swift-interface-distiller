@@ -99,9 +99,12 @@ Binary and system targets are retained as structure; explicit binary/header
 collection selects their language view. An operation failure yields an error,
 not a success-shaped empty snapshot.
 
-The default package scope is public/open interfaces of library products. Explicit
-module selection replaces that default; explicit dependency module selection adds
-modules from the actual resolved graph. Symbol include/exclude patterns match the
+The default package scope is public/open interfaces of library products and their
+reachable Swift library targets. Macro implementations, plugins and executable
+build tools remain package structure. C dependencies supply module maps and header
+search paths for Swift imports; collecting their C language view requires explicit
+header collection. Explicit module selection replaces the default; explicit
+dependency module selection adds modules from the actual resolved graph. Symbol include/exclude patterns match the
 compiler ID, name or `Module.name`. `*` matches any sequence and `?` one character.
 An empty include set includes all candidates. Exclusion wins over inclusion.
 SPI remains a separate opt-in dimension. Filtering is recorded and does not make

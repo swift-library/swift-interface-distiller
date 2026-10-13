@@ -24,9 +24,9 @@ python3 - <<'PY'
 import json, pathlib
 root = pathlib.Path('.build/version-consumer')
 pin = json.loads((root / 'Package.resolved').read_text())['pins'][0]
-assert pin['state']['version'] == '0.1.1', pin
+assert pin['state']['version'] == '0.1.2', pin
 snapshot = json.loads(pathlib.Path('.build/audit/consumer.json').read_text())
 assert snapshot['configurations'][0]['collectedModules'] == ['Example']
 assert snapshot['configurations'][0]['symbols'] == []
-print('Version 0.1.1 consumer resolved, built and exercised the public library')
+print('Version 0.1.2 consumer resolved, built and exercised the public library')
 PY

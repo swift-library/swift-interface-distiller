@@ -92,6 +92,41 @@ func writeExample(to destination: URL) throws {
   } catch let error as DistillerError { #expect(error.code == .conflictingInput) }
 }
 
+@Test(arguments: [false, true])
+func libraryCollectionResolvesClangImports(customModuleMap: Bool) async throws {
+  let root = try testDirectory("clang-import-\(customModuleMap)")
+  let files = [
+    "Package.swift": """
+    // swift-tools-version: 6.3
+    import PackageDescription
+    let package = Package(name: "Client", products: [.library(name: "Client", targets: ["Client"])],
+      targets: [.target(name: "Bridge", publicHeadersPath: "Headers"),
+        .target(name: "Client", dependencies: ["Bridge"])])
+    """,
+    "Sources/Bridge/Headers/Bridge.h": "int bridge_value(void);\n",
+    "Sources/Bridge/Bridge.c": "int bridge_value(void) { return 7; }\n",
+    "Sources/Client/Client.swift":
+      "import Bridge\npublic func value() -> Int32 { bridge_value() }\n",
+  ]
+  for (path, content) in files {
+    let url = root.appendingPathComponent(path)
+    try FileManager.default.createDirectory(
+      at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+    try Data(content.utf8).write(to: url)
+  }
+  if customModuleMap {
+    try Data("module Bridge { header \"Bridge.h\" export * }\n".utf8).write(
+      to: root.appendingPathComponent("Sources/Bridge/Headers/module.modulemap"))
+  }
+  let tools = try await Toolchain.discover(directory: root)
+  let result = try await InterfaceCollector().package(at: root, toolchain: tools)
+  let configuration = result.snapshot.configurations[0]
+  #expect(configuration.expectedModules == ["Client"])
+  #expect(configuration.collectedModules == ["Client"])
+  #expect(configuration.symbols.contains { $0.name == "value()" })
+  #expect(configuration.packages[0].targets.contains { $0.module == "Bridge" })
+}
+
 @Test func clangCollectionRetainsLanguageAndRelativeLocations() async throws {
   let root = try testDirectory("clang-collection")
   let header = root.appendingPathComponent("Point.h")
@@ -151,6 +186,46 @@ func writeExample(to destination: URL) throws {
   #expect(result.targets[0].dependencies[0].condition.platforms == ["macos"])
   #expect(result.targets[0].dependencies[0].condition.traits == ["Extra"])
   #expect(result.targets.allSatisfy { $0.sources.isEmpty })
+}
+
+@Test func libraryModuleSelectionUsesProductRoles() throws {
+  let root = try testDirectory("library-module-roles")
+  func target(_ name: String, _ kind: String, _ moduleType: String) -> JSONValue {
+    .object([
+      "name": .string(name), "type": .string(kind), "module_type": .string(moduleType),
+      "sources": .array([]),
+    ])
+  }
+  let description: JSONValue = .object([
+    "name": .string("Client"),
+    "products": .array([
+      .object([
+        "name": .string("Client"), "type": .object(["library": .array([.string("automatic")])]),
+        "targets": .array([.string("Client")]),
+      ])
+    ]),
+    "targets": .array([
+      target("Client", "library", "SwiftTarget"), target("Support", "library", "SwiftTarget"),
+      target("Macros", "macro", "SwiftTarget"), target("Bridge", "library", "ClangTarget"),
+      target("Generator", "executable", "SwiftTarget"), target("Plugin", "plugin", "PluginTarget"),
+    ]),
+  ])
+  let manifest: JSONValue = .object([
+    "targets": .array([
+      .object([
+        "name": .string("Client"),
+        "dependencies": .array(
+          ["Support", "Macros", "Bridge", "Generator", "Plugin"].map {
+            .object(["target": .array([.string($0), .null])])
+          }),
+      ])
+    ])
+  ])
+  let structure = try PackageDescriptionDecoder.decode(
+    description, manifest: manifest,
+    identity: .init(identity: "client", displayName: "Client", origin: "local:client"), root: root)
+  #expect(structure.libraryModules == ["Client", "Support"])
+  #expect(structure.targets.count == 6)
 }
 
 @Test func resolvedDependencySelectionAndMatchingBinaryImports() async throws {
