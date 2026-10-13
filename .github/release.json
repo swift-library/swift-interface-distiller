@@ -1,0 +1,27 @@
+{
+  "repository": "swift-library/swift-interface-distiller",
+  "version_file": "Sources/InterfaceDistiller/Evidence.swift",
+  "version_pattern": "public static let current = \"([0-9]+\\.[0-9]+\\.[0-9]+)\"",
+  "changelog": "CHANGELOG.md",
+  "check_command": "Scripts/check",
+  "minimum_swift": "6.3",
+  "platforms": {
+    "macOS": "12",
+    "Linux": "Ubuntu 24.04"
+  },
+  "ci": {
+    "include": [
+      {
+        "name": "linux-swift-6.3",
+        "runner": "ubuntu-24.04",
+        "command": "Scripts/check-linux"
+      },
+      {
+        "name": "macos-swift-6.3",
+        "runner": "macos-26",
+        "xcode": "26.3",
+        "swift": "6.3.1"
+      }
+    ]
+  }
+}

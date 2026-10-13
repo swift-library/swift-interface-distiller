@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+consumer_root="$PWD/.build/version-consumer"
+mkdir -p "$consumer_root/Sources/Consumer" .build/audit
+cp Examples/Consumer/Package.swift "$consumer_root/Package.swift"
+cp Examples/Consumer/Sources/Consumer/main.swift "$consumer_root/Sources/Consumer/main.swift"
+if [[ $# -gt 1 ]]; then
+  echo 'usage: Scripts/check-consumer [versioned-repository-mirror-url]' >&2
+  exit 2
+fi
+if [[ $# -eq 1 ]]; then
+  swift package --package-path "$consumer_root" config set-mirror \
+    --original https://github.com/swift-library/swift-interface-distiller.git --mirror "$1"
+else
+  swift package --package-path "$consumer_root" config unset-mirror \
+    --original https://github.com/swift-library/swift-interface-distiller.git 2>/dev/null || true
+fi
+swift run --package-path "$consumer_root" --build-system native \
+  --security-path "$consumer_root/.swiftpm/security" --cache-path "$consumer_root/.build/cache" Consumer > .build/audit/consumer.json
+python3 - <<'PY'
+import json, pathlib
+root = pathlib.Path('.build/version-consumer')
+pin = json.loads((root / 'Package.resolved').read_text())['pins'][0]
+assert pin['state']['version'] == '0.1.0', pin
+snapshot = json.loads(pathlib.Path('.build/audit/consumer.json').read_text())
+assert snapshot['configurations'][0]['collectedModules'] == ['Example']
+assert snapshot['configurations'][0]['symbols'] == []
+print('Version 0.1.0 consumer resolved, built and exercised the public library')
+PY

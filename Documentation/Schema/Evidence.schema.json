@@ -1,0 +1,649 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://swift-library.github.io/schemas/interface-evidence/1.0",
+  "title": "Interface evidence schema 1.0",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+$"
+    },
+    "configurations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Evidence"
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "configurations"
+  ],
+  "additionalProperties": true,
+  "$defs": {
+    "State": {
+      "type": "string",
+      "enum": [
+        "present",
+        "absent",
+        "notCollected",
+        "unsupported",
+        "failed",
+        "filtered",
+        "unresolved"
+      ]
+    },
+    "Provenance": {
+      "type": "string",
+      "enum": [
+        "compilerReported",
+        "parsed",
+        "derived",
+        "policy"
+      ]
+    },
+    "Field": {
+      "type": "object",
+      "properties": {
+        "value": {},
+        "state": {
+          "$ref": "#/$defs/State"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "value",
+        "state",
+        "provenance",
+        "sources"
+      ],
+      "additionalProperties": true
+    },
+    "Configuration": {
+      "type": "object",
+      "properties": {
+        "toolchain": {
+          "type": "string"
+        },
+        "sdk": {
+          "type": "string"
+        },
+        "triple": {
+          "type": "string"
+        },
+        "deploymentTarget": {
+          "type": "string"
+        },
+        "languageMode": {
+          "type": "string"
+        },
+        "buildMode": {
+          "type": "string"
+        },
+        "extractorVersion": {
+          "type": "string"
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "environment": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "toolchain",
+        "sdk",
+        "triple",
+        "deploymentTarget",
+        "languageMode",
+        "buildMode",
+        "extractorVersion",
+        "conditions",
+        "traits",
+        "environment"
+      ],
+      "additionalProperties": true
+    },
+    "Scope": {
+      "type": "object",
+      "properties": {
+        "modules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "includeSPI": {
+          "type": "boolean"
+        },
+        "sourceLocations": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "modules",
+        "include",
+        "exclude",
+        "includeSPI",
+        "sourceLocations"
+      ],
+      "additionalProperties": true
+    },
+    "Symbol": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "module": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "preciseIdentifier": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Field"
+          }
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "module",
+        "language",
+        "preciseIdentifier",
+        "fields",
+        "references"
+      ],
+      "additionalProperties": true
+    },
+    "Relationship": {
+      "type": "object",
+      "properties": {
+        "module": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Field"
+          }
+        }
+      },
+      "required": [
+        "module",
+        "language",
+        "kind",
+        "source",
+        "target",
+        "fields"
+      ],
+      "additionalProperties": true
+    },
+    "Graph": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "module": {
+          "type": "string"
+        },
+        "formatVersion": {
+          "type": "object",
+          "properties": {
+            "major": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "minor": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "patch": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "major",
+            "minor",
+            "patch"
+          ],
+          "additionalProperties": true
+        },
+        "generator": {
+          "type": "string"
+        },
+        "languageView": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "module",
+        "formatVersion",
+        "generator",
+        "languageView"
+      ],
+      "additionalProperties": true
+    },
+    "Gap": {
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/State"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "subject",
+        "state",
+        "reason"
+      ],
+      "additionalProperties": true
+    },
+    "Merge": {
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "duplicateGraph",
+            "duplicateSymbol",
+            "conflict"
+          ]
+        },
+        "variants": {
+          "type": "array",
+          "items": {}
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "subject",
+        "kind",
+        "variants",
+        "sources"
+      ],
+      "additionalProperties": true
+    },
+    "PackageIdentity": {
+      "type": "object",
+      "properties": {
+        "identity": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "origin": {
+          "type": "string"
+        },
+        "resolvedVersion": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "identity",
+        "displayName",
+        "origin"
+      ],
+      "additionalProperties": true
+    },
+    "Product": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "kind",
+        "targets"
+      ],
+      "additionalProperties": true
+    },
+    "Condition": {
+      "type": "object",
+      "properties": {
+        "platforms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "configuration": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "$ref": "#/$defs/State"
+        },
+        "raw": {}
+      },
+      "required": [
+        "platforms",
+        "traits",
+        "state",
+        "raw"
+      ],
+      "additionalProperties": true
+    },
+    "Dependency": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "package": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "condition": {
+          "$ref": "#/$defs/Condition"
+        }
+      },
+      "required": [
+        "kind",
+        "name",
+        "condition"
+      ],
+      "additionalProperties": true
+    },
+    "Source": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+"
+        },
+        "digest": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "digest"
+      ],
+      "additionalProperties": true
+    },
+    "Target": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "module": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "moduleType": {
+          "type": "string"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Source"
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Dependency"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "module",
+        "kind",
+        "moduleType",
+        "sources",
+        "dependencies"
+      ],
+      "additionalProperties": true
+    },
+    "Package": {
+      "type": "object",
+      "properties": {
+        "identity": {
+          "$ref": "#/$defs/PackageIdentity"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Product"
+          }
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Target"
+          }
+        },
+        "sourceDigest": {
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      },
+      "required": [
+        "identity",
+        "products",
+        "targets",
+        "sourceDigest",
+        "provenance"
+      ],
+      "additionalProperties": true
+    },
+    "Evidence": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "configuration": {
+          "$ref": "#/$defs/Configuration"
+        },
+        "scope": {
+          "$ref": "#/$defs/Scope"
+        },
+        "inputDigest": {
+          "type": "string"
+        },
+        "packages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Package"
+          }
+        },
+        "expectedModules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "collectedModules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "graphs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Graph"
+          }
+        },
+        "symbols": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Symbol"
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Relationship"
+          }
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Gap"
+          }
+        },
+        "merges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Merge"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "configuration",
+        "scope",
+        "inputDigest",
+        "packages",
+        "expectedModules",
+        "collectedModules",
+        "graphs",
+        "symbols",
+        "relationships",
+        "gaps",
+        "merges"
+      ],
+      "additionalProperties": true
+    }
+  }
+}

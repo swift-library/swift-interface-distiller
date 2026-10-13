@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+mkdir -p .build/release-validation .build/check
+swift --version > .build/release-validation/toolchain.txt
+uname -srm > .build/release-validation/platform.txt
+swift format lint --strict --recursive Sources Tests Examples Package.swift
+swift test --build-system native
+swift build --build-system native --configuration release
+python3 Scripts/check-cli.py
+Scripts/check-docs
+python3 - <<'PY'
+import json, pathlib
+root = pathlib.Path('.')
+config = json.loads((root / '.github/release.json').read_text())
+schema = json.loads((root / 'Documentation/Schema/Evidence.schema.json').read_text())
+assert schema['properties']['schemaVersion']['pattern'] == r'^1\.[0-9]+$'
+assert config['minimum_swift'] == '6.3'
+(root / '.build/release-validation/checks.json').write_text(json.dumps({'checks': ['format', 'unit-and-integration', 'release-build', 'cli', 'documentation'], 'result': 'passed'}, sort_keys=True) + '\n')
+PY
+if command -v actionlint >/dev/null; then actionlint; fi
