@@ -59,6 +59,26 @@ func writeExample(to destination: URL) throws {
   #expect(result.snapshot.configurations[0].configuration.conditions == ["EXTRA"])
 }
 
+@Test func libraryCollectionWithUnbuiltTestTargets() async throws {
+  let root = try testDirectory("library-with-tests")
+  try writeExample(to: root)
+  let manifest = root.appendingPathComponent("Package.swift")
+  let contents = try String(contentsOf: manifest, encoding: .utf8).replacingOccurrences(
+    of: "targets: [.target(name: \"EvidenceExample\")]",
+    with:
+      "targets: [.target(name: \"EvidenceExample\"), .testTarget(name: \"ExampleTests\", dependencies: [\"EvidenceExample\"])]"
+  )
+  try contents.write(to: manifest, atomically: true, encoding: .utf8)
+  let testSource = root.appendingPathComponent("Tests/ExampleTests/ExampleTests.swift")
+  try FileManager.default.createDirectory(
+    at: testSource.deletingLastPathComponent(), withIntermediateDirectories: true)
+  try Data("import Testing\n@Test func example() {}\n".utf8).write(to: testSource)
+  let tools = try await Toolchain.discover(directory: root)
+  let result = try await InterfaceCollector().package(at: root, toolchain: tools)
+  #expect(result.snapshot.configurations[0].collectedModules == ["EvidenceExample"])
+  #expect(result.snapshot.configurations[0].symbols.contains { $0.name == "Item" })
+}
+
 @Test func explicitBinaryEnvironmentMustMatch() async throws {
   let root = try testDirectory("binary-environment")
   let tools = try await Toolchain.discover(directory: root)

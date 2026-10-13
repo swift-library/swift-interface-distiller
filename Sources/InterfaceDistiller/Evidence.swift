@@ -3,7 +3,7 @@
 
 import Foundation
 
-public enum DistillerVersion { public static let current = "0.1.0" }
+public enum DistillerVersion { public static let current = "0.1.1" }
 
 /// Observation state. An absent field is distinct from an uncollected field.
 public enum ObservationState: String, Codable, Sendable {

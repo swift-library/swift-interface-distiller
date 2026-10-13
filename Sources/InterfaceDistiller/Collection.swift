@@ -237,21 +237,17 @@ public struct InterfaceCollector: Sendable {
     {
       inputs = try loadCollected(collectedURL, roots: roots)
     } else {
-      // SwiftPM retains compilation incrementality; stale graph output never enters a new collection.
-      try removeGraphOutput(scratch)
-      var args = ["package"] + flags + ["dump-symbol-graph", "--emit-extension-block-symbols"]
-      if actualScope.includeSPI { args += ["--include-spi-symbols"] }
+      // SwiftPM owns compilation; extraction is limited to the requested module scope.
+      let args = ["build"] + flags
       commands.append([toolchain.swift] + args)
       _ = try await runner.checked(toolchain.swift, args, directory: root, environment: environment)
-      var found = (try? SymbolGraphInput.load(scratch)) ?? []
-      // The command emits package modules; selected resolved dependency modules are extracted from the same build.
-      let emitted = Set(found.compactMap { $0.value["module"]["name"].string })
+      var found: [SymbolGraphInput] = []
       let bin = try await runner.checked(
         toolchain.swift, ["build"] + flags + ["--show-bin-path"], directory: root,
         environment: environment)
       let binPath = String(decoding: bin.stdout, as: UTF8.self).trimmingCharacters(
         in: .whitespacesAndNewlines)
-      for module in selected where !emitted.contains(module) {
+      for module in selected {
         let target = packages.flatMap(\.targets).first { $0.module == module }
         if target?.moduleType != "SwiftTarget" { continue }
         let output = cache.appendingPathComponent("extraction/" + module)
@@ -433,17 +429,6 @@ public struct InterfaceCollector: Sendable {
       return [node] + node["dependencies"].array.flatMap(visit)
     }
     return visit(node)
-  }
-
-  private func removeGraphOutput(_ scratch: URL) throws {
-    if let enumeration = FileManager.default.enumerator(
-      at: scratch, includingPropertiesForKeys: nil)
-    {
-      for case let url as URL in enumeration where url.lastPathComponent == "symbolgraph" {
-        enumeration.skipDescendants()
-        try FileManager.default.removeItem(at: url)
-      }
-    }
   }
 
   private func loadCollected(_ url: URL, roots: [String: URL]) throws -> [SymbolGraphInput] {
