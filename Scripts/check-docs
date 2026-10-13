@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0 WITH Swift-exception
+# Copyright (c) 2026 Xudong Xu
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p .build/documentation

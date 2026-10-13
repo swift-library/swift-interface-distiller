@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0 WITH Swift-exception
+# Copyright (c) 2026 Xudong Xu
 """Exercise the installed command's stream, error and baseline contracts."""
 import json
 import pathlib

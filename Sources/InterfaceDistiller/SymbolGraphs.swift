@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0 WITH Swift-exception
+// Copyright (c) 2026 Xudong Xu
+
 import Foundation
 
 /// An owned decoder preserves compiler fields without a dependency on compiler libraries.
