@@ -8,8 +8,9 @@ These configurations have local execution coverage:
 | macOS 27, Apple Swift 6.4, SDK build 26A425 | Tested | Tested | Apple Clang 21, tested | SwiftPM and digester tested |
 | Ubuntu 24.04 aarch64, Swift 6.3.1 | Tested | Tested | Toolchain Clang, tested | SwiftPM and digester tested |
 
-CI declares Swift 6.3 on Ubuntu 24.04 and macOS 26 with Xcode 26.3. Remote CI
-execution follows repository publication. The package tools floor is 6.3; the
+CI declares Swift 6.3 on Ubuntu 24.04 and selects Xcode 26.6 on macOS 26
+(`macos-26-swift-6.3`). Each job records its actual compiler version in the
+validation evidence. The package tools floor is 6.3; the
 macOS deployment floor is 12. Newer compilers and SDKs are not assumed equivalent.
 In particular, the installed Swift 6.3.1 compiler cannot import Foundation from
 the macOS 27 SDK; that pairing is not a supported validation configuration.
