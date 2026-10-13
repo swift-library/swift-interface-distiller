@@ -148,6 +148,7 @@ public struct InterfaceCollector: Sendable {
     let nodes = flattenDependencies(resolved)
     var packages: [PackageStructure] = []
     var roots: [String: URL] = [:]
+    var sourceModuleMaps: [String: URL] = [:]
     let pins =
       (try? JSONValue.read(root.appendingPathComponent("Package.resolved")))?["pins"].array ?? []
     for (index, node) in nodes.enumerated() {
@@ -178,6 +179,20 @@ public struct InterfaceCollector: Sendable {
           resolvedVersion: version == "unspecified" ? nil : version,
           revision: pin?["state"]["revision"].string ?? node["revision"].string), root: packageRoot)
       packages.append(package)
+      for target in description["targets"].array {
+        let name = target["name"].string ?? ""
+        let module = target["c99name"].string ?? name
+        let type = target["module_type"].string ?? ""
+        if type == "ClangTarget" || type == "SystemLibraryTarget" {
+          let declaration = manifest["targets"].array.first { $0["name"].string == name }
+          let path = packageRoot.appendingPathComponent(target["path"].string ?? "Sources/\(name)")
+          let headers =
+            type == "SystemLibraryTarget"
+            ? path
+            : path.appendingPathComponent(declaration?["publicHeadersPath"].string ?? "include")
+          sourceModuleMaps[module] = headers.appendingPathComponent("module.modulemap")
+        }
+      }
       for target in package.targets {
         if roots[target.module] != nil {
           throw DistillerError(
@@ -190,19 +205,7 @@ public struct InterfaceCollector: Sendable {
     guard let primary = packages.first else {
       throw DistillerError(.invalidInput, "Resolved dependency graph is empty")
     }
-    var libraryTargets = Set(primary.products.filter { $0.kind == "library" }.flatMap(\.targets))
-    var pendingTargets = Array(libraryTargets)
-    while let name = pendingTargets.popLast() {
-      for dependency in primary.targets.first(where: { $0.name == name })?.dependencies ?? []
-      where dependency.kind == "target" || dependency.kind == "byName" {
-        if primary.targets.contains(where: { $0.name == dependency.name }),
-          libraryTargets.insert(dependency.name).inserted
-        {
-          pendingTargets.append(dependency.name)
-        }
-      }
-    }
-    let defaultModules = primary.targets.filter { libraryTargets.contains($0.name) }.map(\.module)
+    let defaultModules = primary.libraryModules
     let selected = Set((scope.modules.isEmpty ? defaultModules : scope.modules) + dependencyModules)
       .sorted()
     let dependencyCandidates = Set(packages.dropFirst().flatMap { $0.targets.map(\.module) })
@@ -247,19 +250,32 @@ public struct InterfaceCollector: Sendable {
         environment: environment)
       let binPath = String(decoding: bin.stdout, as: UTF8.self).trimmingCharacters(
         in: .whitespacesAndNewlines)
+      var moduleMapArguments: [String] = []
+      for target in packages.flatMap(\.targets) {
+        let generated = URL(fileURLWithPath: binPath)
+          .appendingPathComponent(target.module + ".build/module.modulemap")
+        let candidates = [sourceModuleMaps[target.module], generated].compactMap { $0 }
+        if let map = candidates.first(where: { FileManager.default.fileExists(atPath: $0.path) }) {
+          moduleMapArguments += ["-Xcc", "-fmodule-map-file=" + map.path]
+        }
+        if let headers = sourceModuleMaps[target.module]?.deletingLastPathComponent() {
+          moduleMapArguments += ["-Xcc", "-I" + headers.path]
+        }
+      }
       for module in selected {
         let target = packages.flatMap(\.targets).first { $0.module == module }
-        if target?.moduleType != "SwiftTarget" { continue }
+        if target?.moduleType != "SwiftTarget" || target?.kind == "macro" { continue }
         let output = cache.appendingPathComponent("extraction/" + module)
         if FileManager.default.fileExists(atPath: output.path) {
           try FileManager.default.removeItem(at: output)
         }
         try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
-        let args = moduleArguments(
-          module, output: output, toolchain: toolchain,
-          searchPaths: [
-            URL(fileURLWithPath: binPath).appendingPathComponent("Modules").path, binPath,
-          ], scope: actualScope)
+        let args =
+          moduleArguments(
+            module, output: output, toolchain: toolchain,
+            searchPaths: [
+              URL(fileURLWithPath: binPath).appendingPathComponent("Modules").path, binPath,
+            ], scope: actualScope) + moduleMapArguments
         commands.append([toolchain.swift] + args)
         _ = try await runner.checked(
           toolchain.swift, args, directory: root, environment: environment)
@@ -286,11 +302,13 @@ public struct InterfaceCollector: Sendable {
     }
     var gaps: [CollectionGap] = []
     for target in packages.flatMap(\.targets)
-    where selected.contains(target.module) && target.moduleType != "SwiftTarget" {
+    where selected.contains(target.module)
+      && (target.moduleType != "SwiftTarget" || target.kind == "macro")
+    {
       gaps.append(
         .init(
           target.module, .unsupported,
-          "Target recorded as structure; use explicit binary module or header collection for its language view"
+          "Target recorded as structure; package extraction requires an importable Swift module"
         ))
     }
     let snapshot = try SymbolGraphNormalizer.normalize(

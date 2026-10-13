@@ -1,6 +1,6 @@
 # Library consumer
 
-This independent package resolves `InterfaceDistiller` at version 0.1.1 and uses
+This independent package resolves `InterfaceDistiller` at version 0.1.2 and uses
 only its public API. After the release is published, run:
 
 ```sh
