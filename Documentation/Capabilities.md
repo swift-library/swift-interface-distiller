@@ -1,14 +1,16 @@
 # Platform and toolchain capabilities
 
 Collection uses installed tools. Evidence consumption needs only the library.
-These configurations have local execution coverage:
+These configurations have execution coverage:
 
 | Configuration | Package/graphs | Matching binary modules | C and Objective-C | API diagnostics |
 | --- | --- | --- | --- | --- |
 | macOS 27, Apple Swift 6.4, SDK build 26A425 | Tested | Tested | Apple Clang 21, tested | SwiftPM and digester tested |
 | Ubuntu 24.04 aarch64, Swift 6.3.1 | Tested | Tested | Toolchain Clang, tested | SwiftPM and digester tested |
+| macOS 26 arm64, Xcode 26.6, Apple Swift 6.3.3 | Tested | Tested | Apple Clang, tested | SwiftPM and digester tested |
+| Ubuntu 24.04 x86_64, Swift 6.3.1 | Tested | Tested | Toolchain Clang, tested | SwiftPM and digester tested |
 
-CI declares Swift 6.3 on Ubuntu 24.04 and selects Xcode 26.6 on macOS 26
+CI runs Swift 6.3.1 on Ubuntu 24.04 and selects Xcode 26.6 with Apple Swift 6.3.3 on macOS 26
 (`macos-26-swift-6.3`). Each job records its actual compiler version in the
 validation evidence. The package tools floor is 6.3; the
 macOS deployment floor is 12. Newer compilers and SDKs are not assumed equivalent.
