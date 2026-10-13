@@ -63,6 +63,15 @@ targets: [
 ]
 ```
 
+Install the command-line tool with Homebrew:
+
+```sh
+brew install swift-library/tap/swift-interface-distiller
+```
+
+On macOS, the formula requires macOS 15 or later and Xcode 26 or later with
+Swift 6.3 or later selected. See the [tap requirements](https://github.com/swift-library/homebrew-tap#formulae).
+
 The [versioned consumer](Examples/Consumer) is a complete downstream example.
 Build the executable from a checkout with
 `swift build --build-system native -c release`; it is written to
