@@ -28,4 +28,4 @@ fi
   --output-path .build/documentation/InterfaceDistiller.doccarchive \
   --fallback-display-name InterfaceDistiller \
   --fallback-bundle-identifier org.swift-library.interface-distiller \
-  --fallback-bundle-version 0.1.0 --warnings-as-errors
+  --fallback-bundle-version 0.1.1 --warnings-as-errors

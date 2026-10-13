@@ -1,5 +1,10 @@
 ## Unreleased
 
+## 0.1.1
+
+- Collect selected library and dependency modules without extracting unbuilt test
+  runners from the package.
+
 ## 0.1.0
 
 - Collect portable public-interface evidence from Swift packages, symbol graphs,

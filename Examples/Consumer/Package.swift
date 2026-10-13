@@ -7,7 +7,7 @@ let package = Package(
   name: "InterfaceEvidenceConsumer",
   platforms: [.macOS(.v12)],
   dependencies: [
-    .package(url: "https://github.com/swift-library/swift-interface-distiller.git", exact: "0.1.0")
+    .package(url: "https://github.com/swift-library/swift-interface-distiller.git", exact: "0.1.1")
   ],
   targets: [
     .executableTarget(
