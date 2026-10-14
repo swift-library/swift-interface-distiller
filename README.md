@@ -1,46 +1,50 @@
+<div align="center">
+
 <p align="center">
-  <img src="Documentation/Assets/Logo.svg" width="160" alt="swift-interface-distiller logo">
+  <a href="https://github.com/swift-library/swift-interface-distiller"><img src="Documentation/Assets/Logo.svg" width="160" alt="swift-interface-distiller logo"></a>
 </p>
 
 <h1 align="center">swift-interface-distiller</h1>
 
 <p align="center">
-  Collect, query, and compare public-interface evidence from compiler reports.
+  Distill a Swift package to its public API: a compact interface to read, evidence to query and diff.
 </p>
 
 <p align="center">
   <a href="https://github.com/swift-library/swift-interface-distiller/actions/workflows/ci.yml"><img src="https://github.com/swift-library/swift-interface-distiller/actions/workflows/ci.yml/badge.svg?branch=master" alt="CI"></a>
-  <img src="https://img.shields.io/badge/Swift-6.3%2B-F05138" alt="Swift 6.3+">
-  <img src="https://img.shields.io/badge/platforms-macOS%2012%2B%20%7C%20Linux-lightgrey" alt="Platforms: macOS 12+ | Linux">
-  <a href="LICENSE.txt"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License: Apache-2.0 WITH Swift-exception"></a>
+  <img src="https://img.shields.io/badge/Swift-6.3%2B-F05138?style=flat" alt="Swift 6.3+">
+  <img src="https://img.shields.io/badge/platforms-macOS%2012%2B%20%7C%20Linux-lightgrey?style=flat" alt="Platforms: macOS 12+ | Linux">
+  <a href="LICENSE.txt"><img src="https://img.shields.io/badge/license-Apache--2.0-blue?style=flat" alt="License: Apache-2.0 WITH Swift-exception"></a>
 </p>
 
-[Overview](#overview) · [Install](#install) · [Quick start](#quick-start) ·
-[Usage](#usage) · [Requirements](#requirements) · [Documentation](#documentation) ·
-[Contributing](#contributing) · [License](#license)
+<p align="center">
+  <a href="#overview">Overview</a> ·
+  <a href="#quick-look">Quick look</a> ·
+  <a href="#install">Install</a> ·
+  <a href="#usage">Usage</a> ·
+  <a href="#requirements">Requirements</a> ·
+  <a href="#documentation">Documentation</a> ·
+  <a href="#contributing">Contributing</a> ·
+  <a href="#license">License</a>
+</p>
 
-> [!NOTE]
-> swift-interface-distiller is pre-1.0. Minor releases may include source-breaking
-> changes, so depend on it with `.upToNextMinor(from:)`.
+</div>
 
 ## Overview
 
-swift-interface-distiller produces public-interface evidence for local Swift
-packages, compiler symbol graphs, importable modules, and C or Objective-C
-headers. Each snapshot records its build configuration, collection scope,
-provenance and gaps. The `InterfaceDistiller` library and `interface-distiller`
-executable share the same model.
+Read public declarations reported by the compiler without walking a package’s implementation. Markdown serves people and JSON serves machines, with explicit gaps and deterministic normalization for identical observations. See the [interface guide](Documentation/ReadingInterfaces.md) for measured sizes, budgets, collection scope, and limits.
 
-- Canonical JSON evidence and Markdown with stable links and optional byte budgets.
-- Lookup, members, observed conformers, initializer and return-type candidates,
-  and bounded dependency slices tied to one snapshot.
-- Field-level comparison separating interface, documentation, availability and
-  provenance changes, with compiler API diagnostics as a separate artifact.
-- Baseline write/check commands, documentation coverage, and content-keyed caches.
+## Quick look
 
-Evidence describes compiler observations. Release policy and version decisions
-belong to the consuming workflow. Read the [contracts](Documentation/Contracts.md)
-for identity, completeness, determinism and failure behavior.
+Collect a package, then query one declaration within a byte budget:
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="Documentation/Assets/Demo-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="Documentation/Assets/Demo-light.svg">
+    <img src="Documentation/Assets/Demo-light.svg" alt="Terminal: collect swift-semver and query its incrementing declaration in Swift format within a byte budget.">
+  </picture>
+</p>
 
 ## Install
 
@@ -70,71 +74,20 @@ brew install swift-library/tap/swift-interface-distiller
 ```
 
 On macOS, the formula requires macOS 15 or later and Xcode 26 or later with
-Swift 6.3 or later selected. See the [tap requirements](https://github.com/swift-library/homebrew-tap#formulae).
+Swift 6.3 or later selected. See the [tap requirements](https://github.com/swift-library/homebrew-tap/blob/master/Documentation/Tools.md).
 
 The [versioned consumer](Examples/Consumer) is a complete downstream example.
 Build the executable from a checkout with
 `swift build --build-system native -c release`; it is written to
 `.build/release/interface-distiller`.
 
-## Quick start
-
-From this repository, collect its fixture package, query a declaration, then
-render the snapshot:
-
-```sh
-.build/release/interface-distiller collect package \
-  Tests/InterfaceDistillerTests/Fixtures/Example --output .build/fixture.json
-.build/release/interface-distiller query .build/fixture.json lookup Item
-.build/release/interface-distiller render .build/fixture.json --output-dir .build/markdown
-```
-
-The query includes this compiler identity for `Item`:
-
-```json
-{
-  "language": "swift",
-  "module": "EvidenceExample",
-  "preciseIdentifier": "s:15EvidenceExample4ItemV"
-}
-```
-
-This excerpt selects three fields from the returned symbol. The complete result
-also carries the snapshot identity, configuration, declaration fields and
-provenance. Markdown is written as `part-000001.md` and subsequent parts when a
-byte budget splits the output.
+> [!NOTE]
+> swift-interface-distiller is pre-1.0. Minor releases may include source-breaking
+> changes, so depend on it with `.upToNextMinor(from:)`.
 
 ## Usage
 
-Replace the fixture path with a local package path to collect its library
-products. Select modules with `--module`, add resolved dependency modules with
-`--dependency-module`, and narrow declarations with `--include` and `--exclude`;
-exclusion takes precedence. SPI, synthesized per-conformer copies and source
-locations are opt-in (`--include-spi`, `--include-synthesized`, `--source-locations`).
-
-```sh
-interface-distiller query .build/api.json members MyType --format swift
-interface-distiller query .build/api.json slice MyType --format swift --max-bytes 8000
-interface-distiller render .build/api.json --output-dir .build/interface --docs summary
-interface-distiller render .build/api.json --by-module --output-dir .build/modules
-interface-distiller coverage .build/api.json
-interface-distiller baseline write .build/api.json .build/baseline.json
-interface-distiller baseline check .build/api.json .build/baseline.json
-```
-
-Use the installed executable, or substitute `.build/release/interface-distiller`
-when running from a checkout. Command data goes to stdout, errors are JSON on
-stderr, and failed writes preserve existing baselines. Queries default to JSON;
-`--format swift|markdown` selects a readable view.
-Rendering defaults to a nested Swift interface with summary documentation; use
-`--docs full|none`, `--show-implied` to expand standard conformance requirements,
-or `--view evidence` for the detailed evidence view. `--by-module` adds an index
-and linked module files for large APIs. Query byte
-budgets count the chosen payload format; headers and omission diagnostics remain
-outside that budget. A slice is complete when every in-snapshot reference fits;
-text views count external references, and JSON retains their identities.
-[Commands](Documentation/Commands.md) covers
-configuration, graph normalization, binary modules, headers and API diagnostics.
+Choose the package, modules, configuration, and optional scope explicitly. Query or slice a snapshot as JSON, Swift, or Markdown, then compare it with a release snapshot; the [interface guide](Documentation/ReadingInterfaces.md) explains the workflow and [commands](Documentation/Commands.md) lists the complete grammar.
 
 ## Requirements
 
@@ -151,6 +104,9 @@ Temporary output belongs in `.build/`.
 
 ## Documentation
 
+- [Reading public interfaces](Documentation/ReadingInterfaces.md): measured sizes, queries, budgets, and boundaries.
+
+- [Usage guide](Documentation/Reference/Usage.md): examples, behavior, and limits.
 - [InterfaceDistiller module](Sources/InterfaceDistiller/InterfaceDistiller.docc/InterfaceDistiller.md)
 - [Evidence contracts](Documentation/Contracts.md) and [JSON schema](Documentation/Schema/Evidence.schema.json)
 - [Commands](Documentation/Commands.md) and [capabilities](Documentation/Capabilities.md)
