@@ -104,15 +104,13 @@ public enum InterfaceRenderer {
   ) throws -> String {
     var selected = evidence
     var included = Dictionary(uniqueKeysWithValues: symbols.map { ($0.id, $0) })
-    let parents = Dictionary(
-      grouping: evidence.relationships.filter {
-        ["memberOf", "requirementOf", "optionalRequirementOf"].contains($0.kind)
-      }, by: \.source)
+    let parents = DeclarationNesting.parents(in: evidence)
     let byPrecise = Dictionary(grouping: evidence.symbols, by: \.preciseIdentifier)
     var pending = symbols
     while let child = pending.popLast() {
-      for edge in parents[child.preciseIdentifier] ?? [] where edge.module == child.module {
-        for parent in byPrecise[edge.target] ?? [] where included[parent.id] == nil {
+      for precise in parents[child.id] ?? [] {
+        for parent in byPrecise[precise] ?? []
+        where parent.module == child.module && included[parent.id] == nil {
           included[parent.id] = parent
           pending.append(parent)
         }
@@ -223,7 +221,6 @@ private struct InterfaceProjection {
   private let containers: Set<String> = [
     "swift.struct", "swift.class", "swift.actor", "swift.enum", "swift.protocol", "swift.extension",
   ]
-  private let nesting: Set<String> = ["memberOf", "requirementOf", "optionalRequirementOf"]
 
   private func kind(_ s: SymbolRecord) -> String {
     s.fields["kind"]?.value["identifier"].string ?? ""
@@ -239,11 +236,10 @@ private struct InterfaceProjection {
     let symbols = evidence.symbols.sorted(by: order)
     let byPrecise = symbolsByPrecise
     var parent: [String: String] = [:]
+    let ownership = DeclarationNesting.parents(in: evidence)
     for s in symbols {
-      let candidates = (edgesBySource[s.preciseIdentifier] ?? []).filter {
-        nesting.contains($0.kind) && $0.source == s.preciseIdentifier && $0.module == s.module
-      }.flatMap { byPrecise[$0.target] ?? [] }.filter {
-        containers.contains(kind($0)) && $0.id != s.id
+      let candidates = (ownership[s.id] ?? []).flatMap { byPrecise[$0] ?? [] }.filter {
+        $0.module == s.module && containers.contains(kind($0)) && $0.id != s.id
       }
       if let p = candidates.sorted(by: order).first { parent[s.id] = p.id }
     }
@@ -355,7 +351,11 @@ private struct InterfaceProjection {
     let context = child.fields["swiftExtension"]?.value ?? .null
     return kind(parent) != "swift.extension"
       && (!constraints(context["constraints"]).isEmpty
-        || (kind(parent) == "swift.protocol" && context != .null))
+        || (kind(parent) == "swift.protocol"
+          && (context != .null
+            || (edgesBySource[child.preciseIdentifier] ?? []).contains {
+              $0.kind == "defaultImplementationOf"
+            })))
   }
 
   private func declaration(_ s: SymbolRecord) -> String {

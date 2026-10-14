@@ -305,3 +305,38 @@ import Testing
   #expect(throws: DistillerError.self) { try EvidenceSnapshot.merge([legacy, fixtureSnapshot()]) }
   #expect(try EvidenceSnapshot.merge([legacy]).schemaVersion == "1.0")
 }
+
+@Test func macroPackageInterfaceMatchesSnapshot() throws {
+  let graphs = try SymbolGraphInput.load(
+    #require(
+      Bundle.module.url(forResource: "MacroGraphs", withExtension: nil, subdirectory: "Fixtures")))
+  let snapshot = try SymbolGraphNormalizer.normalize(graphs, configuration: fixtureConfiguration)
+  let expected = try String(
+    contentsOf: #require(
+      Bundle.module.url(
+        forResource: "MacroInterface", withExtension: "md", subdirectory: "Fixtures")),
+    encoding: .utf8)
+  #expect(try MarkdownRenderer.render(snapshot).map(\.markdown).joined() == expected)
+  #expect(
+    snapshot.configurations[0].symbols.contains {
+      $0.fields["kind"]?.value["identifier"].string == "swift.macro"
+    })
+  #expect(
+    !snapshot.configurations[0].symbols.contains {
+      $0.preciseIdentifier.contains("::SYNTHESIZED::")
+    })
+  let query = try SnapshotQuery(snapshot)
+  #expect(query.members(of: "Counter").symbols.filter { $0.name == "count" }.count == 2)
+  let defaults = try query.slice(roots: ["Counter"], format: .swift)
+  #expect(defaults.state == "complete")
+  #expect(defaults.symbols.filter { $0.name == "count" }.count == 2)
+  let view = String(decoding: try query.encode(defaults, format: .swift), as: UTF8.self)
+  #expect(view.contains("extension Counter"))
+
+  #expect(query.members(of: "ChildCounter").symbols.contains { $0.name == "value()" })
+  let inherited = try query.slice(roots: ["ChildCounter"], format: .swift)
+  let childView = String(decoding: try query.encode(inherited, format: .swift), as: UTF8.self)
+  #expect(childView.contains("extension ChildCounter"))
+  #expect(!childView.contains("extension ParentCounter"))
+
+}

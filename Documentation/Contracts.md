@@ -178,7 +178,11 @@ interfaces, not compilable source replacements: bodies, unreported default argum
 uncollected attributes and witness selection cannot be recovered. Missing declaration
 fragments are labelled explicitly. C and Objective-C blocks keep their language view.
 
-Members follow `memberOf`, `requirementOf` and `optionalRequirementOf`. Protocol
+Members follow `memberOf`, `requirementOf` and `optionalRequirementOf`. A protocol
+default with a `defaultImplementationOf` edge uses its reported declaring path
+to identify the containing protocol; queries and views share this derivation.
+The declaring protocol may inherit the implemented requirement from another protocol. It does
+not select a conformance witness. Protocol
 extension members and constrained members retain extension contexts. Conditional
 conformances keep their conditions; external extensions form a separate group.
 Documentation uses `///` lines, with the first paragraph by default; `full` and

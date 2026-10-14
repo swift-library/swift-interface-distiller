@@ -26,6 +26,8 @@ public struct SnapshotQuery: Sendable {
   public let snapshotID: String
   public let evidence: ConfigurationEvidence
   private let schemaVersion: String
+  private let parentReferences: [String: [String]]
+  private let childrenByParent: [String: [String]]
 
   public init(_ snapshot: EvidenceSnapshot, configuration: String? = nil) throws {
     try snapshot.validate()
@@ -39,6 +41,13 @@ public struct SnapshotQuery: Sendable {
     self.schemaVersion = snapshot.schemaVersion
     self.snapshotID = try snapshot.identity()
     self.evidence = selected
+    let parents = DeclarationNesting.parents(in: selected)
+    self.parentReferences = parents
+    self.childrenByParent = Dictionary(
+      grouping: parents.flatMap { child, targets in
+        targets.map { (parent: $0, child: child) }
+      }, by: \.parent
+    ).mapValues { $0.map(\.child).sorted() }
   }
 
   public func lookup(_ identifierOrName: String) -> QueryResult {
@@ -128,12 +137,7 @@ public struct SnapshotQuery: Sendable {
         for edge in evidence.relationships where edge.source == symbol.preciseIdentifier {
           pending.append(edge.target)
         }
-        for edge in evidence.relationships
-        where edge.target == symbol.preciseIdentifier
-          && ["memberOf", "requirementOf", "optionalRequirementOf"].contains(edge.kind)
-        {
-          pending.append(edge.source)
-        }
+        pending += childrenByParent[symbol.preciseIdentifier] ?? []
       }
       pending = Array(Set(pending)).sorted()
     }
@@ -216,6 +220,12 @@ public struct SnapshotQuery: Sendable {
 
   private func related(to identifier: String, kinds: Set<String>) -> QueryResult {
     let ids = Set(lookup(identifier).symbols.map(\.preciseIdentifier) + [identifier])
+    if kinds == DeclarationNesting.kinds {
+      return result(
+        evidence.symbols.filter {
+          !ids.isDisjoint(with: parentReferences[$0.id] ?? [])
+        })
+    }
     let sources = Set(
       evidence.relationships.filter { kinds.contains($0.kind) && ids.contains($0.target) }.map(
         \.source))
