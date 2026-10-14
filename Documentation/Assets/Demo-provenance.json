@@ -1,0 +1,14 @@
+{
+  "source_revision": "c6269c2d3707a599c613748c44130aa24afb15b8",
+  "executable_sha256": "e2d49e8f45cdd9dda9eb25756878055710c0f1916acbae47e384065e46eee6a6",
+  "extractor_version": "0.2.0",
+  "swift": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.0.0",
+  "package": "swift-library/swift-semver",
+  "package_revision": "38d82eeba787e1ff6b2f615068621632811ce6ca",
+  "archive_sha256": "e0c67ff59153933360194713a9193a95578852437663feda34d4a0cd8b0eca7b",
+  "snapshot_sha256": "1a93ff0e0326d46bfb70687c11d7c95f4bbe0b11e3628e26a17b4cde90b236c9",
+  "command_exit_codes": [
+    0,
+    0
+  ]
+}
