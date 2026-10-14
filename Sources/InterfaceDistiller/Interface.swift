@@ -3,7 +3,7 @@
 
 import Foundation
 
-/// Documentation included in a readable view. Summary keeps the first paragraph.
+/// Documentation included in a readable view. Summary keeps the first prose paragraph.
 public enum DocumentationStyle: String, Sendable { case summary, full, none }
 
 /// Output encodings for snapshot queries. JSON preserves the evidence contract.
@@ -17,31 +17,42 @@ public enum InterfaceRenderer {
     for c in snapshot.configurations {
       for s in c.symbols {
         let path = s.fields["pathComponents"]?.value.strings ?? [s.name]
-        let base = ([s.module] + path).map(slug).joined(separator: "-")
+        var components = Array(path.suffix(2)).map { component in
+          slug(String(component.prefix { $0 != "(" }))
+        }
+        if components.first == slug(s.module) { components.removeFirst() }
+        let base = ([slug(s.module)] + components).joined(separator: "-")
         groups[base, default: []].append(c.id + ":" + s.id)
       }
     }
     var result: [String: String] = [:]
-    for (base, keys) in groups {
-      for key in keys {
-        if keys.count == 1 {
-          result[key] = base
-        } else {
-          // Use symbol identity alone unless the same symbol occurs in several configurations.
+    for (base, group) in groups {
+      let keys = Array(Set(group)).sorted()
+      if keys.count == 1 {
+        result[keys[0]] = base
+        continue
+      }
+      let symbols = Dictionary(grouping: keys, by: { String($0.dropFirst(65)) })
+      let digests = Dictionary(
+        uniqueKeysWithValues: keys.map { key in
           let symbol = String(key.dropFirst(65))
-          let repeated = keys.filter { String($0.dropFirst(65)) == symbol }.count > 1
-          let digest = Digest.sha256(Data((repeated ? key : symbol).utf8))
-          var length = 8
-          while groups[base + "-" + digest.prefix(length)] != nil
-            || keys.contains(where: { other in
-              guard other != key else { return false }
-              let otherSymbol = String(other.dropFirst(65))
-              let otherRepeated = keys.filter { String($0.dropFirst(65)) == otherSymbol }.count > 1
-              return Digest.sha256(Data((otherRepeated ? other : otherSymbol).utf8)).prefix(length)
-                == digest.prefix(length)
-            })
-          { length += 1 }
-          result[key] = base + "-" + digest.prefix(length)
+          return (key, Digest.sha256(Data(((symbols[symbol]?.count ?? 0) > 1 ? key : symbol).utf8)))
+        })
+      var counts: [Int: [String: Int]] = [:]
+      for key in keys {
+        let digest = digests[key]!
+        var length = 8
+        while true {
+          if counts[length] == nil {
+            counts[length] = Dictionary(grouping: digests.values, by: { String($0.prefix(length)) })
+              .mapValues(\.count)
+          }
+          let suffix = String(digest.prefix(length))
+          if groups[base + "-" + suffix] == nil && counts[length]?[suffix] == 1 {
+            result[key] = base + "-" + suffix
+            break
+          }
+          length += 1
         }
       }
     }
@@ -49,27 +60,41 @@ public enum InterfaceRenderer {
   }
 
   public static func render(
-    _ snapshot: EvidenceSnapshot, byteBudget: Int? = nil, docs: DocumentationStyle = .summary
+    _ snapshot: EvidenceSnapshot, byteBudget: Int? = nil, docs: DocumentationStyle = .summary,
+    showImplied: Bool = false
   ) throws -> [MarkdownPart] {
     try snapshot.validate()
     guard byteBudget.map({ $0 > 0 }) ?? true else {
       throw DistillerError(.usage, "Interface budget must be positive")
     }
-    let header = header(snapshot)
+    let header = header(snapshot, docs: docs, showImplied: showImplied)
+    let blocks = blocks(snapshot, docs: docs, showImplied: showImplied)
+    return try paginate(blocks, header: header, byteBudget: byteBudget)
+  }
+
+  private static func blocks(
+    _ snapshot: EvidenceSnapshot, docs: DocumentationStyle, showImplied: Bool
+  ) -> [InterfaceBlock] {
     let anchors = anchors(in: snapshot)
-    let blocks = snapshot.configurations.sorted { $0.id < $1.id }.flatMap {
+    return snapshot.configurations.sorted { $0.id < $1.id }.flatMap {
       let configuration = $0
-      return InterfaceProjection(evidence: configuration, docs: docs).blocks(
-        anchors: anchors, markdown: true
-      ).map { block in
-        guard snapshot.configurations.count > 1 else { return block }
-        var block = block
-        block.heading =
-          block.heading.trimmingCharacters(in: .newlines) + " · " + configuration.id.prefix(12)
-          + "\n\n"
-        return block
-      }
+      return InterfaceProjection(evidence: configuration, docs: docs, showImplied: showImplied)
+        .blocks(
+          anchors: anchors, markdown: true
+        ).map { block in
+          guard snapshot.configurations.count > 1 else { return block }
+          var block = block
+          block.heading =
+            block.heading.trimmingCharacters(in: .newlines) + " · " + configuration.id.prefix(12)
+            + "\n\n"
+          return block
+        }
     }
+  }
+
+  private static func paginate(
+    _ blocks: [InterfaceBlock], header: String, byteBudget: Int?
+  ) throws -> [MarkdownPart] {
     var parts: [MarkdownPart] = []
     var current = header
     var section = ""
@@ -98,9 +123,83 @@ public enum InterfaceRenderer {
     return parts
   }
 
+  /// Measures the whole unsplit interface, including symbols collapsed by presentation policy.
+  public static func measure(
+    _ snapshot: EvidenceSnapshot, docs: DocumentationStyle = .summary, showImplied: Bool = false
+  ) throws -> InterfaceSizeReport {
+    try snapshot.validate()
+    let blocks = blocks(snapshot, docs: docs, showImplied: showImplied)
+    let total = try paginate(
+      blocks, header: header(snapshot, docs: docs, showImplied: showImplied),
+      byteBudget: nil
+    ).reduce(0) { $0 + $1.markdown.utf8.count }
+    var sizes = blocks.flatMap(\.sizes)
+    let rendered = Set(sizes.map { $0.configuration + ":" + $0.symbol })
+    for evidence in snapshot.configurations {
+      let accounting = InterfaceAccounting(
+        configuration: evidence.id,
+        implied: ImpliedMembers.categories(in: evidence))
+      for symbol in evidence.symbols where !rendered.contains(evidence.id + ":" + symbol.id) {
+        accounting.add(symbol)
+      }
+      sizes += accounting.symbols.values
+    }
+    let symbolBytes = sizes.reduce(0) {
+      $0 + $1.declarationBytes + $1.documentationBytes + $1.anchorBytes
+    }
+    return InterfaceSizeReport(
+      totalBytes: total, overheadBytes: total - symbolBytes,
+      symbols: sizes.sorted { ($0.configuration, $0.symbol) < ($1.configuration, $1.symbol) })
+  }
+
+  /// Splits by module and provides an index without pruning any selected declaration.
+  public static func modules(
+    _ snapshot: EvidenceSnapshot, byteBudget: Int? = nil, docs: DocumentationStyle = .summary,
+    showImplied: Bool = false
+  ) throws -> [MarkdownPart] {
+    try snapshot.validate()
+    guard byteBudget.map({ $0 > 0 }) ?? true else {
+      throw DistillerError(.usage, "Interface budget must be positive")
+    }
+    let all = blocks(snapshot, docs: docs, showImplied: showImplied)
+    let names = Set(
+      snapshot.configurations.flatMap { $0.collectedModules + $0.symbols.map(\.module) }
+    ).sorted()
+    if names.isEmpty {
+      return try render(snapshot, byteBudget: byteBudget, docs: docs, showImplied: showImplied)
+    }
+    let header = header(snapshot, docs: docs, showImplied: showImplied)
+    var index =
+      header
+      + "| Module | Reported declarations | Interface bytes | Files |\n| --- | ---: | ---: | --- |\n"
+    var output: [MarkdownPart] = []
+    for name in names {
+      var stem = slug(name)
+      if names.filter({ slug($0) == stem }).count > 1 {
+        stem += "-" + Digest.sha256(Data(name.utf8)).prefix(8)
+      }
+      let parts = try paginate(
+        all.filter { $0.module == name }, header: header, byteBudget: byteBudget
+      )
+      .map { MarkdownPart(name: "module-" + stem + "-" + $0.name, markdown: $0.markdown) }
+      let count = snapshot.configurations.flatMap(\.symbols).filter { $0.module == name }.count
+      let links = parts.enumerated().map { "[\($0.offset + 1)](\($0.element.name))" }.joined(
+        separator: ", ")
+      index +=
+        "| \(name) | \(count) | \(parts.reduce(0) { $0 + $1.markdown.utf8.count }) | \(links) |\n"
+      output += parts
+    }
+    if let budget = byteBudget, index.utf8.count > budget {
+      throw DistillerError(
+        .usage, "Module index exceeds the interface byte budget",
+        context: ["minimumBytes": String(index.utf8.count)])
+    }
+    return [MarkdownPart(name: "index.md", markdown: index)] + output
+  }
+
   static func body(
     _ symbols: [SymbolRecord], evidence: ConfigurationEvidence, format: QueryFormat,
-    docs: DocumentationStyle
+    docs: DocumentationStyle, showImplied: Bool = false
   ) throws -> String {
     var selected = evidence
     var included = Dictionary(uniqueKeysWithValues: symbols.map { ($0.id, $0) })
@@ -122,7 +221,10 @@ public enum InterfaceRenderer {
       schemaVersion: evidence.scope.includeSynthesized != nil && evidence.externalReferences != nil
         ? "2.0" : "1.0")
     var section = ""
-    return InterfaceProjection(evidence: selected, docs: docs).blocks(
+    return InterfaceProjection(
+      evidence: selected, docs: docs, showImplied: showImplied,
+      implied: ImpliedMembers.categories(in: evidence), targets: evidence.symbols
+    ).blocks(
       anchors: anchors(in: snapshot), markdown: format == .markdown
     ).map { block in
       let text = (section == block.heading ? "" : block.heading) + block.content
@@ -131,9 +233,17 @@ public enum InterfaceRenderer {
     }.joined()
   }
 
-  static func header(_ snapshot: EvidenceSnapshot) -> String {
+  static func header(
+    _ snapshot: EvidenceSnapshot, docs: DocumentationStyle = .summary, showImplied: Bool = false
+  ) -> String {
     let modules = Set(snapshot.configurations.flatMap(\.collectedModules)).sorted()
     var lines = ["# Swift interface", "", "Modules: " + modules.joined(separator: ", ")]
+    let impliedCount = snapshot.configurations.reduce(0) {
+      $0 + ImpliedMembers.categories(in: $1).count
+    }
+    lines.append(
+      "View: \(docs.rawValue) docs; \(impliedCount) conformance-implied members "
+        + (showImplied ? "expanded" : "collapsed"))
     for c in snapshot.configurations.sorted(by: { $0.id < $1.id }) {
       let scope = c.scope
       let selection =
@@ -201,21 +311,33 @@ public enum InterfaceRenderer {
 }
 
 private struct InterfaceBlock {
+  var module: String
   var heading: String
   var content: String
+  var sizes: [InterfaceSymbolSize]
 }
 
 private struct InterfaceProjection {
   let evidence: ConfigurationEvidence
   let docs: DocumentationStyle
+  let showImplied: Bool
+  let implied: [String: String]
   let edgesBySource: [String: [Relationship]]
   let symbolsByPrecise: [String: [SymbolRecord]]
+  let targetsByPrecise: [String: [SymbolRecord]]
 
-  init(evidence: ConfigurationEvidence, docs: DocumentationStyle) {
+  init(
+    evidence: ConfigurationEvidence, docs: DocumentationStyle, showImplied: Bool,
+    implied: [String: String]? = nil, targets: [SymbolRecord]? = nil
+  ) {
     self.evidence = evidence
     self.docs = docs
+    self.showImplied = showImplied
+    self.implied = implied ?? ImpliedMembers.categories(in: evidence)
     self.edgesBySource = Dictionary(grouping: evidence.relationships, by: \.source)
     self.symbolsByPrecise = Dictionary(grouping: evidence.symbols, by: \.preciseIdentifier)
+    self.targetsByPrecise = Dictionary(
+      grouping: targets ?? evidence.symbols, by: \.preciseIdentifier)
   }
 
   private let containers: Set<String> = [
@@ -233,7 +355,7 @@ private struct InterfaceProjection {
   }
 
   func blocks(anchors: [String: String], markdown: Bool) -> [InterfaceBlock] {
-    let symbols = evidence.symbols.sorted(by: order)
+    let symbols = evidence.symbols.filter { showImplied || implied[$0.id] == nil }.sorted(by: order)
     let byPrecise = symbolsByPrecise
     var parent: [String: String] = [:]
     let ownership = DeclarationNesting.parents(in: evidence)
@@ -270,25 +392,31 @@ private struct InterfaceProjection {
           }
           gather(root)
           var extensions: [String] = []
+          let accounting = InterfaceAccounting(configuration: evidence.id, implied: implied)
           let declaration = declarationTree(
-            root, children: children, level: 0, extensions: &extensions)
+            root, children: children, level: 0, extensions: &extensions, accounting: accounting)
           let source = declaration + extensions.joined()
           if markdown {
-            let ids = members.compactMap { anchors[evidence.id + ":" + $0.id] }.map {
-              "<a id=\"\($0)\"></a>"
+            let ids = members.compactMap { symbol -> String? in
+              guard let anchor = anchors[evidence.id + ":" + symbol.id] else { return nil }
+              let text = "<a id=\"\(anchor)\"></a>"
+              accounting.add(symbol, anchor: text.utf8.count + 1)
+              return text
             }.joined(separator: "\n")
             let heading = "## " + module + (external ? " — External extensions" : "") + "\n\n"
             // A fence longer than any reported run preserves arbitrary documentation and operators.
             let fence = String(repeating: "`", count: max(3, longestBackticks(source) + 1))
             result.append(
               InterfaceBlock(
-                heading: heading,
-                content: ids + "\n\n" + fence + root.language + "\n" + source + fence + "\n\n"))
+                module: module, heading: heading,
+                content: ids + "\n\n" + fence + root.language + "\n" + source + fence + "\n\n",
+                sizes: Array(accounting.symbols.values)))
           } else {
             result.append(
               InterfaceBlock(
+                module: module,
                 heading: "// Module: " + module + (external ? " — External extensions" : "") + "\n",
-                content: source + "\n"))
+                content: source + "\n", sizes: Array(accounting.symbols.values)))
           }
         }
       }
@@ -303,24 +431,36 @@ private struct InterfaceProjection {
 
   private func declarationTree(
     _ s: SymbolRecord, children: [String: [SymbolRecord]], level: Int,
-    extensions deferred: inout [String]
+    extensions deferred: inout [String], accounting: InterfaceAccounting
   )
     -> String
   {
     let indent = String(repeating: "  ", count: level)
-    var lines = documentation(s) + availability(s)
+    let docs = documentation(s)
+    var lines = docs + availability(s)
+    let docBytes = docs.flatMap { $0.components(separatedBy: "\n") }
+      .map { indent + $0 + "\n" }.joined().utf8.count
     let declaration = declaration(s)
     guard containers.contains(kind(s)) else {
       lines.append(declaration)
-      return lines.flatMap { $0.components(separatedBy: "\n") }.map { indent + $0 }.joined(
-        separator: "\n") + "\n"
+      let text =
+        lines.flatMap { $0.components(separatedBy: "\n") }.map { indent + $0 }.joined(
+          separator: "\n") + "\n"
+      accounting.add(
+        s, declaration: text.utf8.count - docBytes, documentation: docBytes,
+        indentation: indent.utf8.count)
+      return text
     }
     lines.append(declaration + " {")
     var text = lines.map { indent + $0 }.joined(separator: "\n") + "\n"
+    accounting.add(
+      s, declaration: text.utf8.count - docBytes + (indent + "}\n").utf8.count,
+      documentation: docBytes, indentation: indent.utf8.count)
     let all = children[s.id] ?? []
     let extensions = all.filter { needsExtension($0, parent: s) }
     for child in all where !needsExtension(child, parent: s) {
-      text += declarationTree(child, children: children, level: level + 1, extensions: &deferred)
+      text += declarationTree(
+        child, children: children, level: level + 1, extensions: &deferred, accounting: accounting)
     }
     text += indent + "}\n"
     let grouped = Dictionary(
@@ -329,8 +469,10 @@ private struct InterfaceProjection {
     for condition in grouped.keys.sorted() {
       var extensionText =
         "\nextension " + path(s) + (condition.isEmpty ? "" : " where " + condition) + " {\n"
+      accounting.add(s, declaration: extensionText.utf8.count + "}\n".utf8.count)
       for child in grouped[condition] ?? [] {
-        extensionText += declarationTree(child, children: children, level: 1, extensions: &deferred)
+        extensionText += declarationTree(
+          child, children: children, level: 1, extensions: &deferred, accounting: accounting)
       }
       extensionText += "}\n"
       deferred.append(extensionText)
@@ -340,9 +482,11 @@ private struct InterfaceProjection {
       !constraints($0.fields["swiftConstraints"]?.value ?? .null).isEmpty
     }
     for edge in conditional {
-      deferred.append(
+      let text =
         "\nextension " + path(s) + ": " + targetName(edge) + " where "
-          + constraints(edge.fields["swiftConstraints"]?.value ?? .null) + " {}\n")
+        + constraints(edge.fields["swiftConstraints"]?.value ?? .null) + " {}\n"
+      accounting.add(s, declaration: text.utf8.count)
+      deferred.append(text)
     }
     return text
   }
@@ -427,7 +571,7 @@ private struct InterfaceProjection {
   }
 
   private func targetName(_ edge: Relationship) -> String {
-    if let target = symbolsByPrecise[edge.target]?.sorted(by: order).first {
+    if let target = targetsByPrecise[edge.target]?.sorted(by: order).first {
       return path(target)
     }
     if let fallback = edge.fields["targetFallback"]?.value.string {
@@ -450,9 +594,17 @@ private struct InterfaceProjection {
       lines.removeFirst()
     }
     if docs == .summary {
-      lines = Array(lines.prefix { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty })
+      lines = Array(lines.prefix { !startsDocumentationBlock($0) })
     }
     return lines.map { "///" + ($0.isEmpty ? "" : " " + $0) }
+  }
+
+  private func startsDocumentationBlock(_ line: String) -> Bool {
+    let text = line.trimmingCharacters(in: .whitespacesAndNewlines)
+    if text.isEmpty || line.hasPrefix("    ") || line.hasPrefix("\t") { return true }
+    return text.range(
+      of: #"^(?:[-+*]\s|\d+[.)]\s|#{1,6}(?:\s|$)|>|`{3,}|~{3,}|(?:-{3,}|_{3,}|\*{3,})\s*$)"#,
+      options: .regularExpression) != nil
   }
 
   private func availability(_ s: SymbolRecord) -> [String] {

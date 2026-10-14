@@ -26,7 +26,26 @@ interface-distiller compare .build/baseline.json .build/api.json
 `render` defaults to `--view interface --docs summary`. It writes one Swift code
 block per top-level declaration, nests members, includes reported attributes,
 access, generics and conformances, and groups external extensions separately.
-`--docs full` keeps all comment paragraphs; `--docs none` omits documentation.
+Summary keeps the leading prose paragraph and stops at a blank line, list,
+heading, quote or code block. A comment containing only parameter lists has no
+summary. `--docs full` keeps all comment paragraphs; `--docs none` omits documentation.
+Standard requirements implied by observed Codable, Equatable, Hashable,
+RawRepresentable and CaseIterable conformances are collapsed in readable views.
+`--show-implied` expands the collected requirements in render, query and slice;
+JSON and the evidence view retain all collected symbols.
+
+For large APIs, `--by-module` writes `index.md` and linked module parts. Each part
+keeps top-level declaration boundaries and the same snapshot context. The index
+records module declaration counts and the full file sizes. `render --report FILE`
+writes per-symbol UTF-8 accounting for the unsplit interface: declaration,
+documentation, anchor and overhead bytes. Indexed file totals include their own
+context and the index, so they can be larger than the unsplit report.
+
+```sh
+interface-distiller render .build/api.json --by-module --output-dir .build/interface
+interface-distiller render .build/api.json --report .build/interface-size.json
+interface-distiller query .build/api.json members MyType --format swift --show-implied
+```
 `--view evidence` preserves the detailed evidence view and its original content.
 The render result on stdout remains a JSON list of parts (or names and sizes when
 `--output-dir` is supplied). Part names are `part-000001.md`, `part-000002.md`, etc.

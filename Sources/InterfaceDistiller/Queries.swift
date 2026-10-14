@@ -88,7 +88,7 @@ public struct SnapshotQuery: Sendable {
   /// Budgets constrain the selected format's payload; diagnostics remain explicit outside the budget.
   public func slice(
     roots: [String], maximumSymbols: Int? = nil, maximumBytes: Int? = nil,
-    format: QueryFormat = .json, docs: DocumentationStyle = .summary
+    format: QueryFormat = .json, docs: DocumentationStyle = .summary, showImplied: Bool = false
   ) throws
     -> SliceResult
   {
@@ -120,7 +120,8 @@ public struct SnapshotQuery: Sendable {
         if format == .json {
           size = try bytes + CanonicalJSON.encode(symbol).count
         } else if maximumBytes != nil {
-          size = try payloadBytes(Array(selected.values) + [symbol], format: format, docs: docs)
+          size = try payloadBytes(
+            Array(selected.values) + [symbol], format: format, docs: docs, showImplied: showImplied)
         } else {
           size = 0
         }
@@ -142,7 +143,8 @@ public struct SnapshotQuery: Sendable {
       pending = Array(Set(pending)).sorted()
     }
     if format != .json && maximumBytes == nil {
-      bytes = try payloadBytes(Array(selected.values), format: format, docs: docs)
+      bytes = try payloadBytes(
+        Array(selected.values), format: format, docs: docs, showImplied: showImplied)
     }
     let identities = Set(selected.values.map(\.preciseIdentifier))
     return SliceResult(
@@ -159,7 +161,7 @@ public struct SnapshotQuery: Sendable {
   /// Applies payload budgets to a query without following its reference closure.
   public func bounded(
     _ result: QueryResult, maximumSymbols: Int? = nil, maximumBytes: Int? = nil,
-    format: QueryFormat = .json, docs: DocumentationStyle = .summary
+    format: QueryFormat = .json, docs: DocumentationStyle = .summary, showImplied: Bool = false
   ) throws -> SliceResult {
     guard result.snapshot == snapshotID, result.configuration == evidence.id,
       maximumSymbols.map({ $0 > 0 }) ?? true, maximumBytes.map({ $0 > 0 }) ?? true
@@ -169,7 +171,8 @@ public struct SnapshotQuery: Sendable {
     for symbol in result.symbols.sorted(by: { $0.id < $1.id }) {
       let exceedsBytes =
         try maximumBytes.map {
-          try payloadBytes(symbols + [symbol], format: format, docs: docs) > $0
+          try payloadBytes(symbols + [symbol], format: format, docs: docs, showImplied: showImplied)
+            > $0
         } == true
       if maximumSymbols.map({ symbols.count >= $0 }) == true || exceedsBytes {
         omitted.append(symbol.id)
@@ -182,19 +185,20 @@ public struct SnapshotQuery: Sendable {
       state: omitted.isEmpty ? "complete" : "truncated",
       symbols: symbols, relationships: [], omittedReferences: omitted, externalReferences: [],
       diagnostics: omitted.isEmpty ? [] : ["Symbol payload budget exhausted"],
-      symbolBytes: try payloadBytes(symbols, format: format, docs: docs))
+      symbolBytes: try payloadBytes(symbols, format: format, docs: docs, showImplied: showImplied))
   }
 
   /// Encodes a result in its snapshot context. Readable formats include explicit omission diagnostics.
   public func encode(
-    _ result: SliceResult, format: QueryFormat = .json, docs: DocumentationStyle = .summary
+    _ result: SliceResult, format: QueryFormat = .json, docs: DocumentationStyle = .summary,
+    showImplied: Bool = false
   ) throws -> Data {
     guard result.snapshot == snapshotID, result.configuration == evidence.id else {
       throw DistillerError(.usage, "Query result belongs to another snapshot")
     }
     if format == .json { return try CanonicalJSON.encode(result) }
     let snapshot = try EvidenceSnapshot(configurations: [evidence], schemaVersion: schemaVersion)
-    var header = InterfaceRenderer.header(snapshot)
+    var header = InterfaceRenderer.header(snapshot, docs: docs, showImplied: showImplied)
     header += "Snapshot: \(snapshotID.prefix(12)) · Selection: \(result.state)\n"
     if !result.omittedReferences.isEmpty {
       header +=
@@ -206,15 +210,20 @@ public struct SnapshotQuery: Sendable {
       header = header.components(separatedBy: "\n").map { "// " + $0 }.joined(separator: "\n")
     }
     let body = try InterfaceRenderer.body(
-      result.symbols, evidence: evidence, format: format, docs: docs)
+      result.symbols, evidence: evidence, format: format, docs: docs, showImplied: showImplied)
     return Data((header + "\n" + body).utf8)
   }
 
-  func payloadBytes(_ symbols: [SymbolRecord], format: QueryFormat, docs: DocumentationStyle) throws
+  func payloadBytes(
+    _ symbols: [SymbolRecord], format: QueryFormat, docs: DocumentationStyle,
+    showImplied: Bool = false
+  ) throws
     -> Int
   {
     if format == .json { return try symbols.reduce(0) { try $0 + CanonicalJSON.encode($1).count } }
-    return try InterfaceRenderer.body(symbols, evidence: evidence, format: format, docs: docs).utf8
+    return try InterfaceRenderer.body(
+      symbols, evidence: evidence, format: format, docs: docs, showImplied: showImplied
+    ).utf8
       .count
   }
 

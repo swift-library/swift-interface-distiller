@@ -1,0 +1,763 @@
+{
+  "date": "2026-10-15",
+  "records": [
+    {
+      "afterBytes": 2439681,
+      "beforeBytes": 3729244,
+      "byCategory": {
+        "CaseIterable": {
+          "after": {},
+          "afterBytes": 0,
+          "before": {},
+          "beforeBytes": 0,
+          "symbols": 0
+        },
+        "CodingKeys": {
+          "after": {},
+          "afterBytes": 0,
+          "before": {},
+          "beforeBytes": 0,
+          "symbols": 0
+        },
+        "Decodable": {
+          "after": {
+            "anchors": 0,
+            "declaration": 0,
+            "documentation": 0
+          },
+          "afterBytes": 0,
+          "before": {
+            "anchors": 227614,
+            "declaration": 106368,
+            "documentation": 140576
+          },
+          "beforeBytes": 474558,
+          "symbols": 2012
+        },
+        "Encodable": {
+          "after": {
+            "anchors": 0,
+            "declaration": 0,
+            "documentation": 0
+          },
+          "afterBytes": 0,
+          "before": {
+            "anchors": 12673,
+            "declaration": 7341,
+            "documentation": 6833
+          },
+          "beforeBytes": 26847,
+          "symbols": 129
+        },
+        "Equatable": {
+          "after": {},
+          "afterBytes": 0,
+          "before": {},
+          "beforeBytes": 0,
+          "symbols": 0
+        },
+        "Hashable": {
+          "after": {},
+          "afterBytes": 0,
+          "before": {},
+          "beforeBytes": 0,
+          "symbols": 0
+        },
+        "RawRepresentable": {
+          "after": {
+            "anchors": 0,
+            "declaration": 0,
+            "documentation": 0
+          },
+          "afterBytes": 0,
+          "before": {
+            "anchors": 138692,
+            "declaration": 43034,
+            "documentation": 71062
+          },
+          "beforeBytes": 252788,
+          "symbols": 1078
+        },
+        "other declared API": {
+          "after": {
+            "anchors": 1149455,
+            "declaration": 1263299,
+            "documentation": 24462
+          },
+          "afterBytes": 2437216,
+          "before": {
+            "anchors": 1684888,
+            "declaration": 1263299,
+            "documentation": 24462
+          },
+          "beforeBytes": 2972649,
+          "symbols": 14903
+        }
+      },
+      "byKind": {
+        "swift.class": {
+          "after": {
+            "anchors": 579,
+            "declaration": 833,
+            "documentation": 407
+          },
+          "afterBytes": 1819,
+          "before": {
+            "anchors": 585,
+            "declaration": 833,
+            "documentation": 407
+          },
+          "beforeBytes": 1825,
+          "symbols": 11
+        },
+        "swift.enum": {
+          "after": {
+            "anchors": 95304,
+            "declaration": 134935,
+            "documentation": 2210
+          },
+          "afterBytes": 232449,
+          "before": {
+            "anchors": 141618,
+            "declaration": 134935,
+            "documentation": 2210
+          },
+          "beforeBytes": 278763,
+          "symbols": 1249
+        },
+        "swift.enum.case": {
+          "after": {
+            "anchors": 216972,
+            "declaration": 153726,
+            "documentation": 2332
+          },
+          "afterBytes": 373030,
+          "before": {
+            "anchors": 325123,
+            "declaration": 153726,
+            "documentation": 2332
+          },
+          "beforeBytes": 481181,
+          "symbols": 2906
+        },
+        "swift.init": {
+          "after": {
+            "anchors": 145517,
+            "declaration": 339011,
+            "documentation": 2289
+          },
+          "afterBytes": 486817,
+          "before": {
+            "anchors": 633094,
+            "declaration": 488413,
+            "documentation": 213927
+          },
+          "beforeBytes": 1335434,
+          "symbols": 5007
+        },
+        "swift.method": {
+          "after": {
+            "anchors": 15088,
+            "declaration": 30388,
+            "documentation": 3157
+          },
+          "afterBytes": 48633,
+          "before": {
+            "anchors": 28052,
+            "declaration": 37729,
+            "documentation": 9990
+          },
+          "beforeBytes": 75771,
+          "symbols": 332
+        },
+        "swift.property": {
+          "after": {
+            "anchors": 512727,
+            "declaration": 403844,
+            "documentation": 10465
+          },
+          "afterBytes": 927036,
+          "before": {
+            "anchors": 720646,
+            "declaration": 403844,
+            "documentation": 10465
+          },
+          "beforeBytes": 1134955,
+          "symbols": 6545
+        },
+        "swift.protocol": {
+          "after": {
+            "anchors": 124,
+            "declaration": 186,
+            "documentation": 0
+          },
+          "afterBytes": 310,
+          "before": {
+            "anchors": 124,
+            "declaration": 186,
+            "documentation": 0
+          },
+          "beforeBytes": 310,
+          "symbols": 2
+        },
+        "swift.struct": {
+          "after": {
+            "anchors": 154053,
+            "declaration": 187166,
+            "documentation": 2694
+          },
+          "afterBytes": 343913,
+          "before": {
+            "anchors": 202605,
+            "declaration": 187166,
+            "documentation": 2694
+          },
+          "beforeBytes": 392465,
+          "symbols": 1938
+        },
+        "swift.type.method": {
+          "after": {
+            "anchors": 465,
+            "declaration": 1843,
+            "documentation": 77
+          },
+          "afterBytes": 2385,
+          "before": {
+            "anchors": 721,
+            "declaration": 1843,
+            "documentation": 77
+          },
+          "beforeBytes": 2641,
+          "symbols": 7
+        },
+        "swift.typealias": {
+          "after": {
+            "anchors": 8626,
+            "declaration": 11367,
+            "documentation": 831
+          },
+          "afterBytes": 20824,
+          "before": {
+            "anchors": 11299,
+            "declaration": 11367,
+            "documentation": 831
+          },
+          "beforeBytes": 23497,
+          "symbols": 125
+        }
+      },
+      "byModule": {
+        "Codex": {
+          "after": {
+            "anchors": 2208,
+            "declaration": 3031,
+            "documentation": 3222
+          },
+          "afterBytes": 8461,
+          "before": {
+            "anchors": 2521,
+            "declaration": 3031,
+            "documentation": 3222
+          },
+          "beforeBytes": 8774,
+          "symbols": 59
+        },
+        "CodexAppServerClient": {
+          "after": {
+            "anchors": 19978,
+            "declaration": 35081,
+            "documentation": 3128
+          },
+          "afterBytes": 58187,
+          "before": {
+            "anchors": 21589,
+            "declaration": 35188,
+            "documentation": 3313
+          },
+          "beforeBytes": 60090,
+          "symbols": 268
+        },
+        "CodexAppServerHummingbird": {
+          "after": {
+            "anchors": 771,
+            "declaration": 1009,
+            "documentation": 0
+          },
+          "afterBytes": 1780,
+          "before": {
+            "anchors": 897,
+            "declaration": 1009,
+            "documentation": 0
+          },
+          "beforeBytes": 1906,
+          "symbols": 10
+        },
+        "CodexAppServerNIO": {
+          "after": {
+            "anchors": 1752,
+            "declaration": 1534,
+            "documentation": 135
+          },
+          "afterBytes": 3421,
+          "before": {
+            "anchors": 1875,
+            "declaration": 1534,
+            "documentation": 135
+          },
+          "beforeBytes": 3544,
+          "symbols": 26
+        },
+        "CodexAppServerProtocol": {
+          "after": {
+            "anchors": 1096376,
+            "declaration": 1195078,
+            "documentation": 534
+          },
+          "afterBytes": 2291988,
+          "before": {
+            "anchors": 2002160,
+            "declaration": 1350958,
+            "documentation": 217805
+          },
+          "beforeBytes": 3570923,
+          "symbols": 17231
+        },
+        "CodexAppServerRuntime": {
+          "after": {
+            "anchors": 3862,
+            "declaration": 3850,
+            "documentation": 361
+          },
+          "afterBytes": 8073,
+          "before": {
+            "anchors": 6138,
+            "declaration": 4270,
+            "documentation": 833
+          },
+          "beforeBytes": 11241,
+          "symbols": 68
+        },
+        "CodexAppServerStdio": {
+          "after": {
+            "anchors": 2841,
+            "declaration": 2346,
+            "documentation": 1593
+          },
+          "afterBytes": 6780,
+          "before": {
+            "anchors": 3202,
+            "declaration": 2346,
+            "documentation": 1593
+          },
+          "beforeBytes": 7141,
+          "symbols": 37
+        },
+        "CodexAppServerURLSession": {
+          "after": {
+            "anchors": 709,
+            "declaration": 490,
+            "documentation": 0
+          },
+          "afterBytes": 1199,
+          "before": {
+            "anchors": 731,
+            "declaration": 490,
+            "documentation": 0
+          },
+          "beforeBytes": 1221,
+          "symbols": 9
+        },
+        "CodexAppServerVapor": {
+          "after": {
+            "anchors": 724,
+            "declaration": 1141,
+            "documentation": 0
+          },
+          "afterBytes": 1865,
+          "before": {
+            "anchors": 861,
+            "declaration": 1141,
+            "documentation": 0
+          },
+          "beforeBytes": 2002,
+          "symbols": 11
+        },
+        "CodexExec": {
+          "after": {
+            "anchors": 12325,
+            "declaration": 12600,
+            "documentation": 9706
+          },
+          "afterBytes": 34631,
+          "before": {
+            "anchors": 14919,
+            "declaration": 12732,
+            "documentation": 9942
+          },
+          "beforeBytes": 37593,
+          "symbols": 244
+        },
+        "CodexMCP": {
+          "after": {
+            "anchors": 7909,
+            "declaration": 7139,
+            "documentation": 5783
+          },
+          "afterBytes": 20831,
+          "before": {
+            "anchors": 8974,
+            "declaration": 7343,
+            "documentation": 6090
+          },
+          "beforeBytes": 22407,
+          "symbols": 159
+        }
+      },
+      "byOrigin": {
+        "compiler-implicit member": {
+          "after": {
+            "anchors": 0,
+            "declaration": 0,
+            "documentation": 0
+          },
+          "afterBytes": 0,
+          "before": {
+            "anchors": 353633,
+            "declaration": 142706,
+            "documentation": 202745
+          },
+          "beforeBytes": 699084,
+          "symbols": 2961
+        },
+        "plugin-generated declaration": {
+          "after": {
+            "anchors": 1108020,
+            "declaration": 1220670,
+            "documentation": 534
+          },
+          "afterBytes": 2329224,
+          "before": {
+            "anchors": 1660910,
+            "declaration": 1234186,
+            "documentation": 15662
+          },
+          "beforeBytes": 2910758,
+          "symbols": 14430
+        },
+        "tracked declaration": {
+          "after": {
+            "anchors": 41435,
+            "declaration": 42629,
+            "documentation": 23928
+          },
+          "afterBytes": 107992,
+          "before": {
+            "anchors": 49324,
+            "declaration": 43150,
+            "documentation": 24526
+          },
+          "beforeBytes": 117000,
+          "symbols": 731
+        }
+      },
+      "components": {
+        "after": {
+          "anchors": 1149455,
+          "declaration": 1263299,
+          "documentation": 24462,
+          "overhead": 2465
+        },
+        "before": {
+          "anchors": 2063867,
+          "declaration": 1420042,
+          "documentation": 242933,
+          "overhead": 2402
+        }
+      },
+      "configurationCount": 1,
+      "duplicateModuleIdentities": 0,
+      "generatedSwiftBytes": 2109916,
+      "indexBytes": 1906,
+      "indexedBytes": 2450838,
+      "inputCommit": "34ffd22fcd05991411c2e74d1e077105e4980ec1",
+      "moduleCount": 12,
+      "package": "swift-codex",
+      "snapshotSHA256": "cc83659a89f5145c951b65ae6122432b9abf4b188bc034eaca30034ff1b90dfc",
+      "sourceBytes": 348627
+    },
+    {
+      "afterBytes": 6323,
+      "beforeBytes": 12340,
+      "byCategory": {
+        "CaseIterable": {
+          "after": {},
+          "afterBytes": 0,
+          "before": {},
+          "beforeBytes": 0,
+          "symbols": 0
+        },
+        "CodingKeys": {
+          "after": {},
+          "afterBytes": 0,
+          "before": {},
+          "beforeBytes": 0,
+          "symbols": 0
+        },
+        "Decodable": {
+          "after": {},
+          "afterBytes": 0,
+          "before": {},
+          "beforeBytes": 0,
+          "symbols": 0
+        },
+        "Encodable": {
+          "after": {},
+          "afterBytes": 0,
+          "before": {},
+          "beforeBytes": 0,
+          "symbols": 0
+        },
+        "Equatable": {
+          "after": {},
+          "afterBytes": 0,
+          "before": {},
+          "beforeBytes": 0,
+          "symbols": 0
+        },
+        "Hashable": {
+          "after": {},
+          "afterBytes": 0,
+          "before": {},
+          "beforeBytes": 0,
+          "symbols": 0
+        },
+        "RawRepresentable": {
+          "after": {
+            "anchors": 0,
+            "declaration": 0,
+            "documentation": 0
+          },
+          "afterBytes": 0,
+          "before": {
+            "anchors": 101,
+            "declaration": 93,
+            "documentation": 91
+          },
+          "beforeBytes": 285,
+          "symbols": 2
+        },
+        "other declared API": {
+          "after": {
+            "anchors": 1383,
+            "declaration": 3276,
+            "documentation": 1060
+          },
+          "afterBytes": 5719,
+          "before": {
+            "anchors": 2135,
+            "declaration": 3276,
+            "documentation": 6100
+          },
+          "beforeBytes": 11511,
+          "symbols": 31
+        }
+      },
+      "byKind": {
+        "swift.associatedtype": {
+          "after": {
+            "anchors": 50,
+            "declaration": 30,
+            "documentation": 0
+          },
+          "afterBytes": 80,
+          "before": {
+            "anchors": 50,
+            "declaration": 30,
+            "documentation": 0
+          },
+          "beforeBytes": 80,
+          "symbols": 1
+        },
+        "swift.extension": {
+          "after": {
+            "anchors": 77,
+            "declaration": 156,
+            "documentation": 141
+          },
+          "afterBytes": 374,
+          "before": {
+            "anchors": 77,
+            "declaration": 156,
+            "documentation": 141
+          },
+          "beforeBytes": 374,
+          "symbols": 2
+        },
+        "swift.init": {
+          "after": {
+            "anchors": 624,
+            "declaration": 2150,
+            "documentation": 0
+          },
+          "afterBytes": 2774,
+          "before": {
+            "anchors": 1349,
+            "declaration": 2194,
+            "documentation": 5084
+          },
+          "beforeBytes": 8627,
+          "symbols": 17
+        },
+        "swift.method": {
+          "after": {
+            "anchors": 468,
+            "declaration": 528,
+            "documentation": 664
+          },
+          "afterBytes": 1660,
+          "before": {
+            "anchors": 524,
+            "declaration": 528,
+            "documentation": 664
+          },
+          "beforeBytes": 1716,
+          "symbols": 8
+        },
+        "swift.property": {
+          "after": {
+            "anchors": 95,
+            "declaration": 89,
+            "documentation": 118
+          },
+          "afterBytes": 302,
+          "before": {
+            "anchors": 155,
+            "declaration": 138,
+            "documentation": 165
+          },
+          "beforeBytes": 458,
+          "symbols": 3
+        },
+        "swift.protocol": {
+          "after": {
+            "anchors": 44,
+            "declaration": 273,
+            "documentation": 63
+          },
+          "afterBytes": 380,
+          "before": {
+            "anchors": 44,
+            "declaration": 273,
+            "documentation": 63
+          },
+          "beforeBytes": 380,
+          "symbols": 1
+        },
+        "swift.struct": {
+          "after": {
+            "anchors": 25,
+            "declaration": 50,
+            "documentation": 74
+          },
+          "afterBytes": 149,
+          "before": {
+            "anchors": 37,
+            "declaration": 50,
+            "documentation": 74
+          },
+          "beforeBytes": 161,
+          "symbols": 1
+        }
+      },
+      "byModule": {
+        "UserDefault": {
+          "after": {
+            "anchors": 1344,
+            "declaration": 3147,
+            "documentation": 919
+          },
+          "afterBytes": 5410,
+          "before": {
+            "anchors": 2096,
+            "declaration": 3147,
+            "documentation": 5959
+          },
+          "beforeBytes": 11202,
+          "symbols": 30
+        },
+        "UserDefaultUtils": {
+          "after": {
+            "anchors": 39,
+            "declaration": 129,
+            "documentation": 141
+          },
+          "afterBytes": 309,
+          "before": {
+            "anchors": 140,
+            "declaration": 222,
+            "documentation": 232
+          },
+          "beforeBytes": 594,
+          "symbols": 3
+        }
+      },
+      "byOrigin": {
+        "plugin-generated declaration": {
+          "after": {
+            "anchors": 687,
+            "declaration": 2241,
+            "documentation": 192
+          },
+          "afterBytes": 3120,
+          "before": {
+            "anchors": 1383,
+            "declaration": 2241,
+            "documentation": 5232
+          },
+          "beforeBytes": 8856,
+          "symbols": 18
+        },
+        "tracked declaration": {
+          "after": {
+            "anchors": 696,
+            "declaration": 1035,
+            "documentation": 868
+          },
+          "afterBytes": 2599,
+          "before": {
+            "anchors": 853,
+            "declaration": 1128,
+            "documentation": 959
+          },
+          "beforeBytes": 2940,
+          "symbols": 15
+        }
+      },
+      "components": {
+        "after": {
+          "anchors": 1383,
+          "declaration": 3276,
+          "documentation": 1060,
+          "overhead": 604
+        },
+        "before": {
+          "anchors": 2236,
+          "declaration": 3369,
+          "documentation": 6191,
+          "overhead": 544
+        }
+      },
+      "configurationCount": 1,
+      "duplicateModuleIdentities": 0,
+      "generatedSwiftBytes": 24185,
+      "indexBytes": 678,
+      "indexedBytes": 7444,
+      "inputCommit": "5bd0952df31e2e7ca4010a8aa53587a776da0b3b",
+      "moduleCount": 2,
+      "package": "swift-userdefault",
+      "snapshotSHA256": "216dca1288040498846358c9ff75f7d4567006a61e57341408bbb9899e361f69",
+      "sourceBytes": 13506
+    }
+  ],
+  "rendererCommit": "292f6d63fdd21cee55e6b115e703d3a06a253762"
+}

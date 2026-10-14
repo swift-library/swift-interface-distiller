@@ -42,6 +42,8 @@ a baseline; ``CompilerDiagnostics`` keeps toolchain diagnostics separate.
 - ``SnapshotQuery``
 - ``MarkdownRenderer``
 - ``InterfaceRenderer``
+- ``InterfaceSizeReport``
+- ``InterfaceSymbolSize``
 - ``DocumentationStyle``
 - ``QueryFormat``
 - ``DocumentationCoverage``

@@ -1,6 +1,7 @@
 # Swift interface
 
 Modules: MacroExample
+View: summary docs; 0 conformance-implied members collapsed
 Extractor: 0.2.0 · Configuration: 9cc03895807a
 Toolchain: fixture compiler
 Scope: public/open; library products; synthesized excluded by policy

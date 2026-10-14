@@ -71,7 +71,8 @@ import InterfaceDistiller
         --swift EXECUTABLE, --clang EXECUTABLE, --sdk-path DIR.
         Query options: --configuration-id ID, --max-symbols N, --max-bytes N,
         --format json|swift|markdown (default json).
-        Readable views: --docs summary|full|none (default summary).
+        Readable views: --docs summary|full|none (default summary), --show-implied.
+        Render options: --by-module (module files and index), --report FILE (unsplit byte accounting).
         Package option: --dependency-module NAME (repeatable).
         See Documentation/Commands.md for contracts and exit codes.
         """)
@@ -115,6 +116,7 @@ import InterfaceDistiller
       let format = QueryFormat(rawValue: args.one("format") ?? "json"),
       let view = MarkdownRenderer.View(rawValue: args.one("view") ?? "interface")
     else { throw DistillerError(.usage, "Invalid view, format or documentation style") }
+    let showImplied = args.flag("show-implied")
     switch try position(0) {
     case "configuration": try emit(try await toolchain().configuration)
     case "collect":
@@ -171,9 +173,18 @@ import InterfaceDistiller
         EvidenceSnapshot.merge(
           args.positionals.dropFirst().map { try EvidenceSnapshot.read(file($0)) }))
     case "render":
+      guard view != .evidence || args.one("report") == nil else {
+        throw DistillerError(.usage, "Interface size reports require the interface view")
+      }
       let snapshot = try EvidenceSnapshot.read(file(position(1)))
       let parts = try MarkdownRenderer.render(
-        snapshot, byteBudget: args.integer("byte-budget"), view: view, docs: docs)
+        snapshot, byteBudget: args.integer("byte-budget"), view: view, docs: docs,
+        showImplied: showImplied, byModule: args.flag("by-module"))
+      if let report = args.one("report") {
+        try CanonicalJSON.write(
+          InterfaceRenderer.measure(snapshot, docs: docs, showImplied: showImplied),
+          to: file(report))
+      }
       if let directory = args.one("output-dir") {
         let root = file(directory)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
@@ -195,7 +206,7 @@ import InterfaceDistiller
       let maximumSymbols = try args.integer("max-symbols")
       let maximumBytes = try args.integer("max-bytes")
       func write(_ result: SliceResult) throws {
-        let data = try query.encode(result, format: format, docs: docs)
+        let data = try query.encode(result, format: format, docs: docs, showImplied: showImplied)
         if let output = args.one("output") {
           try data.write(to: file(output), options: .atomic)
         } else {
@@ -209,7 +220,7 @@ import InterfaceDistiller
           try write(
             query.bounded(
               result, maximumSymbols: maximumSymbols, maximumBytes: maximumBytes, format: format,
-              docs: docs))
+              docs: docs, showImplied: showImplied))
         }
       }
       switch kind {
@@ -222,7 +233,8 @@ import InterfaceDistiller
         try write(
           query.slice(
             roots: Array(args.positionals.dropFirst(selectorIndex)),
-            maximumSymbols: maximumSymbols, maximumBytes: maximumBytes, format: format, docs: docs))
+            maximumSymbols: maximumSymbols, maximumBytes: maximumBytes, format: format, docs: docs,
+            showImplied: showImplied))
       default: throw DistillerError(.usage, "Unknown query kind")
       }
     case "compare":
@@ -280,7 +292,9 @@ import InterfaceDistiller
 private struct Arguments {
   let positionals: [String]
   let options: [String: [String]]
-  static let switches: Set<String> = ["include-spi", "source-locations", "include-synthesized"]
+  static let switches: Set<String> = [
+    "include-spi", "source-locations", "include-synthesized", "show-implied", "by-module",
+  ]
   static let repeated: Set<String> = [
     "module", "include", "exclude", "dependency-module", "search-path", "header",
   ]

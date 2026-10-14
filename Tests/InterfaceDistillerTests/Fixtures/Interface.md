@@ -1,6 +1,7 @@
 # Swift interface
 
 Modules: EvidenceExample
+View: summary docs; 0 conformance-implied members collapsed
 Extractor: 0.2.0 · Configuration: 9cc03895807a
 Toolchain: fixture compiler
 Scope: public/open; library products; SPI included; synthesized excluded by policy
@@ -9,7 +10,7 @@ Completeness: 1/1 modules; 18 declarations; 5 external references; no recorded g
 ## EvidenceExample
 
 <a id="evidenceexample-item"></a>
-<a id="evidenceexample-item-init-name"></a>
+<a id="evidenceexample-item-init"></a>
 <a id="evidenceexample-item-make"></a>
 <a id="evidenceexample-item-name"></a>
 
