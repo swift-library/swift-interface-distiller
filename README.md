@@ -50,7 +50,7 @@ Add the package and the `InterfaceDistiller` product to `Package.swift`:
 dependencies: [
   .package(
     url: "https://github.com/swift-library/swift-interface-distiller.git",
-    .upToNextMinor(from: "0.1.2")
+    .upToNextMinor(from: "0.2.0")
   ),
 ],
 targets: [
@@ -116,6 +116,7 @@ locations are opt-in (`--include-spi`, `--include-synthesized`, `--source-locati
 interface-distiller query .build/api.json members MyType --format swift
 interface-distiller query .build/api.json slice MyType --format swift --max-bytes 8000
 interface-distiller render .build/api.json --output-dir .build/interface --docs summary
+interface-distiller render .build/api.json --by-module --output-dir .build/modules
 interface-distiller coverage .build/api.json
 interface-distiller baseline write .build/api.json .build/baseline.json
 interface-distiller baseline check .build/api.json .build/baseline.json
@@ -126,7 +127,9 @@ when running from a checkout. Command data goes to stdout, errors are JSON on
 stderr, and failed writes preserve existing baselines. Queries default to JSON;
 `--format swift|markdown` selects a readable view.
 Rendering defaults to a nested Swift interface with summary documentation; use
-`--docs full|none` or `--view evidence` for the detailed evidence view. Query byte
+`--docs full|none`, `--show-implied` to expand standard conformance requirements,
+or `--view evidence` for the detailed evidence view. `--by-module` adds an index
+and linked module files for large APIs. Query byte
 budgets count the chosen payload format; headers and omission diagnostics remain
 outside that budget. A slice is complete when every in-snapshot reference fits;
 text views count external references, and JSON retains their identities.

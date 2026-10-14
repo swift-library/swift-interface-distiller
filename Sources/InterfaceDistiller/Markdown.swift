@@ -19,10 +19,18 @@ public enum MarkdownRenderer {
   /// A budget is strict. An indivisible declaration exceeding it produces a machine-readable error.
   public static func render(
     _ snapshot: EvidenceSnapshot, byteBudget: Int? = nil, view: View = .interface,
-    docs: DocumentationStyle = .summary
+    docs: DocumentationStyle = .summary, showImplied: Bool = false, byModule: Bool = false
   ) throws -> [MarkdownPart] {
     if view == .interface {
-      return try InterfaceRenderer.render(snapshot, byteBudget: byteBudget, docs: docs)
+      if byModule {
+        return try InterfaceRenderer.modules(
+          snapshot, byteBudget: byteBudget, docs: docs, showImplied: showImplied)
+      }
+      return try InterfaceRenderer.render(
+        snapshot, byteBudget: byteBudget, docs: docs, showImplied: showImplied)
+    }
+    guard !byModule else {
+      throw DistillerError(.usage, "Module indexing requires the interface view")
     }
     return try evidence(snapshot, byteBudget: byteBudget)
   }

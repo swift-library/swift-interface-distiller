@@ -1,0 +1,2864 @@
+{
+  "metadata": {
+    "formatVersion": {
+      "major": 0,
+      "minor": 6,
+      "patch": 0
+    },
+    "generator": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)"
+  },
+  "module": {
+    "name": "ImpliedExample",
+    "platform": {
+      "architecture": "arm64",
+      "vendor": "apple",
+      "operatingSystem": {
+        "name": "macosx",
+        "minimumVersion": {
+          "major": 12,
+          "minor": 0
+        }
+      }
+    }
+  },
+  "symbols": [
+    {
+      "kind": {
+        "identifier": "swift.struct",
+        "displayName": "Structure"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5ModelV",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Model"
+      ],
+      "names": {
+        "title": "Model",
+        "navigator": [
+          {
+            "kind": "identifier",
+            "spelling": "Model"
+          }
+        ],
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "struct"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "Model"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "ImpliedExample",
+        "lines": [
+          {
+            "text": "A model with compiler-derived decoding support."
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "struct"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "Model"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.property",
+        "displayName": "Instance Property"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5ModelV5valueSivp",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Model",
+        "value"
+      ],
+      "names": {
+        "title": "value",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "var"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "value"
+          },
+          {
+            "kind": "text",
+            "spelling": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Int",
+            "preciseIdentifier": "s:Si"
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "var"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "value"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Int",
+          "preciseIdentifier": "s:Si"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.init",
+        "displayName": "Initializer"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5ModelV5valueACSi_tcfc",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Model",
+        "init(value:)"
+      ],
+      "names": {
+        "title": "init(value:)",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "init"
+          },
+          {
+            "kind": "text",
+            "spelling": "("
+          },
+          {
+            "kind": "externalParam",
+            "spelling": "value"
+          },
+          {
+            "kind": "text",
+            "spelling": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Int",
+            "preciseIdentifier": "s:Si"
+          },
+          {
+            "kind": "text",
+            "spelling": ")"
+          }
+        ]
+      },
+      "functionSignature": {
+        "parameters": [
+          {
+            "name": "value",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "value"
+              },
+              {
+                "kind": "text",
+                "spelling": ": "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "Int",
+                "preciseIdentifier": "s:Si"
+              }
+            ]
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "init"
+        },
+        {
+          "kind": "text",
+          "spelling": "("
+        },
+        {
+          "kind": "externalParam",
+          "spelling": "value"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Int",
+          "preciseIdentifier": "s:Si"
+        },
+        {
+          "kind": "text",
+          "spelling": ")"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.init",
+        "displayName": "Initializer"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5ModelV4fromACSi_tcfc",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Model",
+        "init(from:)"
+      ],
+      "names": {
+        "title": "init(from:)",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "init"
+          },
+          {
+            "kind": "text",
+            "spelling": "("
+          },
+          {
+            "kind": "externalParam",
+            "spelling": "from"
+          },
+          {
+            "kind": "text",
+            "spelling": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Int",
+            "preciseIdentifier": "s:Si"
+          },
+          {
+            "kind": "text",
+            "spelling": ")"
+          }
+        ]
+      },
+      "functionSignature": {
+        "parameters": [
+          {
+            "name": "from",
+            "internalName": "value",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "value"
+              },
+              {
+                "kind": "text",
+                "spelling": ": "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "Int",
+                "preciseIdentifier": "s:Si"
+              }
+            ]
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "init"
+        },
+        {
+          "kind": "text",
+          "spelling": "("
+        },
+        {
+          "kind": "externalParam",
+          "spelling": "from"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "internalParam",
+          "spelling": "value"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Int",
+          "preciseIdentifier": "s:Si"
+        },
+        {
+          "kind": "text",
+          "spelling": ")"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.init",
+        "displayName": "Initializer"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5ModelV4fromACs7Decoder_p_tKcfc",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Model",
+        "init(from:)"
+      ],
+      "names": {
+        "title": "init(from:)",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "init"
+          },
+          {
+            "kind": "text",
+            "spelling": "("
+          },
+          {
+            "kind": "externalParam",
+            "spelling": "from"
+          },
+          {
+            "kind": "text",
+            "spelling": ": any "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Decoder",
+            "preciseIdentifier": "s:s7DecoderP"
+          },
+          {
+            "kind": "text",
+            "spelling": ") "
+          },
+          {
+            "kind": "keyword",
+            "spelling": "throws"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "Swift",
+        "lines": [
+          {
+            "text": "Creates a new instance by decoding from the given decoder."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "This initializer throws an error if reading from the decoder fails, or"
+          },
+          {
+            "text": "if the data read is corrupted or otherwise invalid."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "- Parameter decoder: The decoder to read data from."
+          }
+        ]
+      },
+      "functionSignature": {
+        "parameters": [
+          {
+            "name": "from",
+            "internalName": "decoder",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "decoder"
+              },
+              {
+                "kind": "text",
+                "spelling": ": any "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "Decoder",
+                "preciseIdentifier": "s:s7DecoderP"
+              }
+            ]
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "init"
+        },
+        {
+          "kind": "text",
+          "spelling": "("
+        },
+        {
+          "kind": "externalParam",
+          "spelling": "from"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "internalParam",
+          "spelling": "decoder"
+        },
+        {
+          "kind": "text",
+          "spelling": ": any "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Decoder",
+          "preciseIdentifier": "s:s7DecoderP"
+        },
+        {
+          "kind": "text",
+          "spelling": ") "
+        },
+        {
+          "kind": "keyword",
+          "spelling": "throws"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.enum",
+        "displayName": "Enumeration"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample4ModeO",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Mode"
+      ],
+      "names": {
+        "title": "Mode",
+        "navigator": [
+          {
+            "kind": "identifier",
+            "spelling": "Mode"
+          }
+        ],
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "enum"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "Mode"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "ImpliedExample",
+        "lines": [
+          {
+            "text": "A raw enum with compiler-derived requirements."
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "enum"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "Mode"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.enum.case",
+        "displayName": "Case"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample4ModeO5firstyA2CmF",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Mode",
+        "first"
+      ],
+      "names": {
+        "title": "Mode.first",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "case"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "first"
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "case"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "first"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.enum.case",
+        "displayName": "Case"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample4ModeO6secondyA2CmF",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Mode",
+        "second"
+      ],
+      "names": {
+        "title": "Mode.second",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "case"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "second"
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "case"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "second"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.init",
+        "displayName": "Initializer"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample4ModeO8rawValueACSgSS_tcfc",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Mode",
+        "init(rawValue:)"
+      ],
+      "names": {
+        "title": "init(rawValue:)",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "init"
+          },
+          {
+            "kind": "text",
+            "spelling": "?("
+          },
+          {
+            "kind": "externalParam",
+            "spelling": "rawValue"
+          },
+          {
+            "kind": "text",
+            "spelling": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "String",
+            "preciseIdentifier": "s:SS"
+          },
+          {
+            "kind": "text",
+            "spelling": ")"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "Swift",
+        "lines": [
+          {
+            "text": "Creates a new instance with the specified raw value."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "If there is no value of the type that corresponds with the specified raw"
+          },
+          {
+            "text": "value, this initializer returns `nil`. For example:"
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "    enum PaperSize: String {"
+          },
+          {
+            "text": "        case A4, A5, Letter, Legal"
+          },
+          {
+            "text": "    }"
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "    print(PaperSize(rawValue: \"Legal\"))"
+          },
+          {
+            "text": "    // Prints \"Optional(PaperSize.Legal)\""
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "    print(PaperSize(rawValue: \"Tabloid\"))"
+          },
+          {
+            "text": "    // Prints \"nil\""
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "- Parameter rawValue: The raw value to use for the new instance."
+          }
+        ]
+      },
+      "functionSignature": {
+        "parameters": [
+          {
+            "name": "rawValue",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "rawValue"
+              },
+              {
+                "kind": "text",
+                "spelling": ": "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "String",
+                "preciseIdentifier": "s:SS"
+              }
+            ]
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "init"
+        },
+        {
+          "kind": "text",
+          "spelling": "?("
+        },
+        {
+          "kind": "externalParam",
+          "spelling": "rawValue"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "String",
+          "preciseIdentifier": "s:SS"
+        },
+        {
+          "kind": "text",
+          "spelling": ")"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.struct",
+        "displayName": "Structure"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5FlagsV",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Flags"
+      ],
+      "names": {
+        "title": "Flags",
+        "navigator": [
+          {
+            "kind": "identifier",
+            "spelling": "Flags"
+          }
+        ],
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "struct"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "Flags"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "ImpliedExample",
+        "lines": [
+          {
+            "text": "Public declarations whose signatures are stated by standard conformances."
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "struct"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "Flags"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.property",
+        "displayName": "Instance Property"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5FlagsV8rawValueSSvp",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Flags",
+        "rawValue"
+      ],
+      "names": {
+        "title": "rawValue",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "var"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "rawValue"
+          },
+          {
+            "kind": "text",
+            "spelling": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "String",
+            "preciseIdentifier": "s:SS"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "Swift",
+        "lines": [
+          {
+            "text": "The corresponding value of the raw type."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "A new instance initialized with `rawValue` will be equivalent to this"
+          },
+          {
+            "text": "instance. For example:"
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "    enum PaperSize: String {"
+          },
+          {
+            "text": "        case A4, A5, Letter, Legal"
+          },
+          {
+            "text": "    }"
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "    let selectedSize = PaperSize.Letter"
+          },
+          {
+            "text": "    print(selectedSize.rawValue)"
+          },
+          {
+            "text": "    // Prints \"Letter\""
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "    print(selectedSize == PaperSize(rawValue: selectedSize.rawValue)!)"
+          },
+          {
+            "text": "    // Prints \"true\""
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "var"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "rawValue"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "String",
+          "preciseIdentifier": "s:SS"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.init",
+        "displayName": "Initializer"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5FlagsV8rawValueACSS_tcfc",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Flags",
+        "init(rawValue:)"
+      ],
+      "names": {
+        "title": "init(rawValue:)",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "init"
+          },
+          {
+            "kind": "text",
+            "spelling": "("
+          },
+          {
+            "kind": "externalParam",
+            "spelling": "rawValue"
+          },
+          {
+            "kind": "text",
+            "spelling": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "String",
+            "preciseIdentifier": "s:SS"
+          },
+          {
+            "kind": "text",
+            "spelling": ")"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "Swift",
+        "lines": [
+          {
+            "text": "Creates a new instance with the specified raw value."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "If there is no value of the type that corresponds with the specified raw"
+          },
+          {
+            "text": "value, this initializer returns `nil`. For example:"
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "    enum PaperSize: String {"
+          },
+          {
+            "text": "        case A4, A5, Letter, Legal"
+          },
+          {
+            "text": "    }"
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "    print(PaperSize(rawValue: \"Legal\"))"
+          },
+          {
+            "text": "    // Prints \"Optional(PaperSize.Legal)\""
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "    print(PaperSize(rawValue: \"Tabloid\"))"
+          },
+          {
+            "text": "    // Prints \"nil\""
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "- Parameter rawValue: The raw value to use for the new instance."
+          }
+        ]
+      },
+      "functionSignature": {
+        "parameters": [
+          {
+            "name": "rawValue",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "rawValue"
+              },
+              {
+                "kind": "text",
+                "spelling": ": "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "String",
+                "preciseIdentifier": "s:SS"
+              }
+            ]
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "init"
+        },
+        {
+          "kind": "text",
+          "spelling": "("
+        },
+        {
+          "kind": "externalParam",
+          "spelling": "rawValue"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "String",
+          "preciseIdentifier": "s:SS"
+        },
+        {
+          "kind": "text",
+          "spelling": ")"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.init",
+        "displayName": "Initializer"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5FlagsV8rawValueACSi_tcfc",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Flags",
+        "init(rawValue:)"
+      ],
+      "names": {
+        "title": "init(rawValue:)",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "init"
+          },
+          {
+            "kind": "text",
+            "spelling": "("
+          },
+          {
+            "kind": "externalParam",
+            "spelling": "rawValue"
+          },
+          {
+            "kind": "text",
+            "spelling": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Int",
+            "preciseIdentifier": "s:Si"
+          },
+          {
+            "kind": "text",
+            "spelling": ")"
+          }
+        ]
+      },
+      "functionSignature": {
+        "parameters": [
+          {
+            "name": "rawValue",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "rawValue"
+              },
+              {
+                "kind": "text",
+                "spelling": ": "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "Int",
+                "preciseIdentifier": "s:Si"
+              }
+            ]
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "init"
+        },
+        {
+          "kind": "text",
+          "spelling": "("
+        },
+        {
+          "kind": "externalParam",
+          "spelling": "rawValue"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Int",
+          "preciseIdentifier": "s:Si"
+        },
+        {
+          "kind": "text",
+          "spelling": ")"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.type.property",
+        "displayName": "Type Property"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5FlagsV8allCasesSayACGvpZ",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Flags",
+        "allCases"
+      ],
+      "names": {
+        "title": "allCases",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "static"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "keyword",
+            "spelling": "var"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "allCases"
+          },
+          {
+            "kind": "text",
+            "spelling": ": ["
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Flags",
+            "preciseIdentifier": "s:14ImpliedExample5FlagsV"
+          },
+          {
+            "kind": "text",
+            "spelling": "]"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "Swift",
+        "lines": [
+          {
+            "text": "A collection of all values of this type."
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "static"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "keyword",
+          "spelling": "var"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "allCases"
+        },
+        {
+          "kind": "text",
+          "spelling": ": ["
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Flags",
+          "preciseIdentifier": "s:14ImpliedExample5FlagsV"
+        },
+        {
+          "kind": "text",
+          "spelling": "] { "
+        },
+        {
+          "kind": "keyword",
+          "spelling": "get"
+        },
+        {
+          "kind": "text",
+          "spelling": " }"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.property",
+        "displayName": "Instance Property"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5FlagsV9hashValueSivp",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Flags",
+        "hashValue"
+      ],
+      "names": {
+        "title": "hashValue",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "var"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "hashValue"
+          },
+          {
+            "kind": "text",
+            "spelling": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Int",
+            "preciseIdentifier": "s:Si"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "Swift",
+        "lines": [
+          {
+            "text": "The hash value."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "Hash values are not guaranteed to be equal across different executions of"
+          },
+          {
+            "text": "your program. Do not save hash values to use during a future execution."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "- Important: `hashValue` is deprecated as a `Hashable` requirement. To"
+          },
+          {
+            "text": "  conform to `Hashable`, implement the `hash(into:)` requirement instead."
+          },
+          {
+            "text": "  The compiler provides an implementation for `hashValue` for you."
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "var"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "hashValue"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Int",
+          "preciseIdentifier": "s:Si"
+        },
+        {
+          "kind": "text",
+          "spelling": " { "
+        },
+        {
+          "kind": "keyword",
+          "spelling": "get"
+        },
+        {
+          "kind": "text",
+          "spelling": " }"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.method",
+        "displayName": "Instance Method"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5FlagsV4hash4intoys6HasherVz_tF",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Flags",
+        "hash(into:)"
+      ],
+      "names": {
+        "title": "hash(into:)",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "func"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "hash"
+          },
+          {
+            "kind": "text",
+            "spelling": "("
+          },
+          {
+            "kind": "externalParam",
+            "spelling": "into"
+          },
+          {
+            "kind": "text",
+            "spelling": ": "
+          },
+          {
+            "kind": "keyword",
+            "spelling": "inout"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Hasher",
+            "preciseIdentifier": "s:s6HasherV"
+          },
+          {
+            "kind": "text",
+            "spelling": ")"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "Swift",
+        "lines": [
+          {
+            "text": "Hashes the essential components of this value by feeding them into the"
+          },
+          {
+            "text": "given hasher."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "Implement this method to conform to the `Hashable` protocol. The"
+          },
+          {
+            "text": "components used for hashing must be the same as the components compared"
+          },
+          {
+            "text": "in your type's `==` operator implementation. Call `hasher.combine(_:)`"
+          },
+          {
+            "text": "with each of these components."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "- Important: In your implementation of `hash(into:)`,"
+          },
+          {
+            "text": "  don't call `finalize()` on the `hasher` instance provided,"
+          },
+          {
+            "text": "  or replace it with a different instance."
+          },
+          {
+            "text": "  Doing so may become a compile-time error in the future."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "- Parameter hasher: The hasher to use when combining the components"
+          },
+          {
+            "text": "  of this instance."
+          }
+        ]
+      },
+      "functionSignature": {
+        "parameters": [
+          {
+            "name": "into",
+            "internalName": "hasher",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "hasher"
+              },
+              {
+                "kind": "text",
+                "spelling": ": "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "Hasher",
+                "preciseIdentifier": "s:s6HasherV"
+              }
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "kind": "text",
+            "spelling": "()"
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "func"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "hash"
+        },
+        {
+          "kind": "text",
+          "spelling": "("
+        },
+        {
+          "kind": "externalParam",
+          "spelling": "into"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "internalParam",
+          "spelling": "hasher"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "keyword",
+          "spelling": "inout"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Hasher",
+          "preciseIdentifier": "s:s6HasherV"
+        },
+        {
+          "kind": "text",
+          "spelling": ")"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.func.op",
+        "displayName": "Operator"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample5FlagsV2eeoiySbAC_ACtFZ",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "Flags",
+        "==(_:_:)"
+      ],
+      "names": {
+        "title": "==(_:_:)",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "static"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "keyword",
+            "spelling": "func"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "=="
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "text",
+            "spelling": "("
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Flags",
+            "preciseIdentifier": "s:14ImpliedExample5FlagsV"
+          },
+          {
+            "kind": "text",
+            "spelling": ", "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Flags",
+            "preciseIdentifier": "s:14ImpliedExample5FlagsV"
+          },
+          {
+            "kind": "text",
+            "spelling": ") -> "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Bool",
+            "preciseIdentifier": "s:Sb"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "Swift",
+        "lines": [
+          {
+            "text": "Returns a Boolean value indicating whether two values are equal."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "Equality is the inverse of inequality. For any values `a` and `b`,"
+          },
+          {
+            "text": "`a == b` implies that `a != b` is `false`."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "- Parameters:"
+          },
+          {
+            "text": "  - lhs: A value to compare."
+          },
+          {
+            "text": "  - rhs: Another value to compare."
+          }
+        ]
+      },
+      "functionSignature": {
+        "parameters": [
+          {
+            "name": "lhs",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "lhs"
+              },
+              {
+                "kind": "text",
+                "spelling": ": "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "Flags",
+                "preciseIdentifier": "s:14ImpliedExample5FlagsV"
+              }
+            ]
+          },
+          {
+            "name": "rhs",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "rhs"
+              },
+              {
+                "kind": "text",
+                "spelling": ": "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "Flags",
+                "preciseIdentifier": "s:14ImpliedExample5FlagsV"
+              }
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Bool",
+            "preciseIdentifier": "s:Sb"
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "static"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "keyword",
+          "spelling": "func"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "=="
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "text",
+          "spelling": "("
+        },
+        {
+          "kind": "internalParam",
+          "spelling": "lhs"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Flags",
+          "preciseIdentifier": "s:14ImpliedExample5FlagsV"
+        },
+        {
+          "kind": "text",
+          "spelling": ", "
+        },
+        {
+          "kind": "internalParam",
+          "spelling": "rhs"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Flags",
+          "preciseIdentifier": "s:14ImpliedExample5FlagsV"
+        },
+        {
+          "kind": "text",
+          "spelling": ") -> "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Bool",
+          "preciseIdentifier": "s:Sb"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.enum",
+        "displayName": "Enumeration"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample10CodingKeysO",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "CodingKeys"
+      ],
+      "names": {
+        "title": "CodingKeys",
+        "navigator": [
+          {
+            "kind": "identifier",
+            "spelling": "CodingKeys"
+          }
+        ],
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "enum"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "CodingKeys"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "ImpliedExample",
+        "lines": [
+          {
+            "text": "A public coding-key declaration is not implied by Codable."
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "enum"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "CodingKeys"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.enum.case",
+        "displayName": "Case"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample10CodingKeysO5valueyA2CmF",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "CodingKeys",
+        "value"
+      ],
+      "names": {
+        "title": "CodingKeys.value",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "case"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "value"
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "case"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "value"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.init",
+        "displayName": "Initializer"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample10CodingKeysO8rawValueACSgSS_tcfc",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "CodingKeys",
+        "init(rawValue:)"
+      ],
+      "names": {
+        "title": "init(rawValue:)",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "init"
+          },
+          {
+            "kind": "text",
+            "spelling": "?("
+          },
+          {
+            "kind": "externalParam",
+            "spelling": "rawValue"
+          },
+          {
+            "kind": "text",
+            "spelling": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "String",
+            "preciseIdentifier": "s:SS"
+          },
+          {
+            "kind": "text",
+            "spelling": ")"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "Swift",
+        "lines": [
+          {
+            "text": "Creates a new instance with the specified raw value."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "If there is no value of the type that corresponds with the specified raw"
+          },
+          {
+            "text": "value, this initializer returns `nil`. For example:"
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "    enum PaperSize: String {"
+          },
+          {
+            "text": "        case A4, A5, Letter, Legal"
+          },
+          {
+            "text": "    }"
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "    print(PaperSize(rawValue: \"Legal\"))"
+          },
+          {
+            "text": "    // Prints \"Optional(PaperSize.Legal)\""
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "    print(PaperSize(rawValue: \"Tabloid\"))"
+          },
+          {
+            "text": "    // Prints \"nil\""
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "- Parameter rawValue: The raw value to use for the new instance."
+          }
+        ]
+      },
+      "functionSignature": {
+        "parameters": [
+          {
+            "name": "rawValue",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "rawValue"
+              },
+              {
+                "kind": "text",
+                "spelling": ": "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "String",
+                "preciseIdentifier": "s:SS"
+              }
+            ]
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "init"
+        },
+        {
+          "kind": "text",
+          "spelling": "?("
+        },
+        {
+          "kind": "externalParam",
+          "spelling": "rawValue"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "String",
+          "preciseIdentifier": "s:SS"
+        },
+        {
+          "kind": "text",
+          "spelling": ")"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.init",
+        "displayName": "Initializer"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample10CodingKeysO11stringValueACSgSS_tcfc",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "CodingKeys",
+        "init(stringValue:)"
+      ],
+      "names": {
+        "title": "init(stringValue:)",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "init"
+          },
+          {
+            "kind": "text",
+            "spelling": "?("
+          },
+          {
+            "kind": "externalParam",
+            "spelling": "stringValue"
+          },
+          {
+            "kind": "text",
+            "spelling": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "String",
+            "preciseIdentifier": "s:SS"
+          },
+          {
+            "kind": "text",
+            "spelling": ")"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "Swift",
+        "lines": [
+          {
+            "text": "Creates a new instance from the given string."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "If the string passed as `stringValue` does not correspond to any instance"
+          },
+          {
+            "text": "of this type, the result is `nil`."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "- parameter stringValue: The string value of the desired key."
+          }
+        ]
+      },
+      "functionSignature": {
+        "parameters": [
+          {
+            "name": "stringValue",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "stringValue"
+              },
+              {
+                "kind": "text",
+                "spelling": ": "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "String",
+                "preciseIdentifier": "s:SS"
+              }
+            ]
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "init"
+        },
+        {
+          "kind": "text",
+          "spelling": "?("
+        },
+        {
+          "kind": "externalParam",
+          "spelling": "stringValue"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "String",
+          "preciseIdentifier": "s:SS"
+        },
+        {
+          "kind": "text",
+          "spelling": ")"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.init",
+        "displayName": "Initializer"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample10CodingKeysO8intValueACSgSi_tcfc",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "CodingKeys",
+        "init(intValue:)"
+      ],
+      "names": {
+        "title": "init(intValue:)",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "init"
+          },
+          {
+            "kind": "text",
+            "spelling": "?("
+          },
+          {
+            "kind": "externalParam",
+            "spelling": "intValue"
+          },
+          {
+            "kind": "text",
+            "spelling": ": "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Int",
+            "preciseIdentifier": "s:Si"
+          },
+          {
+            "kind": "text",
+            "spelling": ")"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "Swift",
+        "lines": [
+          {
+            "text": "Creates a new instance from the specified integer."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "If the value passed as `intValue` does not correspond to any instance of"
+          },
+          {
+            "text": "this type, the result is `nil`."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "- parameter intValue: The integer value of the desired key."
+          }
+        ]
+      },
+      "functionSignature": {
+        "parameters": [
+          {
+            "name": "intValue",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "intValue"
+              },
+              {
+                "kind": "text",
+                "spelling": ": "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "Int",
+                "preciseIdentifier": "s:Si"
+              }
+            ]
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "init"
+        },
+        {
+          "kind": "text",
+          "spelling": "?("
+        },
+        {
+          "kind": "externalParam",
+          "spelling": "intValue"
+        },
+        {
+          "kind": "text",
+          "spelling": ": "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Int",
+          "preciseIdentifier": "s:Si"
+        },
+        {
+          "kind": "text",
+          "spelling": ")"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.protocol",
+        "displayName": "Protocol"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample15DecoderDefaultsP",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "DecoderDefaults"
+      ],
+      "names": {
+        "title": "DecoderDefaults",
+        "navigator": [
+          {
+            "kind": "identifier",
+            "spelling": "DecoderDefaults"
+          }
+        ],
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "protocol"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "DecoderDefaults"
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "protocol"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "DecoderDefaults"
+        },
+        {
+          "kind": "text",
+          "spelling": " : "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Decodable",
+          "preciseIdentifier": "s:Se"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.type.method",
+        "displayName": "Type Method"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample15DecoderDefaultsP4makexyFZ",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "DecoderDefaults",
+        "make()"
+      ],
+      "names": {
+        "title": "make()",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "static"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "keyword",
+            "spelling": "func"
+          },
+          {
+            "kind": "text",
+            "spelling": " "
+          },
+          {
+            "kind": "identifier",
+            "spelling": "make"
+          },
+          {
+            "kind": "text",
+            "spelling": "() -> "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Self"
+          }
+        ]
+      },
+      "functionSignature": {
+        "returns": [
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Self"
+          }
+        ]
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "static"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "keyword",
+          "spelling": "func"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "identifier",
+          "spelling": "make"
+        },
+        {
+          "kind": "text",
+          "spelling": "() -> "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Self"
+        }
+      ],
+      "accessLevel": "public"
+    },
+    {
+      "kind": {
+        "identifier": "swift.init",
+        "displayName": "Initializer"
+      },
+      "identifier": {
+        "precise": "s:14ImpliedExample15DecoderDefaultsPAAE4fromxs0C0_p_tKcfc",
+        "interfaceLanguage": "swift"
+      },
+      "pathComponents": [
+        "DecoderDefaults",
+        "init(from:)"
+      ],
+      "names": {
+        "title": "init(from:)",
+        "subHeading": [
+          {
+            "kind": "keyword",
+            "spelling": "init"
+          },
+          {
+            "kind": "text",
+            "spelling": "("
+          },
+          {
+            "kind": "externalParam",
+            "spelling": "from"
+          },
+          {
+            "kind": "text",
+            "spelling": ": any "
+          },
+          {
+            "kind": "typeIdentifier",
+            "spelling": "Decoder",
+            "preciseIdentifier": "s:s7DecoderP"
+          },
+          {
+            "kind": "text",
+            "spelling": ") "
+          },
+          {
+            "kind": "keyword",
+            "spelling": "throws"
+          }
+        ]
+      },
+      "docComment": {
+        "module": "Swift",
+        "lines": [
+          {
+            "text": "Creates a new instance by decoding from the given decoder."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "This initializer throws an error if reading from the decoder fails, or"
+          },
+          {
+            "text": "if the data read is corrupted or otherwise invalid."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "- Parameter decoder: The decoder to read data from."
+          }
+        ]
+      },
+      "functionSignature": {
+        "parameters": [
+          {
+            "name": "from",
+            "internalName": "decoder",
+            "declarationFragments": [
+              {
+                "kind": "identifier",
+                "spelling": "decoder"
+              },
+              {
+                "kind": "text",
+                "spelling": ": any "
+              },
+              {
+                "kind": "typeIdentifier",
+                "spelling": "Decoder",
+                "preciseIdentifier": "s:s7DecoderP"
+              }
+            ]
+          }
+        ]
+      },
+      "swiftExtension": {
+        "extendedModule": "ImpliedExample",
+        "typeKind": "swift.protocol"
+      },
+      "declarationFragments": [
+        {
+          "kind": "keyword",
+          "spelling": "init"
+        },
+        {
+          "kind": "text",
+          "spelling": "("
+        },
+        {
+          "kind": "externalParam",
+          "spelling": "from"
+        },
+        {
+          "kind": "text",
+          "spelling": " "
+        },
+        {
+          "kind": "internalParam",
+          "spelling": "decoder"
+        },
+        {
+          "kind": "text",
+          "spelling": ": any "
+        },
+        {
+          "kind": "typeIdentifier",
+          "spelling": "Decoder",
+          "preciseIdentifier": "s:s7DecoderP"
+        },
+        {
+          "kind": "text",
+          "spelling": ") "
+        },
+        {
+          "kind": "keyword",
+          "spelling": "throws"
+        }
+      ],
+      "accessLevel": "public"
+    }
+  ],
+  "relationships": [
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample5ModelV",
+      "target": "s:Se",
+      "targetFallback": "Swift.Decodable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample5ModelV",
+      "target": "s:SE",
+      "targetFallback": "Swift.Encodable"
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample5ModelV5valueSivp",
+      "target": "s:14ImpliedExample5ModelV"
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample5ModelV5valueACSi_tcfc",
+      "target": "s:14ImpliedExample5ModelV"
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample5ModelV4fromACSi_tcfc",
+      "target": "s:14ImpliedExample5ModelV"
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample5ModelV4fromACs7Decoder_p_tKcfc",
+      "target": "s:14ImpliedExample5ModelV",
+      "sourceOrigin": {
+        "identifier": "s:Se4fromxs7Decoder_p_tKcfc",
+        "displayName": "Decodable.init(from:)"
+      }
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample4ModeO",
+      "target": "s:SQ",
+      "targetFallback": "Swift.Equatable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample4ModeO",
+      "target": "s:SY",
+      "targetFallback": "Swift.RawRepresentable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample4ModeO",
+      "target": "s:Se",
+      "targetFallback": "Swift.Decodable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample4ModeO",
+      "target": "s:SE",
+      "targetFallback": "Swift.Encodable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample4ModeO",
+      "target": "s:SH",
+      "targetFallback": "Swift.Hashable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample4ModeO",
+      "target": "s:s12CaseIterableP",
+      "targetFallback": "Swift.CaseIterable"
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample4ModeO5firstyA2CmF",
+      "target": "s:14ImpliedExample4ModeO"
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample4ModeO6secondyA2CmF",
+      "target": "s:14ImpliedExample4ModeO"
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample4ModeO8rawValueACSgSS_tcfc",
+      "target": "s:14ImpliedExample4ModeO",
+      "sourceOrigin": {
+        "identifier": "s:SY8rawValuexSg03RawB0Qz_tcfc",
+        "displayName": "RawRepresentable.init(rawValue:)"
+      }
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample5FlagsV",
+      "target": "s:SH",
+      "targetFallback": "Swift.Hashable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample5FlagsV",
+      "target": "s:SY",
+      "targetFallback": "Swift.RawRepresentable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample5FlagsV",
+      "target": "s:s12CaseIterableP",
+      "targetFallback": "Swift.CaseIterable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample5FlagsV",
+      "target": "s:SQ",
+      "targetFallback": "Swift.Equatable"
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample5FlagsV8rawValueSSvp",
+      "target": "s:14ImpliedExample5FlagsV",
+      "sourceOrigin": {
+        "identifier": "s:SY8rawValue03RawB0Qzvp",
+        "displayName": "RawRepresentable.rawValue"
+      }
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample5FlagsV8rawValueACSS_tcfc",
+      "target": "s:14ImpliedExample5FlagsV",
+      "sourceOrigin": {
+        "identifier": "s:SY8rawValuexSg03RawB0Qz_tcfc",
+        "displayName": "RawRepresentable.init(rawValue:)"
+      }
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample5FlagsV8rawValueACSi_tcfc",
+      "target": "s:14ImpliedExample5FlagsV"
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample5FlagsV8allCasesSayACGvpZ",
+      "target": "s:14ImpliedExample5FlagsV",
+      "sourceOrigin": {
+        "identifier": "s:s12CaseIterableP8allCases03AllD0QzvpZ",
+        "displayName": "CaseIterable.allCases"
+      }
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample5FlagsV9hashValueSivp",
+      "target": "s:14ImpliedExample5FlagsV",
+      "sourceOrigin": {
+        "identifier": "s:SH9hashValueSivp",
+        "displayName": "Hashable.hashValue"
+      }
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample5FlagsV4hash4intoys6HasherVz_tF",
+      "target": "s:14ImpliedExample5FlagsV",
+      "sourceOrigin": {
+        "identifier": "s:SH4hash4intoys6HasherVz_tF",
+        "displayName": "Hashable.hash(into:)"
+      }
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample5FlagsV2eeoiySbAC_ACtFZ",
+      "target": "s:14ImpliedExample5FlagsV",
+      "sourceOrigin": {
+        "identifier": "s:SQ2eeoiySbx_xtFZ",
+        "displayName": "Equatable.==(_:_:)"
+      }
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample10CodingKeysO",
+      "target": "s:SQ",
+      "targetFallback": "Swift.Equatable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample10CodingKeysO",
+      "target": "s:SH",
+      "targetFallback": "Swift.Hashable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample10CodingKeysO",
+      "target": "s:SY",
+      "targetFallback": "Swift.RawRepresentable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample10CodingKeysO",
+      "target": "s:s9CodingKeyP",
+      "targetFallback": "Swift.CodingKey"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample10CodingKeysO",
+      "target": "s:s28CustomDebugStringConvertibleP",
+      "targetFallback": "Swift.CustomDebugStringConvertible"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample10CodingKeysO",
+      "target": "s:s23CustomStringConvertibleP",
+      "targetFallback": "Swift.CustomStringConvertible"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample10CodingKeysO",
+      "target": "s:s8SendableP",
+      "targetFallback": "Swift.Sendable"
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample10CodingKeysO",
+      "target": "s:s16SendableMetatypeP",
+      "targetFallback": "Swift.SendableMetatype"
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample10CodingKeysO5valueyA2CmF",
+      "target": "s:14ImpliedExample10CodingKeysO"
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample10CodingKeysO8rawValueACSgSS_tcfc",
+      "target": "s:14ImpliedExample10CodingKeysO",
+      "sourceOrigin": {
+        "identifier": "s:SY8rawValuexSg03RawB0Qz_tcfc",
+        "displayName": "RawRepresentable.init(rawValue:)"
+      }
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample10CodingKeysO11stringValueACSgSS_tcfc",
+      "target": "s:14ImpliedExample10CodingKeysO",
+      "sourceOrigin": {
+        "identifier": "s:s9CodingKeyP11stringValuexSgSS_tcfc",
+        "displayName": "CodingKey.init(stringValue:)"
+      }
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample10CodingKeysO8intValueACSgSi_tcfc",
+      "target": "s:14ImpliedExample10CodingKeysO",
+      "sourceOrigin": {
+        "identifier": "s:s9CodingKeyP8intValuexSgSi_tcfc",
+        "displayName": "CodingKey.init(intValue:)"
+      }
+    },
+    {
+      "kind": "conformsTo",
+      "source": "s:14ImpliedExample15DecoderDefaultsP",
+      "target": "s:Se",
+      "targetFallback": "Swift.Decodable"
+    },
+    {
+      "kind": "requirementOf",
+      "source": "s:14ImpliedExample15DecoderDefaultsP4makexyFZ",
+      "target": "s:14ImpliedExample15DecoderDefaultsP"
+    },
+    {
+      "kind": "defaultImplementationOf",
+      "source": "s:14ImpliedExample15DecoderDefaultsPAAE4fromxs0C0_p_tKcfc",
+      "target": "s:Se4fromxs7Decoder_p_tKcfc",
+      "targetFallback": "Swift.Decodable.init(from:)",
+      "sourceOrigin": {
+        "identifier": "s:Se4fromxs7Decoder_p_tKcfc",
+        "displayName": "Decodable.init(from:)"
+      }
+    },
+    {
+      "kind": "memberOf",
+      "source": "s:14ImpliedExample15DecoderDefaultsPAAE4fromxs0C0_p_tKcfc",
+      "target": "s:14ImpliedExample15DecoderDefaultsP",
+      "sourceOrigin": {
+        "identifier": "s:Se4fromxs7Decoder_p_tKcfc",
+        "displayName": "Decodable.init(from:)"
+      }
+    }
+  ]
+}

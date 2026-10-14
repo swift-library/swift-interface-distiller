@@ -185,19 +185,39 @@ The declaring protocol may inherit the implemented requirement from another prot
 not select a conformance witness. Protocol
 extension members and constrained members retain extension contexts. Conditional
 conformances keep their conditions; external extensions form a separate group.
-Documentation uses `///` lines, with the first paragraph by default; `full` and
-`none` select other projections. Implicit Copyable, Escapable and SendableMetatype
+Documentation uses `///` lines, with the leading prose paragraph by default.
+Lists, headings, quotes and code blocks end that paragraph; list-only comments have
+no summary. `full` and `none` select other projections. Readable views collapse
+standard requirement shapes stated by observed Decodable, Encodable, Equatable,
+Hashable, RawRepresentable and CaseIterable conformances. Matching uses standard
+compiler protocol identifiers, reported signatures and declaration ownership;
+extra overloads, unknown signatures and original protocol-extension declarations
+remain. An unfiltered enum's single failable raw-value initializer is an
+unambiguous RawRepresentable presentation candidate. This is a presentation
+policy, not a claim about compiler synthesis or conformance witness selection.
+`--show-implied` expands these collected declarations; JSON and the evidence
+view retain them. Public CodingKeys declarations remain visible because Codable
+does not require that named type. Implicit Copyable, Escapable and SendableMetatype
 conformance relationships are omitted from the interface projection; JSON and
 `--view evidence` retain them. Reported declaration fragments, including explicit
 constraints, remain authoritative.
 
-Interface anchors use lowercase module and path components, joining alphanumeric
-runs with hyphens; an all-punctuation component becomes `symbol`. Collisions add a deterministic prefix of the symbol identity's
-SHA-256; repeated symbols in multiple configurations also include configuration
-identity. Adding documentation, moving checkouts or changing input order does not
-change anchors. Collisions can change an otherwise unsuffixed anchor. The mapping
-is computed from the whole snapshot, including for subset queries. Member anchors
-resolve to their containing declaration block.
+Interface anchors use lowercase module, immediate owner and declaration name,
+joining alphanumeric runs with hyphens. Parameter-label lists are excluded and
+an all-punctuation name becomes `symbol`. Collisions add a deterministic prefix
+of the symbol identity's SHA-256; repeated symbols in multiple configurations
+also include configuration identity. Adding documentation, moving checkouts or
+changing input order does not change anchors. Collisions can change an otherwise
+unsuffixed anchor. The mapping is computed from the whole snapshot, including
+for subset queries. Member anchors resolve to their containing declaration block.
+
+`--by-module` produces a module index and linked interface parts without excluding
+any selected API. Reported declaration counts include collapsed requirements.
+`InterfaceRenderer.measure` and `render --report` account for UTF-8 bytes in the
+whole unsplit interface. Each symbol owns its declaration, documentation and
+anchor bytes; header, headings, fences and remaining spacing are overhead.
+Collapsed symbols have zero rendered bytes and retain their standard-requirement
+category. Reports describe presentation, separately from canonical evidence.
 
 Splitting keeps a top-level declaration, all nested members and its constrained
 extensions together. Every part includes snapshot and module context, and the

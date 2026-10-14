@@ -69,6 +69,14 @@ assert 'Compiler identifier:' in evidence_parts[0]['markdown']
 interface_parts = json.loads(run('render', snapshot).stdout)
 assert 'public struct Item' in interface_parts[0]['markdown']
 assert 'Compiler identifier:' not in interface_parts[0]['markdown']
+report = OUT / 'interface-size.json'
+indexed = json.loads(run('render', snapshot, '--by-module', '--report', report).stdout)
+assert indexed[0]['name'] == 'index.md'
+assert all('(' + part['name'] + ')' in indexed[0]['markdown'] for part in indexed[1:])
+assert json.loads(report.read_bytes())['totalBytes'] == len(interface_parts[0]['markdown'].encode())
+run('render', snapshot, '--show-implied')
+run('render', snapshot, '--view', 'evidence', '--report', report, code=2)
+
 assert json.loads(run('coverage', snapshot).stdout)[0]['eligible'] == 17
 baseline = OUT / 'baseline.json'
 run('baseline', 'write', snapshot, baseline)

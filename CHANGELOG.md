@@ -5,6 +5,11 @@
 - Render a compact Swift interface by default: nested members, reported attributes,
   access, signatures, generics and observed conformances, summary documentation,
   readable anchors, and splitting only between top-level declarations.
+- Collapse standard conformance requirements in readable views; `--show-implied`
+  expands them while JSON and evidence retain every collected declaration.
+  Summary docs stop at Markdown block boundaries, including parameter lists.
+- Use compact owner/name anchors and add `--by-module` indexed rendering and
+  `render --report` UTF-8 byte accounting for large interfaces.
 - Keep the previous rendering and content through `render --view evidence`.
   Scripts that depend on the previous default Markdown must select that view.
 - Add `--docs summary|full|none`, query and slice `--format json|swift|markdown`,
