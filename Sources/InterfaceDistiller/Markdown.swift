@@ -9,12 +9,25 @@ public struct MarkdownPart: Codable, Sendable {
 }
 
 public enum MarkdownRenderer {
+  public enum View: String, Sendable { case interface, evidence }
+
+  /// The evidence view anchor. Use InterfaceRenderer.anchors(in:) for interface links.
   public static func anchor(configuration: String, symbol: String) -> String {
     "symbol-" + Digest.sha256(Data((configuration + ":" + symbol).utf8))
   }
 
   /// A budget is strict. An indivisible declaration exceeding it produces a machine-readable error.
-  public static func render(_ snapshot: EvidenceSnapshot, byteBudget: Int? = nil) throws
+  public static func render(
+    _ snapshot: EvidenceSnapshot, byteBudget: Int? = nil, view: View = .interface,
+    docs: DocumentationStyle = .summary
+  ) throws -> [MarkdownPart] {
+    if view == .interface {
+      return try InterfaceRenderer.render(snapshot, byteBudget: byteBudget, docs: docs)
+    }
+    return try evidence(snapshot, byteBudget: byteBudget)
+  }
+
+  private static func evidence(_ snapshot: EvidenceSnapshot, byteBudget: Int?) throws
     -> [MarkdownPart]
   {
     try snapshot.validate()
@@ -47,6 +60,13 @@ public enum MarkdownRenderer {
           (
             "gap:\(configuration.id):\(index)",
             "### Collection observation: \(gap.state.rawValue)\n\n\(escape(gap.subject))\n\n\(escape(gap.reason))\n\n"
+          ))
+      }
+      for (index, reference) in (configuration.externalReferences ?? []).enumerated() {
+        blocks.append(
+          (
+            "external:\(configuration.id):\(index)",
+            "### External reference\n\n\(escape(reference))\n\n"
           ))
       }
       for (index, merge) in configuration.merges.enumerated() {

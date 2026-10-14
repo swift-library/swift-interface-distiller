@@ -2,7 +2,8 @@
 
 The examples use `.build/` for generated files. `--help` lists the command grammar;
 `--version` prints the product version. Errors are JSON on stderr. Command data is
-JSON on stdout unless `--output` writes it atomically to a file.
+JSON on stdout by default; query and slice can emit Swift or Markdown. `--output`
+writes the chosen format atomically to a file.
 
 ```sh
 interface-distiller configuration --output .build/configuration.json
@@ -13,6 +14,8 @@ interface-distiller query .build/api.json conformers MyProtocol
 interface-distiller query .build/api.json initializers MyType
 interface-distiller query .build/api.json returning MyType
 interface-distiller query .build/api.json slice MyType --max-symbols 100 --max-bytes 60000
+interface-distiller slice .build/api.json MyType --format swift --max-bytes 8000
+interface-distiller query .build/api.json members MyType --format markdown --docs full
 interface-distiller coverage .build/api.json
 interface-distiller render .build/api.json --output-dir .build/markdown --byte-budget 12000
 interface-distiller baseline write .build/api.json .build/baseline.json
@@ -20,17 +23,50 @@ interface-distiller baseline check .build/api.json .build/baseline.json
 interface-distiller compare .build/baseline.json .build/api.json
 ```
 
+`render` defaults to `--view interface --docs summary`. It writes one Swift code
+block per top-level declaration, nests members, includes reported attributes,
+access, generics and conformances, and groups external extensions separately.
+`--docs full` keeps all comment paragraphs; `--docs none` omits documentation.
+`--view evidence` preserves the detailed evidence view and its original content.
+The render result on stdout remains a JSON list of parts (or names and sizes when
+`--output-dir` is supplied). Part names are `part-000001.md`, `part-000002.md`, etc.
+A render byte budget never splits a type's members; an oversized declaration fails
+with `minimumBytes` rather than dropping members.
+
+All query kinds and `slice` accept `--format json|swift|markdown`, defaulting to
+JSON. `slice SNAPSHOT SYMBOL...` is an alias for `query SNAPSHOT slice SYMBOL...`.
+`--max-symbols` and `--max-bytes` bound the selected payload; byte counts use the
+chosen format, including UTF-8 documentation and declaration context. The snapshot
+header and explicit omission diagnostics are outside the query budget, so total
+stdout can exceed it. Render budgets, by contrast, include the whole Markdown part.
+A budgeted non-slice query returns the slice-shaped JSON envelope with state,
+omissions, diagnostics and `symbolBytes`; an unbudgeted JSON query keeps its
+original result shape. Text views carry those diagnostics as text or Swift comments.
+A slice is `complete` when it includes every in-snapshot reference. `truncated`
+means a symbol-count or byte budget omitted in-snapshot symbols. JSON separates
+`omittedReferences` from `externalReferences`; text views show their counts.
+External references do not imply gaps, and collection gaps remain visible in the
+snapshot header independently of the selection's state.
+
 For custom builds, edit the configuration JSON explicitly, then supply
 `--configuration .build/configuration.json`. Compiler builds must match the
 executing `--swift` tool; the SDK path is `--sdk-path`. The target triple carries
 the actual deployment floor; `deploymentTarget` records and must match its version
 (or `notApplicable` on Linux). Build mode, language mode, conditions, traits and
-declared environment live in that configuration. No matrix is inferred.
+declared environment live in that configuration. Detected package configurations
+use `languageMode: "package"`, honoring each package's manifest language mode;
+a numeric mode explicitly overrides all Swift compilations, including dependencies.
+No matrix is inferred.
 
 Package collection defaults to library products. Select `--module ModuleName`
 (repeatable) to replace that set. Add an explicitly resolved dependency with
 `--dependency-module DependencyModule`. Use `--include` and `--exclude` for
 symbol globs; exclusion wins. `--include-spi` and `--source-locations` are opt-ins.
+Synthesized per-conformer copies are excluded by default; `--include-synthesized`
+includes them and records that choice in scope. Protocol extension declarations
+and conformances remain in either scope. Empty library scopes return successful,
+empty evidence. Extraction includes the selected Apple platform's developer modules
+when present, including Testing and its Foundation overlay.
 
 Pre-generated graphs require their producer's configuration:
 

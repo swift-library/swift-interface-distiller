@@ -29,3 +29,14 @@ Swift imported API parity, runtime behavior or witness inference.
 All dependencies of the shipped package are owned local targets. No branch or
 revision package dependency, compiler library, SymbolKit, source index or syntax
 parser is linked. DocC runs directly against compiler-produced library graphs.
+
+[Interface size measurements](InterfaceSize.md) records source, summary-interface
+and canonical JSON byte counts across the organization packages, including collection gaps.
+
+Package collection accepts internal directory symlinks, normalizes filesystem
+aliases for build tools and C modules, and honors dependency manifest language
+modes. Apple platform developer search paths make Testing and its Foundation
+overlay available to library extraction. Empty default library scopes return
+empty evidence; libraries receiving generated declarations from build plugins
+remain selected. These cases have regression fixtures and succeed in the
+[13-package measurement sweep](InterfaceSize.md).

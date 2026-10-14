@@ -1,0 +1,461 @@
+{
+  "date": "2026-10-14",
+  "extractorVersion": "0.2.0",
+  "languageMode": "package",
+  "records": [
+    {
+      "commit": "c82402c0cdfb090b0c8c9f4b4b6989ee81102b14",
+      "externalReferenceCount": 45,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 7286536,
+      "generatedSwiftFiles": 4,
+      "interfaceBytes": 7818793,
+      "interfaceSHA256": "a28a64ad56090cfc018e55d2145009e928bd5cd214f169333ec84872ed5094ed",
+      "jsonBytes": 174825963,
+      "modules": [
+        "AppStoreConnectCore",
+        "AppStoreConnectIrisAPI",
+        "AppStoreConnectPublicAPI",
+        "AppStoreConnectWebSession",
+        "AppStoreConnectWorkflow"
+      ],
+      "package": "swift-appstoreconnect",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [
+          "AppStoreConnectCore",
+          "AppStoreConnectIrisAPI",
+          "AppStoreConnectPublicAPI",
+          "AppStoreConnectWebSession",
+          "AppStoreConnectWorkflow"
+        ],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "ed683679f8de6da935c51028ba93ac5b19bb46308b2b547599bb60f0527aa7eb",
+      "sourceBytes": 1354387,
+      "sourceFiles": 48,
+      "status": "collected",
+      "symbols": 32169
+    },
+    {
+      "commit": "804431603fbbe4f504665efc71df1f7011ca44ea",
+      "externalReferenceCount": 38,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 0,
+      "generatedSwiftFiles": 0,
+      "interfaceBytes": 140904,
+      "interfaceSHA256": "ee0a4800eeb75c92765cd4d88926e4fb83185b1f5fbaa0c4cdb410d1fb3e314d",
+      "jsonBytes": 4928218,
+      "modules": [
+        "Benchmark",
+        "BenchmarkTesting",
+        "BenchmarkXCTest",
+        "Instruments",
+        "Memory",
+        "Report"
+      ],
+      "package": "swift-benchmark",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [
+          "Benchmark",
+          "BenchmarkTesting",
+          "BenchmarkXCTest",
+          "Instruments",
+          "Memory",
+          "Report"
+        ],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "69e13bd61a95f09e5e41c6e137618e0cbae6cf5f903cce20e3218a51f5f5b08f",
+      "sourceBytes": 343591,
+      "sourceFiles": 58,
+      "status": "collected",
+      "symbols": 1059
+    },
+    {
+      "commit": "34ffd22fcd05991411c2e74d1e077105e4980ec1",
+      "externalReferenceCount": 53,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 2109916,
+      "generatedSwiftFiles": 1540,
+      "interfaceBytes": 3729244,
+      "interfaceSHA256": "8e2eeadf57cb5abd79a4ab4364a5222608797f6505395d2bce7e9b8d2a36cc3a",
+      "jsonBytes": 94362934,
+      "modules": [
+        "Codex",
+        "CodexAppServerClient",
+        "CodexAppServerHummingbird",
+        "CodexAppServerNIO",
+        "CodexAppServerProtocol",
+        "CodexAppServerRuntime",
+        "CodexAppServerStdio",
+        "CodexAppServerURLSession",
+        "CodexAppServerVapor",
+        "CodexExec",
+        "CodexMCP",
+        "_CodexProcess"
+      ],
+      "package": "swift-codex",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [
+          "Codex",
+          "CodexAppServerClient",
+          "CodexAppServerHummingbird",
+          "CodexAppServerNIO",
+          "CodexAppServerProtocol",
+          "CodexAppServerRuntime",
+          "CodexAppServerStdio",
+          "CodexAppServerURLSession",
+          "CodexAppServerVapor",
+          "CodexExec",
+          "CodexMCP",
+          "_CodexProcess"
+        ],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "cc83659a89f5145c951b65ae6122432b9abf4b188bc034eaca30034ff1b90dfc",
+      "sourceBytes": 348627,
+      "sourceFiles": 88,
+      "status": "collected",
+      "symbols": 18122
+    },
+    {
+      "commit": "bee8707d232010040a071270d83e3ba1608fd0cd",
+      "externalReferenceCount": 22,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 0,
+      "generatedSwiftFiles": 0,
+      "interfaceBytes": 33142,
+      "interfaceSHA256": "5dc8327d1c68ca9a718ea4ed22b3198bcd83efcdc4ff8163e3eebc1c181b51ad",
+      "jsonBytes": 763863,
+      "modules": [
+        "SwiftDataWritable"
+      ],
+      "package": "swift-data-writable",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [
+          "SwiftDataWritable"
+        ],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "7b21dc59dc1742b74bb557bd174fb87d1731f41cbb3eb158217231f8f60ce1da",
+      "sourceBytes": 66039,
+      "sourceFiles": 17,
+      "status": "collected",
+      "symbols": 149
+    },
+    {
+      "commit": "d5779b29d719afc9a744eae4c110313f5cce1a1e",
+      "externalReferenceCount": 0,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 0,
+      "generatedSwiftFiles": 0,
+      "interfaceBytes": 339,
+      "interfaceSHA256": "8fa91fea4821db640ff3e9728190961ae828db0e541dcf2f7dbdc5d91edbd6f8",
+      "jsonBytes": 2109,
+      "modules": [],
+      "package": "swift-gyb",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "5b0d07214683fd6c36234678b13936cd23189c9bfd229515fd0e4878f165b8f2",
+      "sourceBytes": 689,
+      "sourceFiles": 1,
+      "status": "empty library scope",
+      "symbols": 0
+    },
+    {
+      "commit": "99f66fd4356a1082f7409dbe3ea5de8910f65475",
+      "externalReferenceCount": 19,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 0,
+      "generatedSwiftFiles": 0,
+      "interfaceBytes": 42857,
+      "interfaceSHA256": "86e32ca716ac1a2ed2b48a7f3473cb1842fc1b0b091ad1ad5b16464390b7b5f4",
+      "jsonBytes": 1436124,
+      "modules": [
+        "InterfaceDistiller"
+      ],
+      "package": "swift-interface-distiller",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [
+          "InterfaceDistiller"
+        ],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "d51703cd0ff10496b835cbf05cc9ddccf3937bea5881af1fa0993c974b70d2eb",
+      "sourceBytes": 140084,
+      "sourceFiles": 14,
+      "status": "collected",
+      "symbols": 335
+    },
+    {
+      "commit": "236b9a10041c57400a5c05e9e0db37c33efb6ec3",
+      "externalReferenceCount": 51,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 0,
+      "generatedSwiftFiles": 0,
+      "interfaceBytes": 60741,
+      "interfaceSHA256": "9f13ff839999eb685c6b8072956571fba525d4b6733b4e2119097c5db2e7ee53",
+      "jsonBytes": 1669084,
+      "modules": [
+        "JSONSchema",
+        "JSONSchemaBuilder",
+        "JSONSchemaConversion",
+        "JSONSchemaFoundationModels",
+        "JSONValue"
+      ],
+      "package": "swift-json-schema",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [
+          "JSONSchema",
+          "JSONSchemaBuilder",
+          "JSONSchemaConversion",
+          "JSONSchemaFoundationModels",
+          "JSONValue"
+        ],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "69c971def567aeeed77ce4b9e0f6a174b6f9292f17307fac86859740a965acd0",
+      "sourceBytes": 207888,
+      "sourceFiles": 28,
+      "status": "collected",
+      "symbols": 345
+    },
+    {
+      "commit": "64e8138302beacbcee6d09da759737714884214c",
+      "externalReferenceCount": 0,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 0,
+      "generatedSwiftFiles": 0,
+      "interfaceBytes": 339,
+      "interfaceSHA256": "8fa91fea4821db640ff3e9728190961ae828db0e541dcf2f7dbdc5d91edbd6f8",
+      "jsonBytes": 1845,
+      "modules": [],
+      "package": "swift-package-template",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "210575180f01b68a4bc825bd02387728f7de01bffef3ea446dd0abd0aa3b218a",
+      "sourceBytes": 164,
+      "sourceFiles": 1,
+      "status": "empty library scope",
+      "symbols": 0
+    },
+    {
+      "commit": "e9ceecc992e628b7f555694eafb9f631ac0818eb",
+      "externalReferenceCount": 23,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 0,
+      "generatedSwiftFiles": 0,
+      "interfaceBytes": 10690,
+      "interfaceSHA256": "b314d651fe2790f63d837ff221ca3bb42416376aca983bb42d7d161541654b22",
+      "jsonBytes": 247106,
+      "modules": [
+        "PDF"
+      ],
+      "package": "swift-pdf",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [
+          "PDF"
+        ],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "aab18fb8093e2457f7d3cd5160d9121d60902a20cace9fb547b60f343797ea8c",
+      "sourceBytes": 54576,
+      "sourceFiles": 40,
+      "status": "collected",
+      "symbols": 53
+    },
+    {
+      "commit": "a2094d43d5ce9a5c9bcafd5be92a1e3a7d3b44c8",
+      "externalReferenceCount": 8,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 0,
+      "generatedSwiftFiles": 0,
+      "interfaceBytes": 8057,
+      "interfaceSHA256": "35df501de448ccee26a7ac62fa8d98398cd0b398f427f406758f561aea181d41",
+      "jsonBytes": 155477,
+      "modules": [
+        "Redux",
+        "ReduxShim"
+      ],
+      "package": "swift-redux",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [
+          "Redux",
+          "ReduxShim"
+        ],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "4c8d8516055f3cabece90c6fcdccec2e97c9f74c61a5265eefc979a8b9c607ac",
+      "sourceBytes": 17073,
+      "sourceFiles": 14,
+      "status": "collected",
+      "symbols": 34
+    },
+    {
+      "commit": "38d82eeba787e1ff6b2f615068621632811ce6ca",
+      "externalReferenceCount": 20,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 0,
+      "generatedSwiftFiles": 0,
+      "interfaceBytes": 11392,
+      "interfaceSHA256": "78e7f76e6d9be521219f46a5dc163e59ef54b6274251b77264b15e18727952a5",
+      "jsonBytes": 297002,
+      "modules": [
+        "SemVer"
+      ],
+      "package": "swift-semver",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [
+          "SemVer"
+        ],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "1a93ff0e0326d46bfb70687c11d7c95f4bbe0b11e3628e26a17b4cde90b236c9",
+      "sourceBytes": 26753,
+      "sourceFiles": 5,
+      "status": "collected",
+      "symbols": 67
+    },
+    {
+      "commit": "3035a02639ca99af57d302358425efdf3d57d50d",
+      "externalReferenceCount": 0,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 0,
+      "generatedSwiftFiles": 0,
+      "interfaceBytes": 339,
+      "interfaceSHA256": "8fa91fea4821db640ff3e9728190961ae828db0e541dcf2f7dbdc5d91edbd6f8",
+      "jsonBytes": 256081,
+      "modules": [],
+      "package": "swift-sh",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "5cabc6a34adc0920c255e10a96e32f141730e94631d0239f2cb567e941ee6cdc",
+      "sourceBytes": 48031,
+      "sourceFiles": 18,
+      "status": "empty library scope",
+      "symbols": 0
+    },
+    {
+      "commit": "5bd0952df31e2e7ca4010a8aa53587a776da0b3b",
+      "externalReferenceCount": 13,
+      "extractorVersion": "0.2.0",
+      "generatedSwiftBytes": 24185,
+      "generatedSwiftFiles": 2,
+      "interfaceBytes": 12340,
+      "interfaceSHA256": "f11cd6cc303f21dccaf3b8705d5445746e6f9aaed1acd8a9d1feba8ed8c3143d",
+      "jsonBytes": 190908,
+      "modules": [
+        "UserDefault",
+        "UserDefaultUtils"
+      ],
+      "package": "swift-userdefault",
+      "schemaVersion": "2.0",
+      "scope": {
+        "exclude": [],
+        "include": [],
+        "includeSPI": false,
+        "includeSynthesized": false,
+        "modules": [
+          "UserDefault",
+          "UserDefaultUtils"
+        ],
+        "sourceLocations": false
+      },
+      "snapshotSHA256": "216dca1288040498846358c9ff75f7d4567006a61e57341408bbb9899e361f69",
+      "sourceBytes": 13506,
+      "sourceFiles": 5,
+      "status": "collected",
+      "symbols": 33
+    }
+  ],
+  "rendererVersion": "0.2.0",
+  "schemaVersion": "2.0",
+  "sdk": "macOS:26A425",
+  "sourceExtensions": [
+    ".swift",
+    ".c",
+    ".h",
+    ".m",
+    ".mm",
+    ".cpp",
+    ".cc"
+  ],
+  "target": "arm64-apple-macosx27.0.0",
+  "toolchain": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.0.0",
+  "versionSlice": {
+    "budgetOmissions": 0,
+    "externalReferenceCount": 18,
+    "format": "swift",
+    "inScopeSymbols": 37,
+    "maximumBytes": 8000,
+    "outputBytes": 4795,
+    "payloadBytes": 4354,
+    "state": "complete"
+  }
+}

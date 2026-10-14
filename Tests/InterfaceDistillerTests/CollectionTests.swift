@@ -238,10 +238,13 @@ func libraryCollectionResolvesClangImports(customModuleMap: Bool) async throws {
   try fm.createDirectory(
     at: consumer.appendingPathComponent("Sources/Client"), withIntermediateDirectories: true)
   try Data(
-    "// swift-tools-version: 6.3\nimport PackageDescription\nlet package = Package(name: \"SupportPackage\", products: [.library(name: \"Support\", targets: [\"Support\"])], targets: [.target(name: \"Support\")])\n"
+    "// swift-tools-version: 5.9\nimport PackageDescription\nlet package = Package(name: \"SupportPackage\", products: [.library(name: \"Support\", targets: [\"Support\"])], targets: [.target(name: \"Support\")])\n"
       .utf8
   ).write(to: dependency.appendingPathComponent("Package.swift"))
-  try Data("public struct SupportValue { public init() {} }\n".utf8).write(
+  try Data(
+    "public class SupportValue { public static let shared = SupportValue(); public init() {} }\n"
+      .utf8
+  ).write(
     to: dependency.appendingPathComponent("Sources/Support/Support.swift"))
   let runner = ProcessRunner()
   for arguments in [
@@ -317,4 +320,135 @@ func libraryCollectionResolvesClangImports(customModuleMap: Bool) async throws {
   try FileManager.default.removeItem(at: link)
   try FileManager.default.createSymbolicLink(atPath: link.path, withDestinationPath: "..")
   #expect(throws: DistillerError.self) { try PackageDescriptionDecoder.sourceDigest(root) }
+}
+
+@Test func libraryCollectionIncludesTestingSearchPaths() async throws {
+  let root = try testDirectory("testing-library")
+  try writeExample(to: root)
+  try Data(
+    "import Testing\nimport Foundation\npublic func record(_ comment: Comment) { Issue.record(comment) }\n"
+      .utf8
+  )
+  .write(to: root.appendingPathComponent("Sources/EvidenceExample/Example.swift"))
+  let tools = try await Toolchain.discover(directory: root)
+  let result = try await InterfaceCollector().package(at: root, toolchain: tools)
+  #expect(result.snapshot.configurations[0].symbols.contains { $0.name == "record(_:)" })
+}
+
+@Test func collectionAcceptsInternalDirectorySymlinksAndHashesTargets() async throws {
+  let root = try testDirectory("directory-symlink-package")
+  try writeExample(to: root)
+  let link = root.appendingPathComponent("LinkedSources")
+  try FileManager.default.createSymbolicLink(atPath: link.path, withDestinationPath: "Sources")
+  // Internal cycles have finite identity and never recursively enumerate the link.
+  try FileManager.default.createSymbolicLink(
+    atPath: root.appendingPathComponent("Self").path, withDestinationPath: ".")
+  let before = try PackageDescriptionDecoder.sourceDigest(root)
+  let tools = try await Toolchain.discover(directory: root)
+  let result = try await InterfaceCollector().package(at: root, toolchain: tools)
+  #expect(result.snapshot.configurations[0].symbols.contains { $0.name == "Item" })
+  try Data("public struct Updated {}\n".utf8).write(
+    to: link.appendingPathComponent("EvidenceExample/Example.swift"))
+  #expect(try PackageDescriptionDecoder.sourceDigest(root) != before)
+  try FileManager.default.removeItem(at: link)
+  try FileManager.default.createSymbolicLink(atPath: link.path, withDestinationPath: "..")
+  #expect(throws: DistillerError.self) { try PackageDescriptionDecoder.sourceDigest(root) }
+}
+
+@Test func commentOnlyLibraryAndExecutableOnlyScopesNeedNoBuild() async throws {
+  let root = try testDirectory("empty-scope")
+  try writeExample(to: root)
+  let source = root.appendingPathComponent("Sources/EvidenceExample/Example.swift")
+  try Data("// Template\n/* outer /* inner */ comment */\n".utf8).write(to: source)
+  let tools = try await Toolchain.discover(directory: root)
+  let empty = try await InterfaceCollector().package(at: root, toolchain: tools)
+  #expect(empty.snapshot.configurations[0].expectedModules.isEmpty)
+  #expect(empty.snapshot.configurations[0].symbols.isEmpty)
+  #expect(empty.snapshot.configurations[0].gaps.isEmpty)
+  #expect(!empty.report.commands.contains { $0.dropFirst().first == "build" })
+  let manifest = root.appendingPathComponent("Package.swift")
+  let text = try String(contentsOf: manifest, encoding: .utf8)
+    .replacingOccurrences(of: ".library(", with: ".executable(")
+    .replacingOccurrences(of: ".target(", with: ".executableTarget(")
+  try text.write(to: manifest, atomically: true, encoding: .utf8)
+  try Data("this executable cannot build\n".utf8).write(to: source)
+  let executable = try await InterfaceCollector().package(at: root, toolchain: tools)
+  #expect(executable.snapshot.configurations[0].expectedModules.isEmpty)
+  #expect(!executable.report.commands.contains { $0.dropFirst().first == "build" })
+  #expect(!PackageDescriptionDecoder.isSwiftTrivia(Data("/* unclosed".utf8)))
+  #expect(
+    !PackageDescriptionDecoder.isSwiftTrivia(Data("/* comment */ public struct Value {}".utf8)))
+}
+
+@Test func collectionPolicyDropsCopiesButKeepsProtocolExtensions() async throws {
+  let root = try testDirectory("synthesized-policy")
+  try writeExample(to: root)
+  let tools = try await Toolchain.discover(directory: root)
+  let collector = InterfaceCollector()
+  let selected = try await collector.package(at: root, toolchain: tools)
+  let all = try await collector.package(
+    at: root, toolchain: tools, scope: .init(includeSynthesized: true))
+  #expect(selected.snapshot.configurations[0].scope.includeSynthesized == false)
+  #expect(all.snapshot.configurations[0].scope.includeSynthesized == true)
+  #expect(
+    !selected.snapshot.configurations[0].symbols.contains {
+      $0.preciseIdentifier.contains("::SYNTHESIZED::")
+    })
+  #expect(
+    all.snapshot.configurations[0].symbols.contains {
+      $0.preciseIdentifier.contains("::SYNTHESIZED::")
+    })
+  #expect(selected.snapshot.configurations[0].symbols.contains { $0.name == "label" })
+  #expect(
+    !selected.snapshot.configurations[0].gaps.contains { $0.subject.contains("::SYNTHESIZED::") })
+  #expect(selected.report.commands.contains { $0.contains("-skip-synthesized-members") })
+  #expect(!all.report.commands.contains { $0.contains("-skip-synthesized-members") })
+}
+
+@Test func collectionCanonicalizesPathsForBuildToolsAndClangModules() async throws {
+  let directory = try testDirectory("tool-and-clang-paths")
+  let root = directory.appendingPathComponent("package")
+  let files = [
+    "Package.swift": """
+    // swift-tools-version: 6.3
+    import PackageDescription
+    let package = Package(name: "ToolClient", products: [.library(name: "Client", targets: ["Client"])],
+      targets: [.target(name: "Bridge"), .target(name: "Client", dependencies: ["Bridge"], plugins: ["Generate"]),
+        .executableTarget(name: "Generator"),
+        .plugin(name: "Generate", capability: .buildTool(), dependencies: ["Generator"])])
+    """,
+    "Sources/Bridge/include/Bridge.h": "#include <stdint.h>\nint32_t bridge_value(void);\n",
+    "Sources/Bridge/Bridge.c": "#include \"Bridge.h\"\nint32_t bridge_value(void) { return 7; }\n",
+    "Sources/Client/Client.swift": "// Declarations are generated by the build plugin.\n",
+    "Sources/Generator/main.swift": """
+    import Foundation
+    try "import Bridge\\npublic struct GeneratedValue {}\\npublic func value() -> Int32 { bridge_value() }\\n".write(toFile: CommandLine.arguments[1], atomically: true, encoding: .utf8)
+    """,
+    "Plugins/Generate/Generate.swift": """
+    import PackagePlugin
+    @main struct Generate: BuildToolPlugin {
+      func createBuildCommands(context: PluginContext, target: Target) throws -> [Command] {
+        let output = context.pluginWorkDirectoryURL.appending(path: "Generated.swift")
+        return [.buildCommand(displayName: "Generate interface", executable: try context.tool(named: "Generator").url,
+          arguments: [output.path], outputFiles: [output])]
+      }
+    }
+    """,
+  ]
+  for (path, content) in files {
+    let url = root.appendingPathComponent(path)
+    try FileManager.default.createDirectory(
+      at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+    try Data(content.utf8).write(to: url)
+  }
+  let alias = directory.appendingPathComponent("alias")
+  try FileManager.default.createSymbolicLink(atPath: alias.path, withDestinationPath: "package")
+  let tools = try await Toolchain.discover(directory: directory)
+  let result = try await InterfaceCollector().package(at: alias, toolchain: tools)
+  #expect(result.snapshot.configurations[0].symbols.contains { $0.name == "GeneratedValue" })
+  #expect(result.report.inputPath == root.resolvingSymlinksInPath().path)
+  #expect(!result.report.commands.flatMap { $0 }.contains { $0.contains(alias.path) })
+  let direct = try await InterfaceCollector().package(at: root, toolchain: tools)
+  #expect(direct.report.cacheHit)
+  #expect(direct.snapshot == result.snapshot)
 }

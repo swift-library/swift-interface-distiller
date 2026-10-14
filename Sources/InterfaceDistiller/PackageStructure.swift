@@ -142,6 +142,41 @@ public enum PackageDescriptionDecoder {
       sourceDigest: try sourceDigest(root), provenance: .parsed)
   }
 
+  /// Proves a source contains only whitespace and comments; any other token requires compilation.
+  static func isSwiftTrivia(_ data: Data) -> Bool {
+    let bytes = Array(data)
+    var index = bytes.starts(with: [0xef, 0xbb, 0xbf]) ? 3 : 0
+    while index < bytes.count {
+      if [9, 10, 11, 12, 13, 32].contains(bytes[index]) {
+        index += 1
+        continue
+      }
+      guard index + 1 < bytes.count, bytes[index] == 47 else { return false }
+      if bytes[index + 1] == 47 {
+        index += 2
+        while index < bytes.count && bytes[index] != 10 && bytes[index] != 13 { index += 1 }
+      } else if bytes[index + 1] == 42 {
+        index += 2
+        var depth = 1
+        while index + 1 < bytes.count && depth > 0 {
+          if bytes[index] == 47 && bytes[index + 1] == 42 {
+            depth += 1
+            index += 2
+          } else if bytes[index] == 42 && bytes[index + 1] == 47 {
+            depth -= 1
+            index += 2
+          } else {
+            index += 1
+          }
+        }
+        if depth != 0 { return false }
+      } else {
+        return false
+      }
+    }
+    return true
+  }
+
   /// Includes uncommitted and untracked regular files. Producer outputs and VCS metadata are excluded.
   public static func sourceDigest(_ root: URL) throws -> String {
     guard
@@ -163,13 +198,17 @@ public enum PackageDescriptionDecoder {
             .unsupported, "Source symlinks outside the package require an explicit input boundary")
         }
         let resolved = url.resolvingSymlinksInPath()
-        if try resolved.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile != true {
-          throw DistillerError(.unsupported, "Directory symlinks are not a closed source input")
+        let target = try resolved.resourceValues(forKeys: [.isRegularFileKey, .isDirectoryKey])
+        guard target.isRegularFile == true || target.isDirectory == true else {
+          throw DistillerError(.unsupported, "Source symlink target is not a file or directory")
         }
         let lexical = String(
           url.standardizedFileURL.path.dropFirst(root.standardizedFileURL.path.count + 1))
         let digest = try CanonicalJSON.key([
-          "target": relative, "content": Digest.sha256(try Data(contentsOf: resolved)),
+          "target": relative,
+          // Internal directories are already enumerated at their real path; do not follow cycles.
+          "content": target.isDirectory == true
+            ? "directory" : Digest.sha256(try Data(contentsOf: resolved)),
         ])
         entries.append(SourceFile(path: lexical, digest: digest))
       } else if values.isRegularFile == true, let relative = PortablePath.relative(url, to: root) {

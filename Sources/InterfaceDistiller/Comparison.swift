@@ -91,7 +91,10 @@ public enum SnapshotComparator {
         le, re, configuration: id, symbol: "", category: "interface", path: "/relationships")
       let oldMetadata = try CanonicalJSON.value(lhs).object
       let newMetadata = try CanonicalJSON.value(rhs).object
-      for field in ["inputDigest", "packages", "expectedModules", "collectedModules", "graphs"] {
+      for field in [
+        "inputDigest", "packages", "expectedModules", "collectedModules", "graphs",
+        "externalReferences",
+      ] {
         changes += differences(
           oldMetadata[field] ?? .null, newMetadata[field] ?? .null, configuration: id,
           symbol: "", category: "provenance", path: "/" + field)

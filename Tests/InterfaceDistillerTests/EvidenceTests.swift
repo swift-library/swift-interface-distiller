@@ -6,9 +6,13 @@ import Testing
 
 @testable import InterfaceDistiller
 
-let fixtureConfiguration = BuildConfiguration(
-  toolchain: "fixture compiler", sdk: "fixture-sdk", triple: "fixture-target",
-  deploymentTarget: "fixture-floor")
+let fixtureConfiguration: BuildConfiguration = {
+  var config = BuildConfiguration(
+    toolchain: "fixture compiler", sdk: "fixture-sdk", triple: "fixture-target",
+    deploymentTarget: "fixture-floor")
+  config.extractorVersion = "0.2.0"
+  return config
+}()
 
 func fixtureGraphs() throws -> [SymbolGraphInput] {
   try SymbolGraphInput.load(
@@ -81,8 +85,8 @@ func testDirectory(_ name: String) throws -> URL {
   #expect(query.observedConformers(to: "Named").symbols.contains { $0.name == "Item" })
   #expect(query.lookup("unknown-symbol").symbols.isEmpty)
   let coverage = DocumentationCoverage.measure(query.evidence)
-  #expect(coverage.eligible == 18)
-  #expect(coverage.documented == 7)
+  #expect(coverage.eligible == 17)
+  #expect(coverage.documented == 6)
   #expect(coverage.undocumented.count == coverage.eligible - coverage.documented)
 }
 
@@ -94,7 +98,9 @@ func testDirectory(_ name: String) throws -> URL {
   #expect(!result.omittedReferences.isEmpty)
   #expect(result.diagnostics.contains("Symbol payload budget exhausted"))
   let external = try query.slice(roots: ["Item"])
-  #expect(external.omittedReferences.contains("s:SS"))
+  #expect(external.externalReferences.contains("s:SS"))
+  #expect(external.state == "complete")
+  #expect(external.omittedReferences.isEmpty)
   let empty = try query.slice(roots: [])
   #expect(empty.state == "complete")
   #expect(empty.symbols.isEmpty)
@@ -171,7 +177,7 @@ func testDirectory(_ name: String) throws -> URL {
   let data = try CanonicalJSON.encode(base)
   #expect(try JSONDecoder().decode(EvidenceSnapshot.self, from: data) == base)
   var incompatible = base
-  incompatible.schemaVersion = "2.0"
+  incompatible.schemaVersion = "3.0"
   #expect(throws: DistillerError.self) { try incompatible.validate() }
   var otherConfig = fixtureConfiguration
   otherConfig.conditions = ["EXTRA"]
@@ -187,7 +193,7 @@ func testDirectory(_ name: String) throws -> URL {
 
 @Test func markdownStableAnchorsAndStrictBudgets() throws {
   let snapshot = try fixtureSnapshot()
-  let parts = try MarkdownRenderer.render(snapshot, byteBudget: 3000)
+  let parts = try MarkdownRenderer.render(snapshot, byteBudget: 3000, view: .evidence)
   #expect(parts.allSatisfy { $0.markdown.utf8.count <= 3000 })
   #expect(parts.count > 1)
   let content = parts.map(\.markdown).joined()
@@ -198,7 +204,9 @@ func testDirectory(_ name: String) throws -> URL {
           + MarkdownRenderer.anchor(configuration: snapshot.configurations[0].id, symbol: s.id)
           + "\""))
   }
-  #expect(throws: DistillerError.self) { try MarkdownRenderer.render(snapshot, byteBudget: 256) }
+  #expect(throws: DistillerError.self) {
+    try MarkdownRenderer.render(snapshot, byteBudget: 256, view: .evidence)
+  }
 }
 
 @Test func loaderRejectsMissingEmptyAndMalformedInputs() throws {
@@ -264,4 +272,26 @@ func testDirectory(_ name: String) throws -> URL {
   let merged = try SymbolGraphNormalizer.mergedRelationships([first, second])
   #expect(merged.count == 1)
   #expect(merged[0].fields["condition"]?.sources == ["first", "second"])
+}
+
+@Test func externalReferenceMetadataChangesAreCompared() throws {
+  let baseline = try fixtureSnapshot()
+  var candidate = baseline
+  candidate.configurations[0].externalReferences?.append("additional-external-reference")
+  let difference = try SnapshotComparator.compare(baseline, candidate)
+  #expect(!difference.equal)
+  #expect(
+    difference.changes.contains { $0.path == "/externalReferences" && $0.category == "provenance" })
+}
+
+@Test func normalizationHonorsTaskCancellation() async throws {
+  let graphs = try fixtureGraphs()
+  let task = Task {
+    withUnsafeCurrentTask { $0?.cancel() }
+    return try SymbolGraphNormalizer.normalize(graphs, configuration: fixtureConfiguration)
+  }
+  do {
+    _ = try await task.value
+    Issue.record("Expected cancelled normalization")
+  } catch is CancellationError {}
 }

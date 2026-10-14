@@ -64,7 +64,24 @@ public enum SymbolGraphNormalizer {
     var merges: [MergeRecord] = []
     var collected: Set<String> = []
     for input in inputs {
-      let raw = input.value
+      try Task.checkCancellation()
+      var raw = input.value
+      if scope.includeSynthesized == false {
+        var fields = raw.object
+        fields["symbols"] = .array(
+          raw["symbols"].array.filter {
+            !($0["identifier"]["precise"].string ?? "").contains("::SYNTHESIZED::")
+          })
+        fields["relationships"] = .array(
+          raw["relationships"].array.filter {
+            !($0["source"].string ?? "").contains("::SYNTHESIZED::")
+              && !($0["target"].string ?? "").contains("::SYNTHESIZED::")
+          })
+        // Validate the original shape before projecting the collection policy.
+        if case .array = raw["symbols"], case .array = raw["relationships"] {
+          raw = .object(fields)
+        }
+      }
       guard let module = raw["module"]["name"].string,
         raw["metadata"]["formatVersion"]["major"] == .number(0),
         validFormatVersion(raw["metadata"]["formatVersion"]),
@@ -94,6 +111,7 @@ public enum SymbolGraphNormalizer {
         generator: raw["metadata"]["generator"].string ?? "unknown",
         languageView: input.languageView)
       for original in symbols {
+        try Task.checkCancellation()
         guard let precise = original["identifier"]["precise"].string,
           let language = original["identifier"]["interfaceLanguage"].string,
           original["kind"]["identifier"].string != nil, original["names"]["title"].string != nil
@@ -157,16 +175,19 @@ public enum SymbolGraphNormalizer {
             module: module, language: language, preciseIdentifier: precise,
             fields: fields, references: refs))
       }
+      let languages = Dictionary(grouping: symbols) { $0["identifier"]["precise"].string ?? "" }
+        .mapValues {
+          $0.compactMap { $0["identifier"]["interfaceLanguage"].string }.sorted().first
+            ?? input.languageView
+        }
       for edge in edges {
+        try Task.checkCancellation()
         guard let kind = edge["kind"].string, let source = edge["source"].string,
           let target = edge["target"].string
         else {
           throw DistillerError(.invalidInput, "Relationship lacks kind or endpoint")
         }
-        let language =
-          symbols.first { $0["identifier"]["precise"].string == source }?["identifier"][
-            "interfaceLanguage"
-          ].string ?? input.languageView
+        let language = languages[source] ?? input.languageView
         let extras = portableValue(edge, root: input.sourceRoot, locations: scope.sourceLocations)
           .object
           .filter { !["kind", "source", "target"].contains($0.key) }
@@ -178,6 +199,7 @@ public enum SymbolGraphNormalizer {
     }
     var symbols: [SymbolRecord] = []
     for (id, values) in candidates {
+      try Task.checkCancellation()
       let groups = try Dictionary(grouping: values) { try CanonicalJSON.key(withoutSources($0)) }
       if groups.count > 1 {
         let variants = try sortedJSON(
@@ -205,24 +227,10 @@ public enum SymbolGraphNormalizer {
       symbols.append(value)
     }
     let byPrecise = Dictionary(grouping: symbols, by: \.preciseIdentifier)
-    var kept: [Relationship] = []
-    for edge in relationships {
-      if byPrecise[edge.source] == nil {
-        gaps.append(.init(edge.source, .unresolved, "Relationship source was not collected"))
-      }
-      if byPrecise[edge.target] == nil {
-        gaps.append(
-          .init(edge.target, .unresolved, "Relationship target is outside collected symbols"))
-      }
-      kept.append(edge)
-    }
-    for s in symbols {
-      for reference in s.references where byPrecise[reference] == nil {
-        gaps.append(
-          .init(
-            reference, .unresolved, "Referenced compiler identifier is outside collected symbols"))
-      }
-    }
+    let external = Set(
+      relationships.flatMap { [$0.source, $0.target] } + symbols.flatMap(\.references)
+    )
+    .filter { byPrecise[$0] == nil }.sorted()
     let expected = Set(
       expectedModules.isEmpty
         ? (scope.modules.isEmpty ? Array(collected) : scope.modules) : expectedModules)
@@ -235,8 +243,9 @@ public enum SymbolGraphNormalizer {
       inputDigest: try inputDigest ?? CanonicalJSON.key(graphList.map(\.id)),
       packages: packages.sorted { $0.identity.identity < $1.identity.identity },
       expectedModules: expected.sorted(), collectedModules: collected.sorted(), graphs: graphList,
-      symbols: symbols.sorted { $0.id < $1.id }, relationships: try mergedRelationships(kept),
-      gaps: try uniqueSorted(gaps), merges: try uniqueSorted(merges))
+      symbols: symbols.sorted { $0.id < $1.id },
+      relationships: try mergedRelationships(relationships),
+      gaps: try uniqueSorted(gaps), merges: try uniqueSorted(merges), externalReferences: external)
     return try EvidenceSnapshot(configurations: [evidence])
   }
 

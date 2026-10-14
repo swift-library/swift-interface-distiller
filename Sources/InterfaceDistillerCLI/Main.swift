@@ -56,8 +56,9 @@ import InterfaceDistiller
         collect headers NAME --header PATH --language c|objective-c
         normalize GRAPH... --configuration CONFIG
         merge SNAPSHOT...
-        render SNAPSHOT --output-dir DIR [--byte-budget N]
+        render SNAPSHOT --output-dir DIR [--view interface|evidence] [--byte-budget N]
         query SNAPSHOT lookup|members|conformers|initializers|returning|slice SYMBOL...
+        slice SNAPSHOT SYMBOL...                Query a reference closure
         compare BASELINE CANDIDATE
         baseline write|check SNAPSHOT FILE
         coverage SNAPSHOT
@@ -65,10 +66,12 @@ import InterfaceDistiller
         diagnose digester --baseline FILE --candidate FILE
 
         Common options: --output FILE, --configuration FILE, --module NAME,
-        --include GLOB, --exclude GLOB, --include-spi, --source-locations,
+        --include GLOB, --exclude GLOB, --include-spi, --include-synthesized, --source-locations,
         --source-root DIR, --cache DIR, --report FILE, --timeout SECONDS,
         --swift EXECUTABLE, --clang EXECUTABLE, --sdk-path DIR.
-        Query options: --configuration-id ID, --max-symbols N, --max-bytes N.
+        Query options: --configuration-id ID, --max-symbols N, --max-bytes N,
+        --format json|swift|markdown (default json).
+        Readable views: --docs summary|full|none (default summary).
         Package option: --dependency-module NAME (repeatable).
         See Documentation/Commands.md for contracts and exit codes.
         """)
@@ -106,7 +109,12 @@ import InterfaceDistiller
     }
     let scope = CollectionScope(
       modules: args.many("module"), include: args.many("include"), exclude: args.many("exclude"),
-      includeSPI: args.flag("include-spi"), sourceLocations: args.flag("source-locations"))
+      includeSPI: args.flag("include-spi"), sourceLocations: args.flag("source-locations"),
+      includeSynthesized: args.flag("include-synthesized"))
+    guard let docs = DocumentationStyle(rawValue: args.one("docs") ?? "summary"),
+      let format = QueryFormat(rawValue: args.one("format") ?? "json"),
+      let view = MarkdownRenderer.View(rawValue: args.one("view") ?? "interface")
+    else { throw DistillerError(.usage, "Invalid view, format or documentation style") }
     switch try position(0) {
     case "configuration": try emit(try await toolchain().configuration)
     case "collect":
@@ -164,7 +172,8 @@ import InterfaceDistiller
           args.positionals.dropFirst().map { try EvidenceSnapshot.read(file($0)) }))
     case "render":
       let snapshot = try EvidenceSnapshot.read(file(position(1)))
-      let parts = try MarkdownRenderer.render(snapshot, byteBudget: args.integer("byte-budget"))
+      let parts = try MarkdownRenderer.render(
+        snapshot, byteBudget: args.integer("byte-budget"), view: view, docs: docs)
       if let directory = args.one("output-dir") {
         let root = file(directory)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
@@ -176,22 +185,44 @@ import InterfaceDistiller
       } else {
         try emit(parts)
       }
-    case "query":
+    case "query", "slice":
       let query = try SnapshotQuery(
         EvidenceSnapshot.read(file(position(1))), configuration: args.one("configuration-id"))
-      let kind = try position(2)
-      let selector = try position(3)
+      let sliceCommand = args.positionals[0] == "slice"
+      let kind = try sliceCommand ? "slice" : position(2)
+      let selectorIndex = sliceCommand ? 2 : 3
+      let selector = try position(selectorIndex)
+      let maximumSymbols = try args.integer("max-symbols")
+      let maximumBytes = try args.integer("max-bytes")
+      func write(_ result: SliceResult) throws {
+        let data = try query.encode(result, format: format, docs: docs)
+        if let output = args.one("output") {
+          try data.write(to: file(output), options: .atomic)
+        } else {
+          FileHandle.standardOutput.write(data)
+        }
+      }
+      func show(_ result: QueryResult) throws {
+        if format == .json && maximumSymbols == nil && maximumBytes == nil {
+          try emit(result)
+        } else {
+          try write(
+            query.bounded(
+              result, maximumSymbols: maximumSymbols, maximumBytes: maximumBytes, format: format,
+              docs: docs))
+        }
+      }
       switch kind {
-      case "lookup": try emit(query.lookup(selector))
-      case "members": try emit(query.members(of: selector))
-      case "conformers": try emit(query.observedConformers(to: selector))
-      case "initializers": try emit(query.initializers(of: selector))
-      case "returning": try emit(query.returning(selector))
+      case "lookup": try show(query.lookup(selector))
+      case "members": try show(query.members(of: selector))
+      case "conformers": try show(query.observedConformers(to: selector))
+      case "initializers": try show(query.initializers(of: selector))
+      case "returning": try show(query.returning(selector))
       case "slice":
-        try emit(
+        try write(
           query.slice(
-            roots: Array(args.positionals.dropFirst(3)),
-            maximumSymbols: args.integer("max-symbols"), maximumBytes: args.integer("max-bytes")))
+            roots: Array(args.positionals.dropFirst(selectorIndex)),
+            maximumSymbols: maximumSymbols, maximumBytes: maximumBytes, format: format, docs: docs))
       default: throw DistillerError(.usage, "Unknown query kind")
       }
     case "compare":
@@ -249,7 +280,7 @@ import InterfaceDistiller
 private struct Arguments {
   let positionals: [String]
   let options: [String: [String]]
-  static let switches: Set<String> = ["include-spi", "source-locations"]
+  static let switches: Set<String> = ["include-spi", "source-locations", "include-synthesized"]
   static let repeated: Set<String> = [
     "module", "include", "exclude", "dependency-module", "search-path", "header",
   ]
@@ -257,7 +288,7 @@ private struct Arguments {
     "output", "configuration", "source-root", "cache", "report", "timeout", "swift", "clang",
     "sdk-path",
     "configuration-id", "max-symbols", "max-bytes", "byte-budget", "output-dir", "built-with",
-    "language", "baseline-ref", "baseline", "candidate", "digester",
+    "language", "baseline-ref", "baseline", "candidate", "digester", "view", "docs", "format",
   ]
 
   init(_ args: [String]) throws {

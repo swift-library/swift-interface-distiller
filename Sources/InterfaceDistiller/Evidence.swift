@@ -3,7 +3,7 @@
 
 import Foundation
 
-public enum DistillerVersion { public static let current = "0.1.2" }
+public enum DistillerVersion { public static let current = "0.2.0" }
 
 /// Observation state. An absent field is distinct from an uncollected field.
 public enum ObservationState: String, Codable, Sendable {
@@ -74,15 +74,18 @@ public struct CollectionScope: Codable, Sendable, Equatable {
   public var exclude: [String]
   public var includeSPI: Bool
   public var sourceLocations: Bool
+  /// Nil identifies legacy scope, which included synthesized copies. Schema 2 requires a choice.
+  public var includeSynthesized: Bool?
   public init(
     modules: [String] = [], include: [String] = [], exclude: [String] = [],
-    includeSPI: Bool = false, sourceLocations: Bool = false
+    includeSPI: Bool = false, sourceLocations: Bool = false, includeSynthesized: Bool = false
   ) {
     self.modules = modules.sorted()
     self.include = include.sorted()
     self.exclude = exclude.sorted()
     self.includeSPI = includeSPI
     self.sourceLocations = sourceLocations
+    self.includeSynthesized = includeSynthesized
   }
 
   func accepts(module: String, id: String, name: String) -> Bool {
@@ -177,15 +180,17 @@ public struct ConfigurationEvidence: Codable, Sendable, Equatable {
   public var relationships: [Relationship]
   public var gaps: [CollectionGap]
   public var merges: [MergeRecord]
+  /// Out-of-scope compiler identities; unavailable only in schema 1 evidence.
+  public var externalReferences: [String]? = nil
 }
 
-/// Schema 1.x permits unknown object keys, but unknown major versions are rejected.
+/// Reads schema 1.x and 2.x; new snapshots use schema 2.0.
 public struct EvidenceSnapshot: Codable, Sendable, Equatable {
   public var schemaVersion: String
   public var configurations: [ConfigurationEvidence]
 
-  public init(configurations: [ConfigurationEvidence]) throws {
-    self.schemaVersion = "1.0"
+  public init(configurations: [ConfigurationEvidence], schemaVersion: String = "2.0") throws {
+    self.schemaVersion = schemaVersion
     self.configurations = configurations.sorted { $0.id < $1.id }
     try validate()
   }
@@ -199,7 +204,7 @@ public struct EvidenceSnapshot: Codable, Sendable, Equatable {
   }
 
   public func validate() throws {
-    guard schemaVersion.range(of: #"^1\.[0-9]+$"#, options: .regularExpression) != nil else {
+    guard schemaVersion.range(of: #"^[12]\.[0-9]+$"#, options: .regularExpression) != nil else {
       throw DistillerError(
         .incompatibleSchema, "Unsupported evidence schema", context: ["schema": schemaVersion])
     }
@@ -207,6 +212,12 @@ public struct EvidenceSnapshot: Codable, Sendable, Equatable {
       throw DistillerError(.invalidEvidence, "Duplicate configuration identities")
     }
     for c in configurations {
+      if schemaVersion.hasPrefix("2.")
+        && (c.scope.includeSynthesized == nil || c.externalReferences == nil)
+      {
+        throw DistillerError(
+          .invalidEvidence, "Schema 2 requires synthesized-member policy and external references")
+      }
       guard c.id == (try c.configuration.identity()),
         Set(c.symbols.map(\.id)).count == c.symbols.count
       else {
@@ -247,6 +258,11 @@ public struct EvidenceSnapshot: Codable, Sendable, Equatable {
 
   public static func merge(_ snapshots: [EvidenceSnapshot]) throws -> EvidenceSnapshot {
     var found: [String: ConfigurationEvidence] = [:]
+    let majors = Set(snapshots.map { $0.schemaVersion.split(separator: ".").first })
+    guard majors.count <= 1 else {
+      throw DistillerError(
+        .incompatibleSchema, "Snapshots from different schema majors cannot be merged")
+    }
     for snapshot in snapshots {
       try snapshot.validate()
       for c in snapshot.configurations {
@@ -259,7 +275,8 @@ public struct EvidenceSnapshot: Codable, Sendable, Equatable {
         found[c.id] = c
       }
     }
-    return try Self(configurations: Array(found.values))
+    return try Self(
+      configurations: Array(found.values), schemaVersion: snapshots.first?.schemaVersion ?? "2.0")
   }
 }
 

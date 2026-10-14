@@ -1,5 +1,27 @@
 ## Unreleased
 
+## 0.2.0
+
+- Render a compact Swift interface by default: nested members, reported attributes,
+  access, signatures, generics and observed conformances, summary documentation,
+  readable anchors, and splitting only between top-level declarations.
+- Keep the previous rendering and content through `render --view evidence`.
+  Scripts that depend on the previous default Markdown must select that view.
+- Add `--docs summary|full|none`, query and slice `--format json|swift|markdown`,
+  and a `slice` command alias. Query budgets count the selected format's payload.
+- Collect package interfaces without synthesized per-conformer copies by default;
+  use `--include-synthesized` to opt in. Original protocol extensions and conformances
+  remain. Hide implicit marker conformances in the interface view.
+- Distinguish external references from collection gaps and budget omissions. A slice
+  containing its in-snapshot closure is complete; text headers show reference counts.
+- Emit evidence schema 2.0 with required synthesized policy and external-reference
+  fields. Update schema consumers before reading new evidence. Schema 1.x reading and
+  its evidence rendering remain supported; JSON remains the default query format.
+- Accept internal directory symlinks, normalize compiler execution paths, honor
+  package language modes, expose toolchain Testing modules during extraction, and
+  return empty default scopes for declaration-free libraries and executable packages.
+- Include both captured compiler streams in process-failure diagnostics.
+
 ## 0.1.2
 
 - Resolve generated and custom C module maps when collecting Swift library interfaces.

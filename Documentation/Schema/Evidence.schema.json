@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://swift-library.github.io/schemas/interface-evidence/1.0",
-  "title": "Interface evidence schema 1.0",
+  "$id": "https://swift-library.github.io/schemas/interface-evidence/2.0",
+  "title": "Interface evidence schema 2.0",
   "type": "object",
   "properties": {
     "schemaVersion": {
       "type": "string",
-      "pattern": "^1\\.[0-9]+$"
+      "pattern": "^2\\.[0-9]+$"
     },
     "configurations": {
       "type": "array",
@@ -160,6 +160,9 @@
         },
         "sourceLocations": {
           "type": "boolean"
+        },
+        "includeSynthesized": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -167,7 +170,8 @@
         "include",
         "exclude",
         "includeSPI",
-        "sourceLocations"
+        "sourceLocations",
+        "includeSynthesized"
       ],
       "additionalProperties": true
     },
@@ -627,6 +631,12 @@
           "items": {
             "$ref": "#/$defs/Merge"
           }
+        },
+        "externalReferences": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
@@ -641,7 +651,8 @@
         "symbols",
         "relationships",
         "gaps",
-        "merges"
+        "merges",
+        "externalReferences"
       ],
       "additionalProperties": true
     }

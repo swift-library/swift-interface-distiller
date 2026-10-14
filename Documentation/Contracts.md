@@ -10,10 +10,13 @@ build environment; identical extraction version and collection scope. Package
 identity is distinct from its display name, origin and resolved version.
 
 Package collection hashes regular files recursively, excluding `.git`, `.build`
-and `.swiftpm`, which own VCS, compilation and package-manager state. External
-source symlinks and directory symlinks are rejected because they do not form a
-closed input. Regular source symlinks must resolve inside the package; their lexical path,
-resolved relative target and content contribute to input identity. The
+and `.swiftpm`, which own VCS, compilation and package-manager state. Source
+symlinks must resolve inside the package root. File links contribute their lexical
+path, resolved relative target and content; directory links contribute their lexical
+path and resolved target, whose files are enumerated at their real path. Links are
+never recursively followed, so internal cycles have finite identity. Collection
+normalizes execution paths consistently before invoking SwiftPM to avoid duplicate
+compiler-cache identities for filesystem aliases. The
 manifest and resolved dependencies are interrogated through SwiftPM's public
 commands; no SwiftPM implementation library is linked. Binary inputs additionally
 hash their explicitly supplied content roots. Header inputs hash their declared
@@ -33,13 +36,22 @@ portable evidence. Store evidence, run reports and caches under `.build/`.
 
 ## Format and provenance
 
-Product version and schema version are independent. Schema `1.0` is described in
+Product version and schema version are independent. New evidence uses schema `2.0`, described in
 [Evidence.schema.json](Schema/Evidence.schema.json). Readers accept unknown object
 keys in the same major schema and ignore them; consumers needing round-trip
 preservation should retain the original JSON. Unknown major schemas, unknown
 required enum values, invalid identities and malformed required fields fail.
 New optional fields are minor schema additions; changed meanings, removed fields,
 new required fields or enum cases require a major version.
+
+Schema 2 requires `scope.includeSynthesized` and `externalReferences` on every
+configuration. These fields record a deliberate collection policy and distinguish
+out-of-scope references from missing observations. This is a major schema change
+because the fields are required and completeness semantics changed. Readers also
+accept schema 1.x snapshots with their recorded scope and gaps intact; a missing
+synthesized policy means the legacy collector included copies. Its evidence view
+remains unchanged. The [schema 1.0 contract](https://github.com/swift-library/swift-interface-distiller/blob/v0.1.2/Documentation/Schema/Evidence.schema.json)
+remains available at the immutable release tag.
 
 Compiler symbol fields retain unknown mixins as JSON values. Declaration
 fragments are ordered, raw documentation text is retained, and compiler precise
@@ -77,7 +89,7 @@ Main and extension graph files contribute to the same module. Identical graphs
 and identical symbols have duplicate records; identical symbol fields combine
 source graph references. Conflicting variants are retained in a conflict record
 and excluded from the resolved symbol set. No observation wins by file order.
-Several snapshots can merge only when each configuration identity has identical
+Snapshots can merge only within one schema major and when each configuration identity has identical
 observations. Distinct configurations remain distinct; an overlapping identity
 with different observations is an error.
 
@@ -93,21 +105,41 @@ are canonicalized before their content identities are computed.
 States distinguish `present`, `absent`, `notCollected`, `unsupported`, `failed`,
 `filtered` and `unresolved`. `absent` requires an observation such as an explicitly
 unconditional dependency; omitted producer fields are never inferred absent.
-Expected and collected modules are separate lists. External type references and
-relationship endpoints may remain unresolved even in a successful collection.
+Expected and collected modules are separate lists. Compiler identifiers outside
+the collected scope are listed in `externalReferences`, a derived sorted set of
+missing declaration references and relationship endpoints. They are external
+observations, not unresolved collection gaps. Conflicts and missing expected
+modules remain gaps.
 Binary and system targets are retained as structure; explicit binary/header
 collection selects their language view. An operation failure yields an error,
 not a success-shaped empty snapshot.
 
 The default package scope is public/open interfaces of library products and their
-reachable Swift library targets. Macro implementations, plugins and executable
-build tools remain package structure. C dependencies supply module maps and header
+reachable Swift library targets. Libraries with only whitespace and comments and no build-tool plugin,
+and packages with no library products, produce an empty default scope without a
+build; no claim is made about executable behavior. Other sources and plugin-generated library targets require compiler
+collection, even if their API eventually proves empty. Macro implementations,
+plugins and executable build tools remain package structure. C dependencies supply module maps and header
 search paths for Swift imports; collecting their C language view requires explicit
 header collection. Explicit module selection replaces the default; explicit
 dependency module selection adds modules from the actual resolved graph. Symbol include/exclude patterns match the
 compiler ID, name or `Module.name`. `*` matches any sequence and `?` one character.
 An empty include set includes all candidates. Exclusion wins over inclusion.
-SPI remains a separate opt-in dimension. Filtering is recorded and does not make
+SPI remains a separate opt-in dimension. Synthesized symbol-graph copies are
+excluded by default through `-skip-synthesized-members`; graph normalization
+applies the same rule to `::SYNTHESIZED::` identities and their relationships.
+`includeSynthesized: true` opts in. Original protocol-extension declarations and
+conformances remain, including defaults from package-owned protocols. Exclusion
+is the recorded policy, not a completeness gap. Graph identities use the policy's
+projected graph content, so excluded copies do not affect comparison provenance.
+
+Detected package configurations use `languageMode: "package"`, honoring each
+manifest's Swift language mode, including dependency and generator packages.
+An explicit numeric language mode applies a global compiler override. Apple
+platform developer framework and library search paths accompany package extraction,
+matching SwiftPM's access to Testing and its Foundation overlay.
+
+Filtering is recorded and does not make
 out-of-scope declarations evidence of removal in a differently scoped comparison.
 
 ## Queries, views and comparison
@@ -119,16 +151,60 @@ reported relationships. Returns-a-type candidates contain that compiler type ID
 in return fragments; they are candidates, not a type-inference result.
 
 A slice follows declaration references, outgoing relationships and contained
-members/requirements until closure. Cycles terminate by identity. Missing and
-budget-omitted references are explicit. Its state is `complete` only if no
-reference was omitted; external references produce `truncated`. Symbol-count and
-byte budgets constrain the selected symbol payload, not the diagnostic envelope.
+members/requirements until closure. Cycles terminate by identity. Roots must
+resolve within the snapshot. `omittedReferences` contains only in-snapshot symbols
+excluded by a byte or symbol-count budget; `externalReferences` lists out-of-scope
+compiler identifiers separately. A slice is `complete` when every in-snapshot
+reference is selected. `truncated` means a budget omitted in-snapshot symbols.
+Collection gaps remain visible independently of selection completeness. Symbol-count and
+byte budgets constrain the selected symbol payload in the requested format, not
+the snapshot header or diagnostic envelope. JSON retains its sum of independently
+encoded symbol records; Swift and Markdown measure the rendered UTF-8 payload,
+including declaration context, documentation, fences and anchors. `symbolBytes`
+reports that payload size. Text views include ancestor declarations as context
+for member queries; those context declarations also count toward their budget.
 A consumer must inspect both the state and omitted references.
 
-Markdown renders this same evidence model. Full SHA-256 anchors are stable for
-configuration and symbol identity. Splitting names parts deterministically and
-uses explicit cross-part links. A byte budget is strict; an evidence block that
-cannot fit alone yields an error reporting the required size.
+The default Markdown interface view projects the collected evidence. One snapshot
+header records modules, extractor, toolchain, 12-character configuration IDs,
+scope, declaration and external-reference counts, and every recorded gap category.
+The header and query diagnostics use counts; compiler identifier lists remain in
+JSON and the evidence view. Short IDs
+are display labels; canonical JSON retains the authoritative full identities.
+Declarations preserve the compiler's ordered fragments (including generic parameters,
+where clauses, isolation and signatures), add reported access and availability,
+and join observed inheritance and conformance relationships. These are reported
+interfaces, not compilable source replacements: bodies, unreported default arguments,
+uncollected attributes and witness selection cannot be recovered. Missing declaration
+fragments are labelled explicitly. C and Objective-C blocks keep their language view.
+
+Members follow `memberOf`, `requirementOf` and `optionalRequirementOf`. A protocol
+default with a `defaultImplementationOf` edge uses its reported declaring path
+to identify the containing protocol; queries and views share this derivation.
+The declaring protocol may inherit the implemented requirement from another protocol. It does
+not select a conformance witness. Protocol
+extension members and constrained members retain extension contexts. Conditional
+conformances keep their conditions; external extensions form a separate group.
+Documentation uses `///` lines, with the first paragraph by default; `full` and
+`none` select other projections. Implicit Copyable, Escapable and SendableMetatype
+conformance relationships are omitted from the interface projection; JSON and
+`--view evidence` retain them. Reported declaration fragments, including explicit
+constraints, remain authoritative.
+
+Interface anchors use lowercase module and path components, joining alphanumeric
+runs with hyphens; an all-punctuation component becomes `symbol`. Collisions add a deterministic prefix of the symbol identity's
+SHA-256; repeated symbols in multiple configurations also include configuration
+identity. Adding documentation, moving checkouts or changing input order does not
+change anchors. Collisions can change an otherwise unsuffixed anchor. The mapping
+is computed from the whole snapshot, including for subset queries. Member anchors
+resolve to their containing declaration block.
+
+Splitting keeps a top-level declaration, all nested members and its constrained
+extensions together. Every part includes snapshot and module context, and the
+byte budget includes that context. An indivisible declaration that cannot fit
+produces an error with the minimum required size. `--view evidence` retains the
+full metadata, SHA-256 anchors, explicit cross-part links and per-evidence-block
+splitting of the evidence view; documentation selection affects only interface views.
 
 Comparison reports added/removed symbols and JSON-pointer field changes in
 interface, documentation, availability and provenance categories. Different
@@ -137,8 +213,8 @@ change without claiming interface additions/removals. Compiler API diagnostics
 are a separate artifact with producer, input identities, status and normalized
 stdout/stderr. Neither comparison chooses a version nor decides a release gate.
 
-Documentation coverage counts collected non-extension symbols once, including
-reported synthesized declarations. A nonblank raw comment line marks a symbol
+Documentation coverage counts collected non-extension symbols once. Its denominator
+follows the recorded synthesized-member policy. A nonblank raw comment line marks a symbol
 documented. Excluded symbols and conflicted variants are outside the denominator.
 An empty denominator yields a null fraction, never a manufactured 100 percent.
 
@@ -162,6 +238,5 @@ snapshot schema and identities. A cache is a disposable trusted local derivative
 
 Baseline write validates before atomic replacement. Missing expected modules,
 failed/unsupported collection and conflicts cannot replace a valid baseline.
-Unresolved external references remain explicit and may exist in a valid scoped
-baseline. Baseline check never writes the baseline. Shared organization workflows
+External references remain explicit and may exist in a valid scoped baseline. Baseline check never writes the baseline. Shared organization workflows
 own comparison targets, release interpretation and baseline governance.
