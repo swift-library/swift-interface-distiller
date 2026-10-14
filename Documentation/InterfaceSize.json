@@ -28,8 +28,8 @@
     {
       "commit": "bee8707d232010040a071270d83e3ba1608fd0cd",
       "extractorVersion": "0.1.2",
-      "interfaceBytes": 33739,
-      "interfaceSHA256": "5072cf3b2207c7fb859f297b66fb088edb424f041b606f1d8343bfb4912bf51a",
+      "interfaceBytes": 33728,
+      "interfaceSHA256": "5cea2e0a4cf8e44edd220259481d40b5b59a31c54bc0b97a24a0115462c4b48b",
       "jsonBytes": 776465,
       "modules": [
         "SwiftDataWritable"
@@ -58,15 +58,15 @@
     {
       "commit": "v0.2.0",
       "extractorVersion": "0.2.0",
-      "interfaceBytes": 52180,
-      "interfaceSHA256": "b80e428a9b4c138a5863665d274be493f9795ce8c6d3e8c9d6d36c2a4d5adba2",
+      "interfaceBytes": 51932,
+      "interfaceSHA256": "467e90f25946baa925575b877030df9884c898fb6dd00b8ec78e59a7049f0718",
       "jsonBytes": 1662125,
       "modules": [
         "InterfaceDistiller"
       ],
       "package": "swift-interface-distiller",
-      "snapshotSHA256": "ac7ac27e41b3a8fd4ff478c1852878646a893db1000b45f9a0a642f003397dcf",
-      "sourceBytes": 131231,
+      "snapshotSHA256": "d1d44396528456ffed0081c38f6940d6764af0e974c0c15318526bac9437ab75",
+      "sourceBytes": 131586,
       "sourceFiles": 13,
       "status": "collected",
       "symbols": 376
@@ -74,8 +74,8 @@
     {
       "commit": "5a0411b33c6b17af002dd799cabe9405e6a3ac97",
       "extractorVersion": "0.1.2",
-      "interfaceBytes": 100107,
-      "interfaceSHA256": "4abf279f6d6d28a8b42fd604f3b8418ba4278e28a8d6ed79023612921e24baec",
+      "interfaceBytes": 100124,
+      "interfaceSHA256": "c94fc9ad38f32452acbfa4436a1c6c41a0c69ba12d7bbe128c2653ca788c4c2f",
       "jsonBytes": 2583296,
       "modules": [
         "JSONSchema",
@@ -102,8 +102,8 @@
     {
       "commit": "e9ceecc992e628b7f555694eafb9f631ac0818eb",
       "extractorVersion": "0.1.2",
-      "interfaceBytes": 838663,
-      "interfaceSHA256": "5135400a05d7bdc2b971a22ac131ab99bd6f6e322f5bfd7d61e30421756ac850",
+      "interfaceBytes": 838652,
+      "interfaceSHA256": "798fbf56fbd4fd642932a4489e196eca46dbcb6b6f29d0f364ef6f6514db4e3d",
       "jsonBytes": 14947269,
       "modules": [
         "PDF"
@@ -118,8 +118,8 @@
     {
       "commit": "b79420e28d6add8ddd725d7ab29f1265e9471b73",
       "extractorVersion": "0.1.2",
-      "interfaceBytes": 9161,
-      "interfaceSHA256": "d8b460795ae36f67b358e1f2341b3aa49dcd09b1db460e8b7cb94896e584c556",
+      "interfaceBytes": 9155,
+      "interfaceSHA256": "b4fd124d388054db785fe94d362300cecee26a58cd285eec1fdc98e39e940dba",
       "jsonBytes": 175852,
       "modules": [
         "Redux",
@@ -138,8 +138,8 @@
     {
       "commit": "38d82eeba787e1ff6b2f615068621632811ce6ca",
       "extractorVersion": "0.1.2",
-      "interfaceBytes": 14802,
-      "interfaceSHA256": "7644d8db7934fa4e7f104ed1a32f1355d55bc030d07b3a0e31508c95568ec231",
+      "interfaceBytes": 14804,
+      "interfaceSHA256": "ab20ffd682159888bfbf346a9980699503bf6ea26a9d89effe9e6fc93ee6a265",
       "jsonBytes": 385866,
       "modules": [
         "SemVer"

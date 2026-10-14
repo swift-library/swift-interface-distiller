@@ -23,14 +23,14 @@ Unavailable collection has no interface or JSON size; it is not counted as zero.
 | [swift-appstoreconnect](https://github.com/swift-library/swift-appstoreconnect/tree/d69fed4872300bbf78f7e172c82499052b7032c7) | 1,354,387 | — | — | unavailable |
 | [swift-benchmark](https://github.com/swift-library/swift-benchmark/tree/f54079d4a1e31d39dbedc6bef9822c429b361ee7) | 343,591 | — | — | unavailable |
 | [swift-codex](https://github.com/swift-library/swift-codex/tree/80e68cfafd8275e2eb249c2be06e1bf5c4a20fc9) | 348,627 | — | — | unavailable |
-| [swift-data-writable](https://github.com/swift-library/swift-data-writable/tree/bee8707d232010040a071270d83e3ba1608fd0cd) | 66,039 | 33,739 | 776,465 | 51.1% |
+| [swift-data-writable](https://github.com/swift-library/swift-data-writable/tree/bee8707d232010040a071270d83e3ba1608fd0cd) | 66,039 | 33,728 | 776,465 | 51.1% |
 | [swift-gyb](https://github.com/swift-library/swift-gyb/tree/d5779b29d719afc9a744eae4c110313f5cce1a1e) | 689 | 268 | 2,052 | 38.9% |
-| [swift-interface-distiller](https://github.com/swift-library/swift-interface-distiller/tree/v0.2.0) | 131,231 | 52,180 | 1,662,125 | 39.8% |
-| [swift-json-schema](https://github.com/swift-library/swift-json-schema/tree/5a0411b33c6b17af002dd799cabe9405e6a3ac97) | 207,888 | 100,107 | 2,583,296 | 48.2% |
+| [swift-interface-distiller](https://github.com/swift-library/swift-interface-distiller/tree/v0.2.0) | 131,586 | 51,932 | 1,662,125 | 39.5% |
+| [swift-json-schema](https://github.com/swift-library/swift-json-schema/tree/5a0411b33c6b17af002dd799cabe9405e6a3ac97) | 207,888 | 100,124 | 2,583,296 | 48.2% |
 | [swift-package-template](https://github.com/swift-library/swift-package-template/tree/64e8138302beacbcee6d09da759737714884214c) | 164 | — | — | unavailable |
-| [swift-pdf](https://github.com/swift-library/swift-pdf/tree/e9ceecc992e628b7f555694eafb9f631ac0818eb) | 54,576 | 838,663 | 14,947,269 | 1536.7% |
-| [swift-redux](https://github.com/swift-library/swift-redux/tree/b79420e28d6add8ddd725d7ab29f1265e9471b73) | 17,073 | 9,161 | 175,852 | 53.7% |
-| [swift-semver](https://github.com/swift-library/swift-semver/tree/38d82eeba787e1ff6b2f615068621632811ce6ca) | 26,753 | 14,802 | 385,866 | 55.3% |
+| [swift-pdf](https://github.com/swift-library/swift-pdf/tree/e9ceecc992e628b7f555694eafb9f631ac0818eb) | 54,576 | 838,652 | 14,947,269 | 1536.7% |
+| [swift-redux](https://github.com/swift-library/swift-redux/tree/b79420e28d6add8ddd725d7ab29f1265e9471b73) | 17,073 | 9,155 | 175,852 | 53.6% |
+| [swift-semver](https://github.com/swift-library/swift-semver/tree/38d82eeba787e1ff6b2f615068621632811ce6ca) | 26,753 | 14,804 | 385,866 | 55.3% |
 | [swift-sh](https://github.com/swift-library/swift-sh/tree/3035a02639ca99af57d302358425efdf3d57d50d) | 48,031 | — | — | unavailable |
 | [swift-userdefault](https://github.com/swift-library/swift-userdefault/tree/6e01cfa1b626e559e5cdcd2c1ae1dcec9098f47b) | 13,506 | 12,345 | 192,501 | 91.4% |
 

@@ -17,7 +17,7 @@ public enum InterfaceRenderer {
     for c in snapshot.configurations {
       for s in c.symbols {
         let path = s.fields["pathComponents"]?.value.strings ?? [s.name]
-        let base = slug(([s.module] + path).joined(separator: "-"))
+        let base = ([s.module] + path).map(slug).joined(separator: "-")
         groups[base, default: []].append(c.id + ":" + s.id)
       }
     }
@@ -199,7 +199,7 @@ private struct InterfaceProjection {
   }
 
   private let containers: Set<String> = [
-    "swift.struct", "swift.class", "swift.enum", "swift.protocol", "swift.extension",
+    "swift.struct", "swift.class", "swift.actor", "swift.enum", "swift.protocol", "swift.extension",
   ]
   private let nesting: Set<String> = ["memberOf", "requirementOf", "optionalRequirementOf"]
 

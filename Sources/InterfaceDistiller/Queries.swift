@@ -100,7 +100,14 @@ public struct SnapshotQuery: Sendable {
       }
       for symbol in matches {
         if selected[symbol.id] != nil { continue }
-        let size = try payloadBytes(Array(selected.values) + [symbol], format: format, docs: docs)
+        let size: Int
+        if format == .json {
+          size = try bytes + CanonicalJSON.encode(symbol).count
+        } else if maximumBytes != nil {
+          size = try payloadBytes(Array(selected.values) + [symbol], format: format, docs: docs)
+        } else {
+          size = 0
+        }
         if maximumSymbols.map({ selected.count >= $0 }) == true
           || maximumBytes.map({ size > $0 }) == true
         {
@@ -122,6 +129,9 @@ public struct SnapshotQuery: Sendable {
         }
       }
       pending = Array(Set(pending)).sorted()
+    }
+    if format != .json && maximumBytes == nil {
+      bytes = try payloadBytes(Array(selected.values), format: format, docs: docs)
     }
     let identities = Set(selected.values.map(\.preciseIdentifier))
     return SliceResult(

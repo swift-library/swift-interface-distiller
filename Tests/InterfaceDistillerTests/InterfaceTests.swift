@@ -226,3 +226,16 @@ import Testing
   let text = try MarkdownRenderer.render(snapshot).map(\.markdown).joined()
   #expect(text.contains("public struct Shelf<T>: Named where T : Named"))
 }
+
+@Test func operatorAnchorsDoNotRenameTheirContainingType() throws {
+  var snapshot = try fixtureSnapshot()
+  let item = try #require(snapshot.configurations[0].symbols.first { $0.name == "Item" })
+  var fields = item.fields
+  fields["pathComponents"]?.value = .array([.string("Item"), .string("==(_:_:)")])
+  snapshot.configurations[0].symbols.append(
+    SymbolRecord(
+      module: item.module, language: item.language, preciseIdentifier: "operator", fields: fields))
+  let anchors = InterfaceRenderer.anchors(in: snapshot)
+  #expect(anchors[snapshot.configurations[0].id + ":" + item.id] == "evidenceexample-item")
+  #expect(anchors.values.contains("evidenceexample-item-symbol"))
+}

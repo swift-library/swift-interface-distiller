@@ -148,7 +148,7 @@ Documentation uses `///` lines, with the first paragraph by default; `full` and
 `none` select other projections. Compiler-synthesized observations remain included.
 
 Interface anchors use lowercase module and path components, joining alphanumeric
-runs with hyphens. Collisions add a deterministic prefix of the symbol identity's
+runs with hyphens; an all-punctuation component becomes `symbol`. Collisions add a deterministic prefix of the symbol identity's
 SHA-256; repeated symbols in multiple configurations also include configuration
 identity. Adding documentation, moving checkouts or changing input order does not
 change anchors. Collisions can change an otherwise unsuffixed anchor. The mapping
