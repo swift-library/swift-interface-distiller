@@ -7,8 +7,14 @@ import Testing
 @testable import InterfaceDistiller
 
 @Test func readableAndEvidenceViewsMatchSnapshots() throws {
-  let snapshot = try fixtureSnapshot()
   for (view, name) in [(MarkdownRenderer.View.interface, "Interface"), (.evidence, "Evidence")] {
+    let snapshot =
+      try view == .evidence
+      ? EvidenceSnapshot.read(
+        #require(
+          Bundle.module.url(
+            forResource: "Evidence-v1", withExtension: "json", subdirectory: "Fixtures")))
+      : fixtureSnapshot()
     let expected = try String(
       contentsOf: #require(
         Bundle.module.url(forResource: name, withExtension: "md", subdirectory: "Fixtures")),
@@ -84,7 +90,7 @@ import Testing
   for anchor in anchors.values {
     #expect(content.components(separatedBy: "id=\"" + anchor + "\"").count == 2)
   }
-  #expect(throws: DistillerError.self) { try MarkdownRenderer.render(snapshot, byteBudget: 700) }
+  #expect(throws: DistillerError.self) { try MarkdownRenderer.render(snapshot, byteBudget: 500) }
 }
 
 @Test func documentationStylesAndFullDeclarations() throws {
@@ -104,7 +110,7 @@ import Testing
   #expect(full.contains("/// More details."))
   #expect(full.contains("````swift"))
   #expect(!none.contains("///"))
-  #expect(summary.contains("public struct Item: Named, Sendable, SendableMetatype"))
+  #expect(summary.contains("public struct Item: Named, Sendable"))
   #expect(summary.contains("@available(*, deprecated, renamed: \"Item\")"))
   #expect(summary.contains("@MainActor public func load() async throws -> Item"))
   #expect(summary.contains("extension Array where Element == Item"))
@@ -130,7 +136,7 @@ import Testing
       #expect(try bytes == CanonicalJSON.encode(full))
     } else {
       let text = String(decoding: bytes, as: UTF8.self)
-      #expect(text.contains("Omitted references:"))
+      #expect(text.contains("External references:"))
       #expect(text.contains("public struct Item"))
     }
   }
@@ -238,4 +244,64 @@ import Testing
   let anchors = InterfaceRenderer.anchors(in: snapshot)
   #expect(anchors[snapshot.configurations[0].id + ":" + item.id] == "evidenceexample-item")
   #expect(anchors.values.contains("evidenceexample-item-symbol"))
+}
+
+@Test func markerConformancesAndExternalReferencesStayInEvidence() throws {
+  let snapshot = try fixtureSnapshot()
+  let configuration = snapshot.configurations[0]
+  #expect(configuration.relationships.contains { $0.target == "s:s16SendableMetatypeP" })
+  #expect(configuration.externalReferences?.contains("s:SS") == true)
+  #expect(!configuration.gaps.contains { $0.state == .unresolved })
+  let interface = try MarkdownRenderer.render(snapshot).map(\.markdown).joined()
+  #expect(!interface.contains("SendableMetatype"))
+  #expect(!interface.contains("s:SS"))
+  let detailed = try MarkdownRenderer.render(snapshot, view: .evidence).map(\.markdown).joined()
+  #expect(detailed.contains("s:SS"))
+  #expect(detailed.contains("s:s16SendableMetatypeP"))
+  let query = try SnapshotQuery(snapshot)
+  let result = try query.slice(roots: ["Item"])
+  #expect(result.state == "complete")
+  #expect(!result.externalReferences.isEmpty)
+  for format in [QueryFormat.swift, .markdown] {
+    let text = String(decoding: try query.encode(result, format: format), as: UTF8.self)
+    #expect(text.contains("Selection: complete"))
+    #expect(text.contains("External references: \(result.externalReferences.count)"))
+    #expect(!text.contains("s:SS"))
+  }
+  var invalid = snapshot
+  invalid.configurations[0].scope.includeSynthesized = nil
+  #expect(throws: DistillerError.self) { try invalid.validate() }
+  invalid = snapshot
+  invalid.configurations[0].externalReferences = nil
+  #expect(throws: DistillerError.self) { try invalid.validate() }
+}
+
+@Test func normalizationPolicyDoesNotRecordSynthesizedCopiesAsGaps() throws {
+  let selected = try fixtureSnapshot()
+  let all = try fixtureSnapshot(scope: .init(includeSPI: true, includeSynthesized: true))
+  #expect(all.configurations[0].symbols.count == selected.configurations[0].symbols.count + 1)
+  #expect(selected.configurations[0].symbols.contains { $0.name == "label" })
+  #expect(!selected.configurations[0].gaps.contains { $0.subject.contains("::SYNTHESIZED::") })
+  #expect(
+    !selected.configurations[0].relationships.contains { $0.source.contains("::SYNTHESIZED::") })
+  #expect(
+    try MarkdownRenderer.render(selected).first?.markdown.contains("synthesized excluded by policy")
+      == true)
+}
+
+@Test func legacyEvidenceCanBeReadAndQueriedWithoutMixingSchemaMajors() throws {
+  let legacy = try EvidenceSnapshot.read(
+    #require(
+      Bundle.module.url(forResource: "Evidence-v1", withExtension: "json", subdirectory: "Fixtures")
+    ))
+  #expect(legacy.schemaVersion == "1.0")
+  #expect(legacy.configurations[0].scope.includeSynthesized == nil)
+  let query = try SnapshotQuery(legacy)
+  let result = try query.slice(roots: ["Item"], format: .swift)
+  #expect(result.state == "complete")
+  let text = String(decoding: try query.encode(result, format: .swift), as: UTF8.self)
+  #expect(text.contains("external references"))
+  #expect(!text.contains("unresolved"))
+  #expect(throws: DistillerError.self) { try EvidenceSnapshot.merge([legacy, fixtureSnapshot()]) }
+  #expect(try EvidenceSnapshot.merge([legacy]).schemaVersion == "1.0")
 }

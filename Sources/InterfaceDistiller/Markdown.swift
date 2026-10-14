@@ -62,6 +62,13 @@ public enum MarkdownRenderer {
             "### Collection observation: \(gap.state.rawValue)\n\n\(escape(gap.subject))\n\n\(escape(gap.reason))\n\n"
           ))
       }
+      for (index, reference) in (configuration.externalReferences ?? []).enumerated() {
+        blocks.append(
+          (
+            "external:\(configuration.id):\(index)",
+            "### External reference\n\n\(escape(reference))\n\n"
+          ))
+      }
       for (index, merge) in configuration.merges.enumerated() {
         blocks.append(
           (

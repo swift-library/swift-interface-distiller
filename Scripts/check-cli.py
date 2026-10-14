@@ -27,7 +27,7 @@ config.write_bytes(run('configuration').stdout)
 snapshot = OUT / 'snapshot.json'
 run('normalize', 'Tests/InterfaceDistillerTests/Fixtures/Graphs', '--configuration', config, '--include-spi', '--output', snapshot)
 evidence = json.loads(snapshot.read_bytes())
-assert len(evidence['configurations'][0]['symbols']) == 19
+assert len(evidence['configurations'][0]['symbols']) == 18
 for kind in ['lookup', 'members', 'conformers', 'initializers', 'returning', 'slice']:
     selector = 'Named' if kind == 'conformers' else 'Item'
     data = json.loads(run('query', snapshot, kind, selector).stdout)
@@ -47,7 +47,7 @@ for fmt in ['json', 'swift', 'markdown']:
     if fmt == 'json':
         assert json.loads(limited.stdout)['state'] == 'truncated'
     else:
-        assert b'budget exhausted' in limited.stdout and b'Omitted references:' in limited.stdout
+        assert b'budget exhausted' in limited.stdout and b'Omitted in-snapshot symbols:' in limited.stdout
 for option, value in [('format', 'xml'), ('docs', 'brief'), ('view', 'other')]:
     failure = run('query', snapshot, 'lookup', 'Item', '--' + option, value, code=2)
     assert json.loads(failure.stderr)['code'] == 'usage'
@@ -60,7 +60,7 @@ assert 'Compiler identifier:' in evidence_parts[0]['markdown']
 interface_parts = json.loads(run('render', snapshot).stdout)
 assert 'public struct Item' in interface_parts[0]['markdown']
 assert 'Compiler identifier:' not in interface_parts[0]['markdown']
-assert json.loads(run('coverage', snapshot).stdout)[0]['eligible'] == 18
+assert json.loads(run('coverage', snapshot).stdout)[0]['eligible'] == 17
 baseline = OUT / 'baseline.json'
 run('baseline', 'write', snapshot, baseline)
 before = baseline.read_bytes()

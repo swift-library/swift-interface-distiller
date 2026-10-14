@@ -109,7 +109,8 @@ byte budget splits the output.
 Replace the fixture path with a local package path to collect its library
 products. Select modules with `--module`, add resolved dependency modules with
 `--dependency-module`, and narrow declarations with `--include` and `--exclude`;
-exclusion takes precedence. SPI and source locations are opt-in.
+exclusion takes precedence. SPI, synthesized per-conformer copies and source
+locations are opt-in (`--include-spi`, `--include-synthesized`, `--source-locations`).
 
 ```sh
 interface-distiller query .build/api.json members MyType --format swift
@@ -127,7 +128,8 @@ stderr, and failed writes preserve existing baselines. Queries default to JSON;
 Rendering defaults to a nested Swift interface with summary documentation; use
 `--docs full|none` or `--view evidence` for the detailed evidence view. Query byte
 budgets count the chosen payload format; headers and omission diagnostics remain
-outside that budget. A bounded slice reports omitted references explicitly.
+outside that budget. A slice is complete when every in-snapshot reference fits;
+text views count external references, and JSON retains their identities.
 [Commands](Documentation/Commands.md) covers
 configuration, graph normalization, binary modules, headers and API diagnostics.
 

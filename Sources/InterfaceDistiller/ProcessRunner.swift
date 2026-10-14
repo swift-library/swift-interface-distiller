@@ -69,6 +69,7 @@ public struct ProcessRunner: Sendable {
         context: [
           "executable": executable, "status": String(result.status),
           "stderr": String(decoding: result.stderr.suffix(16384), as: UTF8.self),
+          "stdout": String(decoding: result.stdout.suffix(16384), as: UTF8.self),
         ])
     }
     return result

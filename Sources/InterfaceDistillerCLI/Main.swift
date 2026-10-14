@@ -66,7 +66,7 @@ import InterfaceDistiller
         diagnose digester --baseline FILE --candidate FILE
 
         Common options: --output FILE, --configuration FILE, --module NAME,
-        --include GLOB, --exclude GLOB, --include-spi, --source-locations,
+        --include GLOB, --exclude GLOB, --include-spi, --include-synthesized, --source-locations,
         --source-root DIR, --cache DIR, --report FILE, --timeout SECONDS,
         --swift EXECUTABLE, --clang EXECUTABLE, --sdk-path DIR.
         Query options: --configuration-id ID, --max-symbols N, --max-bytes N,
@@ -109,7 +109,8 @@ import InterfaceDistiller
     }
     let scope = CollectionScope(
       modules: args.many("module"), include: args.many("include"), exclude: args.many("exclude"),
-      includeSPI: args.flag("include-spi"), sourceLocations: args.flag("source-locations"))
+      includeSPI: args.flag("include-spi"), sourceLocations: args.flag("source-locations"),
+      includeSynthesized: args.flag("include-synthesized"))
     guard let docs = DocumentationStyle(rawValue: args.one("docs") ?? "summary"),
       let format = QueryFormat(rawValue: args.one("format") ?? "json"),
       let view = MarkdownRenderer.View(rawValue: args.one("view") ?? "interface")
@@ -279,7 +280,7 @@ import InterfaceDistiller
 private struct Arguments {
   let positionals: [String]
   let options: [String: [String]]
-  static let switches: Set<String> = ["include-spi", "source-locations"]
+  static let switches: Set<String> = ["include-spi", "source-locations", "include-synthesized"]
   static let repeated: Set<String> = [
     "module", "include", "exclude", "dependency-module", "search-path", "header",
   ]

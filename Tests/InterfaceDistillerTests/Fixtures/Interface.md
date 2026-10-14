@@ -1,25 +1,22 @@
 # Swift interface
 
 Modules: EvidenceExample
-Extractor: 0.1.2 · Configuration: 0e1abf758760
+Extractor: 0.2.0 · Configuration: 9cc03895807a
 Toolchain: fixture compiler
-Scope: public/open; library products; SPI included
-Completeness: 1/1 modules; 7 unresolved: Referenced compiler identifier is outside collected symbols; Relationship target is outside collected symbols
+Scope: public/open; library products; SPI included; synthesized excluded by policy
+Completeness: 1/1 modules; 18 declarations; 5 external references; no recorded gaps
 
 ## EvidenceExample
 
 <a id="evidenceexample-item"></a>
 <a id="evidenceexample-item-init-name"></a>
-<a id="evidenceexample-item-label"></a>
 <a id="evidenceexample-item-make"></a>
 <a id="evidenceexample-item-name"></a>
 
 ```swift
 /// A named value.
-public struct Item: Named, Sendable, SendableMetatype {
+public struct Item: Named, Sendable {
   public init(name: String)
-  /// A default label.
-  public var label: String { get }
   public static func make() -> Item
   /// The display name.
   public let name: String
@@ -32,7 +29,7 @@ public struct Item: Named, Sendable, SendableMetatype {
 
 ```swift
 /// A value that can supply its display name.
-public protocol Named : Sendable, SendableMetatype {
+public protocol Named : Sendable {
   /// The display name.
   public var name: String { get }
 }
@@ -72,7 +69,7 @@ extension Shelf where T == Item {
 <a id="evidenceexample-store-load"></a>
 
 ```swift
-@MainActor public final class Store: Sendable, SendableMetatype {
+@MainActor public final class Store: Sendable {
   @MainActor public init()
   @MainActor public func load() async throws -> Item
 }

@@ -119,7 +119,10 @@ public enum InterfaceRenderer {
       }
     }
     selected.symbols = Array(included.values)
-    let snapshot = try EvidenceSnapshot(configurations: [evidence])
+    let snapshot = try EvidenceSnapshot(
+      configurations: [evidence],
+      schemaVersion: evidence.scope.includeSynthesized != nil && evidence.externalReferences != nil
+        ? "2.0" : "1.0")
     var section = ""
     return InterfaceProjection(evidence: selected, docs: docs).blocks(
       anchors: anchors(in: snapshot), markdown: format == .markdown
@@ -145,6 +148,9 @@ public enum InterfaceRenderer {
         scopeText += "; exclude " + scope.exclude.sorted().joined(separator: ", ")
       }
       if scope.sourceLocations { scopeText += "; source locations" }
+      scopeText +=
+        scope.includeSynthesized == false
+        ? "; synthesized excluded by policy" : "; synthesized included"
       lines += [
         "Extractor: \(c.configuration.extractorVersion) · Configuration: \(c.id.prefix(12))",
         "Toolchain: " + oneLine(c.configuration.toolchain),
@@ -156,16 +162,32 @@ public enum InterfaceRenderer {
   }
 
   private static func completeness(_ c: ConfigurationEvidence) -> String {
-    var gaps = Dictionary(grouping: c.gaps, by: { $0.state.rawValue }).sorted { $0.key < $1.key }
-      .map { state, values in
-        "\(values.count) \(state): "
-          + Set(values.map { oneLine($0.reason) }).sorted().joined(separator: "; ")
-      }
+    let legacyExternalReasons: Set<String> = [
+      "Relationship source was not collected", "Relationship target is outside collected symbols",
+      "Referenced compiler identifier is outside collected symbols",
+    ]
+    let observations = c.gaps.filter {
+      c.externalReferences != nil || !legacyExternalReasons.contains($0.reason)
+    }
+    var gaps = Dictionary(grouping: observations, by: { $0.state.rawValue }).sorted {
+      $0.key < $1.key
+    }
+    .map { state, values in
+      "\(values.count) \(state): "
+        + Set(values.map { oneLine($0.reason) }).sorted().joined(separator: "; ")
+    }
     let missing = Set(c.expectedModules).subtracting(c.collectedModules).sorted()
-    if !missing.isEmpty { gaps.append("missing modules: " + missing.joined(separator: ", ")) }
+    if !missing.isEmpty { gaps.append("\(missing.count) missing modules") }
     let conflicts = c.merges.filter { $0.kind == "conflict" }.map(\.subject).sorted()
-    if !conflicts.isEmpty { gaps.append("conflicts: " + conflicts.joined(separator: ", ")) }
-    return "\(c.collectedModules.count)/\(c.expectedModules.count) modules; "
+    if !conflicts.isEmpty { gaps.append("\(conflicts.count) conflicts") }
+    let collected = Set(c.symbols.map(\.preciseIdentifier))
+    let externalCount =
+      c.externalReferences?.count
+      ?? Set(
+        c.symbols.flatMap(\.references) + c.relationships.flatMap { [$0.source, $0.target] }
+      ).subtracting(collected).count
+    return
+      "\(c.collectedModules.count)/\(c.expectedModules.count) modules; \(c.symbols.count) declarations; \(externalCount) external references; "
       + (gaps.isEmpty ? "no recorded gaps" : gaps.joined(separator: "; "))
   }
 
@@ -394,6 +416,9 @@ private struct InterfaceProjection {
     (edgesBySource[s.preciseIdentifier] ?? []).filter {
       ["conformsTo", "inheritsFrom"].contains($0.kind) && $0.source == s.preciseIdentifier
         && $0.module == s.module
+        && ![
+          "s:s8CopyableP", "s:s9EscapableP", "s:s16SendableMetatypeP",
+        ].contains($0.target)
     }.sorted {
       ($0.target, constraints($0.fields["swiftConstraints"]?.value ?? .null)) < (
         $1.target, constraints($1.fields["swiftConstraints"]?.value ?? .null)
@@ -408,7 +433,7 @@ private struct InterfaceProjection {
     if let fallback = edge.fields["targetFallback"]?.value.string {
       return fallback.hasPrefix("Swift.") ? String(fallback.dropFirst(6)) : fallback
     }
-    return "/* unresolved: " + edge.target + " */"
+    return "/* type name not reported */"
   }
 
   private func constraints(_ value: JSONValue) -> String {

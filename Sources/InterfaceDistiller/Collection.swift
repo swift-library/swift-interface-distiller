@@ -69,7 +69,8 @@ public struct Toolchain: Sendable {
     let configuration = BuildConfiguration(
       toolchain: String(decoding: version.stdout, as: UTF8.self).trimmingCharacters(
         in: .whitespacesAndNewlines),
-      sdk: sdkIdentity, triple: triple, deploymentTarget: deploymentTarget(in: triple))
+      sdk: sdkIdentity, triple: triple, deploymentTarget: deploymentTarget(in: triple),
+      languageMode: "package")
     return Self(swift: swift, clang: clang, sdkPath: sdkPath, configuration: configuration)
   }
 
@@ -79,8 +80,10 @@ public struct Toolchain: Sendable {
       "--build-system", "native",
       "--security-path", scratch.appendingPathComponent("security").path,
       "--configuration", configuration.buildMode, "--triple", configuration.triple,
-      "-Xswiftc", "-swift-version", "-Xswiftc", configuration.languageMode,
     ]
+    if configuration.languageMode != "package" {
+      args += ["-Xswiftc", "-swift-version", "-Xswiftc", configuration.languageMode]
+    }
     if let sdkPath { args += ["--sdk", sdkPath] }
     for condition in configuration.conditions { args += ["-Xswiftc", "-D" + condition] }
     if !configuration.traits.isEmpty {
@@ -126,7 +129,9 @@ public struct InterfaceCollector: Sendable {
     dependencyModules: [String] = [], cache: URL? = nil
   ) async throws -> CollectionResult {
     let start = Date()
-    let cache = cache ?? root.appendingPathComponent(".build/interface-distiller")
+    let root = root.standardizedFileURL.resolvingSymlinksInPath()
+    let cache = (cache ?? root.appendingPathComponent(".build/interface-distiller"))
+      .standardizedFileURL.resolvingSymlinksInPath()
     try FileManager.default.createDirectory(at: cache, withIntermediateDirectories: true)
     let lock = try await CollectionLock.acquire(cache.appendingPathComponent("collection.lock"))
     defer { lock.release() }
@@ -149,13 +154,14 @@ public struct InterfaceCollector: Sendable {
     var packages: [PackageStructure] = []
     var roots: [String: URL] = [:]
     var sourceModuleMaps: [String: URL] = [:]
+    var generatedModules: Set<String> = []
     let pins =
       (try? JSONValue.read(root.appendingPathComponent("Package.resolved")))?["pins"].array ?? []
     for (index, node) in nodes.enumerated() {
       guard let path = node["path"].string else {
         throw DistillerError(.invalidInput, "Resolved package lacks checkout path")
       }
-      let packageRoot = URL(fileURLWithPath: path)
+      let packageRoot = URL(fileURLWithPath: path).standardizedFileURL.resolvingSymlinksInPath()
       let packageFlags = toolchain.packageArguments(
         root: packageRoot, scratch: scratch.appendingPathComponent("structure-\(index)"))
       let description = try await command(
@@ -183,8 +189,11 @@ public struct InterfaceCollector: Sendable {
         let name = target["name"].string ?? ""
         let module = target["c99name"].string ?? name
         let type = target["module_type"].string ?? ""
+        let declaration = manifest["targets"].array.first { $0["name"].string == name }
+        if index == 0 && !(declaration?["pluginUsages"].array ?? []).isEmpty {
+          generatedModules.insert(module)
+        }
         if type == "ClangTarget" || type == "SystemLibraryTarget" {
-          let declaration = manifest["targets"].array.first { $0["name"].string == name }
           let path = packageRoot.appendingPathComponent(target["path"].string ?? "Sources/\(name)")
           let headers =
             type == "SystemLibraryTarget"
@@ -205,7 +214,15 @@ public struct InterfaceCollector: Sendable {
     guard let primary = packages.first else {
       throw DistillerError(.invalidInput, "Resolved dependency graph is empty")
     }
-    let defaultModules = primary.libraryModules
+    let defaultModules = try primary.libraryModules.filter { module in
+      guard let target = primary.targets.first(where: { $0.module == module }),
+        target.moduleType == "SwiftTarget", !generatedModules.contains(module)
+      else { return true }
+      return try target.sources.contains {
+        try !PackageDescriptionDecoder.isSwiftTrivia(
+          Data(contentsOf: root.appendingPathComponent($0.path)))
+      }
+    }
     let selected = Set((scope.modules.isEmpty ? defaultModules : scope.modules) + dependencyModules)
       .sorted()
     let dependencyCandidates = Set(packages.dropFirst().flatMap { $0.targets.map(\.module) })
@@ -232,6 +249,14 @@ public struct InterfaceCollector: Sendable {
       let snapshot = try EvidenceSnapshot.read(normalizedURL)
       return CollectionResult(
         snapshot: snapshot, report: report(start, root, cache, true, commands))
+    }
+    if selected.isEmpty {
+      let snapshot = try SymbolGraphNormalizer.normalize(
+        [], configuration: toolchain.configuration, scope: actualScope, packages: packages,
+        inputDigest: key)
+      try CanonicalJSON.write(snapshot, to: normalizedURL)
+      return CollectionResult(
+        snapshot: snapshot, report: report(start, root, cache, false, commands))
     }
     let collectedURL = cache.appendingPathComponent("collected/" + key)
     let inputs: [SymbolGraphInput]
@@ -431,11 +456,25 @@ public struct InterfaceCollector: Sendable {
   ) -> [String] {
     var args = [
       "symbolgraph-extract", "-module-name", name, "-target", toolchain.configuration.triple,
-      "-swift-version", toolchain.configuration.languageMode, "-output-dir", output.path,
-      "-emit-extension-block-symbols",
+      "-output-dir", output.path, "-emit-extension-block-symbols",
     ]
+    if toolchain.configuration.languageMode != "package" {
+      args += ["-swift-version", toolchain.configuration.languageMode]
+    }
     if let sdk = toolchain.sdkPath { args += ["-sdk", sdk] }
     if scope.includeSPI { args += ["-include-spi-symbols"] }
+    if scope.includeSynthesized == false { args += ["-skip-synthesized-members"] }
+    // SwiftPM exposes the selected Apple platform's developer modules to library builds too.
+    if let sdk = toolchain.sdkPath {
+      let developer = URL(fileURLWithPath: sdk).deletingLastPathComponent()
+        .deletingLastPathComponent()
+      let frameworks = developer.appendingPathComponent("Library/Frameworks")
+      let libraries = developer.appendingPathComponent("usr/lib")
+      if FileManager.default.fileExists(atPath: frameworks.path) {
+        args += ["-F", frameworks.path, "-Xcc", "-F" + frameworks.path]
+      }
+      if FileManager.default.fileExists(atPath: libraries.path) { args += ["-I", libraries.path] }
+    }
     for path in searchPaths { args += ["-I", path] }
     return args
   }

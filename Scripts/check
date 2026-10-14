@@ -17,7 +17,7 @@ import json, pathlib
 root = pathlib.Path('.')
 config = json.loads((root / '.github/release.json').read_text())
 schema = json.loads((root / 'Documentation/Schema/Evidence.schema.json').read_text())
-assert schema['properties']['schemaVersion']['pattern'] == r'^1\.[0-9]+$'
+assert schema['properties']['schemaVersion']['pattern'] == r'^2\.[0-9]+$'
 assert config['minimum_swift'] == '6.3'
 (root / '.build/release-validation/checks.json').write_text(json.dumps({'checks': ['format', 'unit-and-integration', 'release-build', 'cli', 'documentation'], 'result': 'passed'}, sort_keys=True) + '\n')
 PY
