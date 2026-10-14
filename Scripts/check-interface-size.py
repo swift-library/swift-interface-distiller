@@ -13,8 +13,9 @@ args = parser.parse_args()
 data = json.loads((root / 'Documentation/InterfaceSize.json').read_text())
 text = f'''# Interface size measurements
 
-Measured {data['date']} with extractor and renderer {data['extractorVersion']},
-summary documentation, collapsed conformance requirements, and the default
+Measured {data['date']} with renderer {data['rendererVersion']} and recorded snapshots
+from extractors {', '.join(data['extractorVersions'])}, summary documentation,
+collapsed conformance requirements, top-level block anchors, and the default
 public/open library-product scope.
 Synthesized per-conformer copies are excluded; original protocol extensions and
 conformances remain. All 13 organization packages were collected with the same
@@ -25,8 +26,9 @@ Toolchain: `{data['toolchain'].replace(chr(10), ' ')}`. SDK: `{data['sdk']}`.
 Target: `{data['target']}`. Language mode: `{data['languageMode']}` (each package's
 manifest controls its language mode). Input commits, file counts, module names,
 scope and SHA-256 digests are in [the measurement record](InterfaceSize.json).
-Renderer implementation: `{data['rendererCommit']}`. Captured snapshots retain
-their per-row collection dates. The distiller self-row uses that signed implementation
+Renderer implementation: `{data['rendererCommit']}`. Existing snapshots were
+rerendered to isolate this presentation change; their JSON and per-row collection
+dates are retained. The distiller self-row was recollected at that signed implementation
 commit before this report;
 measurement-only documentation changes do not alter that implementation.
 
@@ -70,14 +72,15 @@ collector regression coverage; this sweep has no unavailable package rows.
 
 ## View revision
 
-Standard conformance requirements are collapsed by default and expand with
-`--show-implied`. Summary docs stop at Markdown block boundaries, so parameter
-lists and examples are kept in `--docs full`. Anchors use the module, immediate
-owner and declaration name, with identity suffixes on collision. `--by-module`
+Anchors identify top-level declaration blocks and standalone extension groups.
+Member links target their containing block; members have no separate anchor IDs
+and do not participate in collisions. Top-level anchors use the module, immediate
+owner and declaration name, with identity suffixes on collision. Standard conformance
+requirements remain collapsed and summary docs keep leading prose. `--by-module`
 adds an index with links and full byte counts for every module. Its index is a
 navigation surface, not a replacement for measuring the complete interface.
 
-| Package | Previous interface bytes | Current interface bytes |
+| Package | 0.2.0 interface bytes | 0.3.0 interface bytes |
 | --- | ---: | ---: |
 '''
 for row in data['records']:
@@ -93,8 +96,10 @@ retained in JSON; the Swift view shows their count.
 
 ## Reproduce
 
-Use the recorded commits, toolchain and SDK, collect each package's default scope,
-then render the resulting canonical JSON with release {data['rendererVersion']}:
+For exact reproduction, use the recorded commits, toolchain, SDK and each row's
+extractor version to collect its default scope, then render that canonical JSON
+with release {data['rendererVersion']}. Rerendering captured snapshots isolates
+presentation changes from compiler observations:
 
 ```sh
 interface-distiller collect package PACKAGE --output .build/api.json
@@ -112,8 +117,8 @@ density = json.loads((root / 'Documentation/InterfaceDensity.json').read_text())
 density_text = f"""# Interface density
 
 Measured {density['date']} from the recorded snapshots with renderer implementation
-`{density['rendererCommit']}`. These are complete default interface views with summary
-docs. Source, generated Swift and JSON definitions are shared with
+`{density['rendererCommit']}`. The comparison is renderer 0.2.0 to 0.3.0 with summary
+docs and collapsed implied members in both. Source, generated Swift and JSON definitions are shared with
 [Interface size measurements](InterfaceSize.md). Canonical snapshots are unchanged
 for these two packages. `render --report` provides the current per-symbol byte
 accounting. Reference Markdown and per-symbol accounting are retained as run evidence.
@@ -128,6 +133,20 @@ standard requirements may be declared explicitly and still be implied by conform
 No compiler witness selection is inferred.
 
 """
+density_text += """## Block anchors
+
+Every interface code block has one top-level anchor. Member and nested-type links
+target that block. Standalone extension blocks retain anchors; extensions within
+a type's block share the type's destination. Evidence views keep per-symbol IDs.
+Each row measures the complete unsplit interface, including metadata and fences.
+The self-row was recollected at the new renderer implementation.
+
+| Package | 0.2.0 bytes | 0.3.0 bytes | Anchors before | Anchors after | Anchor bytes before | Anchor bytes after |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+"""
+for row in density['summary']:
+    density_text += f"| `{row['package']}` | {row['beforeBytes']:,} | {row['afterBytes']:,} | {row['beforeAnchorCount']:,} | {row['afterAnchorCount']:,} | {row['beforeAnchorBytes']:,} | {row['afterAnchorBytes']:,} |\n"
+density_text += '\n'
 for record in density['records']:
     name = record['package']
     density_text += f"""## {name}
@@ -152,6 +171,10 @@ Symbols in distinct qualified namespaces remain distinct API.
 density_text += """
 ## Interpretation
 
+Removing member anchors changes navigation output without omitting declarations
+or documentation. The component tables account for that reduction; member anchor
+bytes become zero and collisions are computed only between top-level blocks.
+
 Codex's generated Stable and Experimental namespaces expose a genuinely large API.
 Their qualified identifiers differ; equal-looking declarations in those namespaces
 are not duplicate observations. After collapsing 3,219 standard requirements,
@@ -163,10 +186,10 @@ source goal; module indexing and focused lookup/member queries provide smaller e
 points. The index size is not presented as the API's size.
 
 UserDefault's initializers are emitted from generation templates. Their comments
-begin with parameter lists, not a prose paragraph; repeating those lists was the
-summary error. Summary mode omits them and full mode preserves them. Original
-protocol-extension declarations remain. The complete summary interface now fits
-around half the tracked source size.
+begin with parameter lists and have no leading prose paragraph. Summary mode
+omits those lists and full mode preserves them. Original
+protocol-extension declarations remain. The complete summary interface stays
+below half the tracked source size.
 
 No Equatable equality members, Hashable hash members, CaseIterable allCases or
 CodingKeys are present in these two default snapshots. Their zero rows reflect

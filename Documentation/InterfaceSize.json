@@ -1,18 +1,21 @@
 {
   "date": "2026-10-15",
-  "extractorVersion": "0.2.0",
+  "extractorVersions": [
+    "0.2.0",
+    "0.3.0"
+  ],
   "languageMode": "package",
   "records": [
     {
-      "beforeInterfaceBytes": 7818793,
+      "beforeInterfaceBytes": 4886009,
       "collectionDate": "2026-10-14",
       "commit": "c82402c0cdfb090b0c8c9f4b4b6989ee81102b14",
       "externalReferenceCount": 45,
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 7286536,
       "generatedSwiftFiles": 4,
-      "interfaceBytes": 4886009,
-      "interfaceSHA256": "01d8dac496b1e225e4628fdf2d21742005da761b095f3ca9c28c90b0d99a01cc",
+      "interfaceBytes": 2781942,
+      "interfaceSHA256": "47d8943e0222cc68dabbb8f911cdcd94d468eedfb5e7775ac53c082f974edd6b",
       "jsonBytes": 174825963,
       "modules": [
         "AppStoreConnectCore",
@@ -44,15 +47,15 @@
       "symbols": 32169
     },
     {
-      "beforeInterfaceBytes": 140904,
+      "beforeInterfaceBytes": 122216,
       "collectionDate": "2026-10-14",
       "commit": "804431603fbbe4f504665efc71df1f7011ca44ea",
       "externalReferenceCount": 38,
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 0,
       "generatedSwiftFiles": 0,
-      "interfaceBytes": 122216,
-      "interfaceSHA256": "ff9546ce6ba7c48c8884e54f3cab10fd7d2164fbf4faa24e3920e05ecde42a3e",
+      "interfaceBytes": 79825,
+      "interfaceSHA256": "429ba34a4d82159db77ab8bb73424f035f4a1da24431bcacdd512b6a237c5511",
       "jsonBytes": 4928218,
       "modules": [
         "Benchmark",
@@ -86,15 +89,15 @@
       "symbols": 1059
     },
     {
-      "beforeInterfaceBytes": 3729244,
+      "beforeInterfaceBytes": 2439681,
       "collectionDate": "2026-10-14",
       "commit": "34ffd22fcd05991411c2e74d1e077105e4980ec1",
       "externalReferenceCount": 53,
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 2109916,
       "generatedSwiftFiles": 1540,
-      "interfaceBytes": 2439681,
-      "interfaceSHA256": "9ba0dbeaf55f336420b4fe1b4d7d44456693ab43698f6310632a35b3dbf57e92",
+      "interfaceBytes": 1294628,
+      "interfaceSHA256": "57bd52eb7e84fb0306d1c672f1c7b838c7a46a6d3c928595cd1b7bc0e16d988d",
       "jsonBytes": 94362934,
       "modules": [
         "Codex",
@@ -140,15 +143,15 @@
       "symbols": 18122
     },
     {
-      "beforeInterfaceBytes": 33142,
+      "beforeInterfaceBytes": 32710,
       "collectionDate": "2026-10-14",
       "commit": "bee8707d232010040a071270d83e3ba1608fd0cd",
       "externalReferenceCount": 22,
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 0,
       "generatedSwiftFiles": 0,
-      "interfaceBytes": 32710,
-      "interfaceSHA256": "b6d547cc97a467cd9cc6e5c3a883de08ffbaf7a877af706477fc3c886ddacb3e",
+      "interfaceBytes": 23333,
+      "interfaceSHA256": "b8df2bb62b0fd9c1fff3a95c3ec232801e8d09409c4affcf11b2eea995e65789",
       "jsonBytes": 763863,
       "modules": [
         "SwiftDataWritable"
@@ -172,7 +175,7 @@
       "symbols": 149
     },
     {
-      "beforeInterfaceBytes": 339,
+      "beforeInterfaceBytes": 399,
       "collectionDate": "2026-10-14",
       "commit": "d5779b29d719afc9a744eae4c110313f5cce1a1e",
       "externalReferenceCount": 0,
@@ -200,16 +203,16 @@
       "symbols": 0
     },
     {
-      "beforeInterfaceBytes": 42857,
+      "beforeInterfaceBytes": 38547,
       "collectionDate": "2026-10-15",
-      "commit": "292f6d63fdd21cee55e6b115e703d3a06a253762",
+      "commit": "c29f8a29192742e1889590122213730a74d0ea2d",
       "externalReferenceCount": 19,
-      "extractorVersion": "0.2.0",
+      "extractorVersion": "0.3.0",
       "generatedSwiftBytes": 0,
       "generatedSwiftFiles": 0,
-      "interfaceBytes": 38547,
-      "interfaceSHA256": "bcd3a72377dd439beacde1a3126c7948701cd1e51dce8fe13416aba05cbed690",
-      "jsonBytes": 1517368,
+      "interfaceBytes": 23425,
+      "interfaceSHA256": "90d7f4ca828fb5080b7e9fabcd6b48fc34141a8461da8ad738f64382430c66a3",
+      "jsonBytes": 1517438,
       "modules": [
         "InterfaceDistiller"
       ],
@@ -225,22 +228,22 @@
         ],
         "sourceLocations": false
       },
-      "snapshotSHA256": "912e15be5fb10a15d1ed8056e6e0aa90aacb445ddaacc945df92a261703c2f89",
-      "sourceBytes": 157775,
+      "snapshotSHA256": "4e01c47e0a33f4cb9d442f5ddf85b26653919fc1bf8b49bdc0720f5d9ecce09b",
+      "sourceBytes": 158233,
       "sourceFiles": 16,
       "status": "collected",
       "symbols": 353
     },
     {
-      "beforeInterfaceBytes": 60741,
+      "beforeInterfaceBytes": 58044,
       "collectionDate": "2026-10-14",
       "commit": "236b9a10041c57400a5c05e9e0db37c33efb6ec3",
       "externalReferenceCount": 51,
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 0,
       "generatedSwiftFiles": 0,
-      "interfaceBytes": 58044,
-      "interfaceSHA256": "e8686f6cb75dae2430f1bd21ef4b98d41e4f17caf395b8b5f21335855a23c90a",
+      "interfaceBytes": 44647,
+      "interfaceSHA256": "0af73bce0f4bb30f963545aa4bd47b2f7ebb6b56e7c419e94051090705077b60",
       "jsonBytes": 1669084,
       "modules": [
         "JSONSchema",
@@ -272,7 +275,7 @@
       "symbols": 345
     },
     {
-      "beforeInterfaceBytes": 339,
+      "beforeInterfaceBytes": 399,
       "collectionDate": "2026-10-14",
       "commit": "64e8138302beacbcee6d09da759737714884214c",
       "externalReferenceCount": 0,
@@ -300,15 +303,15 @@
       "symbols": 0
     },
     {
-      "beforeInterfaceBytes": 10690,
+      "beforeInterfaceBytes": 10658,
       "collectionDate": "2026-10-14",
       "commit": "e9ceecc992e628b7f555694eafb9f631ac0818eb",
       "externalReferenceCount": 23,
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 0,
       "generatedSwiftFiles": 0,
-      "interfaceBytes": 10658,
-      "interfaceSHA256": "0a4b85dc883c05d9fc429482bc80082031726bc5bc6095a28afe2093fa07b795",
+      "interfaceBytes": 8854,
+      "interfaceSHA256": "94ad56e987ca4b06477615d36bea6db536c7f1157ce66b0be1c1dd06882a5d9c",
       "jsonBytes": 247106,
       "modules": [
         "PDF"
@@ -332,15 +335,15 @@
       "symbols": 53
     },
     {
-      "beforeInterfaceBytes": 8057,
+      "beforeInterfaceBytes": 5941,
       "collectionDate": "2026-10-14",
       "commit": "a2094d43d5ce9a5c9bcafd5be92a1e3a7d3b44c8",
       "externalReferenceCount": 8,
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 0,
       "generatedSwiftFiles": 0,
-      "interfaceBytes": 5941,
-      "interfaceSHA256": "d92b486a4852ed3182bc836c0a1621716fe4cdc738ab89eac68636f4633df0f0",
+      "interfaceBytes": 5176,
+      "interfaceSHA256": "f64ddc96ceb40a591666f3331f5ba756bfeac243dd10e8a7e048a13857ecc25a",
       "jsonBytes": 155477,
       "modules": [
         "Redux",
@@ -366,15 +369,15 @@
       "symbols": 34
     },
     {
-      "beforeInterfaceBytes": 11392,
+      "beforeInterfaceBytes": 9995,
       "collectionDate": "2026-10-14",
       "commit": "38d82eeba787e1ff6b2f615068621632811ce6ca",
       "externalReferenceCount": 20,
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 0,
       "generatedSwiftFiles": 0,
-      "interfaceBytes": 9995,
-      "interfaceSHA256": "1c074dcfcae4ebedfd0d4d99895c1d8dabc1cd9bedce0478aa9940b72acf540c",
+      "interfaceBytes": 7281,
+      "interfaceSHA256": "ea9dcd065eb4b8f9ba7296da45a4fd682383668fb018919923f6f185e3a6567e",
       "jsonBytes": 297002,
       "modules": [
         "SemVer"
@@ -398,7 +401,7 @@
       "symbols": 67
     },
     {
-      "beforeInterfaceBytes": 339,
+      "beforeInterfaceBytes": 399,
       "collectionDate": "2026-10-14",
       "commit": "3035a02639ca99af57d302358425efdf3d57d50d",
       "externalReferenceCount": 0,
@@ -426,15 +429,15 @@
       "symbols": 0
     },
     {
-      "beforeInterfaceBytes": 12340,
+      "beforeInterfaceBytes": 6323,
       "collectionDate": "2026-10-14",
       "commit": "5bd0952df31e2e7ca4010a8aa53587a776da0b3b",
       "externalReferenceCount": 13,
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 24185,
       "generatedSwiftFiles": 2,
-      "interfaceBytes": 6323,
-      "interfaceSHA256": "c0a65dc2268af9f92957e3c3916795b93e34457b17eb4f679662f65aa3cb571c",
+      "interfaceBytes": 5086,
+      "interfaceSHA256": "1b8d44e429c177533f1e6c02e18f4001a784789bf9b0da30e79a718413c92110",
       "jsonBytes": 190908,
       "modules": [
         "UserDefault",
@@ -460,8 +463,8 @@
       "symbols": 33
     }
   ],
-  "rendererCommit": "292f6d63fdd21cee55e6b115e703d3a06a253762",
-  "rendererVersion": "0.2.0",
+  "rendererCommit": "c29f8a29192742e1889590122213730a74d0ea2d",
+  "rendererVersion": "0.3.0",
   "schemaVersion": "2.0",
   "sdk": "macOS:26A425",
   "sourceExtensions": [
