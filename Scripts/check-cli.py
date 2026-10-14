@@ -21,7 +21,7 @@ def run(*args, code=0):
     return result
 
 
-assert run('--version').stdout.strip() == b'0.1.2'
+assert run('--version').stdout.strip() == b'0.2.0'
 config = OUT / 'configuration.json'
 config.write_bytes(run('configuration').stdout)
 snapshot = OUT / 'snapshot.json'
@@ -33,6 +33,33 @@ for kind in ['lookup', 'members', 'conformers', 'initializers', 'returning', 'sl
     data = json.loads(run('query', snapshot, kind, selector).stdout)
     assert data['symbols'], kind
 assert json.loads(run('query', snapshot, 'slice', 'Item', '--max-symbols', 1).stdout)['state'] == 'truncated'
+for fmt in ['json', 'swift', 'markdown']:
+    for kind in ['lookup', 'members', 'conformers', 'initializers', 'returning', 'slice']:
+        selector = 'Named' if kind == 'conformers' else 'Item'
+        result = run('query', snapshot, kind, selector, '--format', fmt)
+        if fmt == 'json':
+            assert json.loads(result.stdout)['symbols']
+        else:
+            assert b'public ' in result.stdout
+            assert b'Selection:' in result.stdout
+    assert run('slice', snapshot, 'Item', '--format', fmt).stdout == run('query', snapshot, 'slice', 'Item', '--format', fmt).stdout
+    limited = run('query', snapshot, 'members', 'Item', '--format', fmt, '--max-bytes', 10)
+    if fmt == 'json':
+        assert json.loads(limited.stdout)['state'] == 'truncated'
+    else:
+        assert b'budget exhausted' in limited.stdout and b'Omitted references:' in limited.stdout
+for option, value in [('format', 'xml'), ('docs', 'brief'), ('view', 'other')]:
+    failure = run('query', snapshot, 'lookup', 'Item', '--' + option, value, code=2)
+    assert json.loads(failure.stderr)['code'] == 'usage'
+for docs in ['summary', 'full', 'none']:
+    output = OUT / ('interface-' + docs + '.swift')
+    run('query', snapshot, 'slice', 'Item', '--format', 'swift', '--docs', docs, '--output', output)
+    assert (b'///' in output.read_bytes()) == (docs != 'none')
+evidence_parts = json.loads(run('render', snapshot, '--view', 'evidence').stdout)
+assert 'Compiler identifier:' in evidence_parts[0]['markdown']
+interface_parts = json.loads(run('render', snapshot).stdout)
+assert 'public struct Item' in interface_parts[0]['markdown']
+assert 'Compiler identifier:' not in interface_parts[0]['markdown']
 assert json.loads(run('coverage', snapshot).stdout)[0]['eligible'] == 18
 baseline = OUT / 'baseline.json'
 run('baseline', 'write', snapshot, baseline)

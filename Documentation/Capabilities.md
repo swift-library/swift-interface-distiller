@@ -29,3 +29,6 @@ Swift imported API parity, runtime behavior or witness inference.
 All dependencies of the shipped package are owned local targets. No branch or
 revision package dependency, compiler library, SymbolKit, source index or syntax
 parser is linked. DocC runs directly against compiler-produced library graphs.
+
+[Interface size measurements](InterfaceSize.md) records source, summary-interface
+and canonical JSON byte counts across the organization packages, including collection gaps.

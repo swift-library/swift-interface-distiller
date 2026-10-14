@@ -73,8 +73,11 @@ public struct SnapshotQuery: Sendable {
   }
 
   /// Closure follows declaration references, outgoing relationships and contained declarations.
-  /// Budgets constrain encoded symbol payload; omitted identities and diagnostics remain explicit.
-  public func slice(roots: [String], maximumSymbols: Int? = nil, maximumBytes: Int? = nil) throws
+  /// Budgets constrain the selected format's payload; diagnostics remain explicit outside the budget.
+  public func slice(
+    roots: [String], maximumSymbols: Int? = nil, maximumBytes: Int? = nil,
+    format: QueryFormat = .json, docs: DocumentationStyle = .summary
+  ) throws
     -> SliceResult
   {
     guard maximumSymbols.map({ $0 > 0 }) ?? true, maximumBytes.map({ $0 > 0 }) ?? true else {
@@ -97,16 +100,16 @@ public struct SnapshotQuery: Sendable {
       }
       for symbol in matches {
         if selected[symbol.id] != nil { continue }
-        let size = try CanonicalJSON.encode(symbol).count
+        let size = try payloadBytes(Array(selected.values) + [symbol], format: format, docs: docs)
         if maximumSymbols.map({ selected.count >= $0 }) == true
-          || maximumBytes.map({ bytes + size > $0 }) == true
+          || maximumBytes.map({ size > $0 }) == true
         {
           omitted.insert(symbol.id)
           diagnostics.insert("Symbol payload budget exhausted")
           continue
         }
         selected[symbol.id] = symbol
-        bytes += size
+        bytes = size
         pending += symbol.references
         for edge in evidence.relationships where edge.source == symbol.preciseIdentifier {
           pending.append(edge.target)
@@ -129,6 +132,68 @@ public struct SnapshotQuery: Sendable {
         identities.contains($0.source) && identities.contains($0.target)
       },
       omittedReferences: omitted.sorted(), diagnostics: diagnostics.sorted(), symbolBytes: bytes)
+  }
+
+  /// Applies payload budgets to a query without following its reference closure.
+  public func bounded(
+    _ result: QueryResult, maximumSymbols: Int? = nil, maximumBytes: Int? = nil,
+    format: QueryFormat = .json, docs: DocumentationStyle = .summary
+  ) throws -> SliceResult {
+    guard result.snapshot == snapshotID, result.configuration == evidence.id,
+      maximumSymbols.map({ $0 > 0 }) ?? true, maximumBytes.map({ $0 > 0 }) ?? true
+    else { throw DistillerError(.usage, "Invalid query result or budget") }
+    var symbols: [SymbolRecord] = []
+    var omitted: [String] = []
+    for symbol in result.symbols.sorted(by: { $0.id < $1.id }) {
+      let exceedsBytes =
+        try maximumBytes.map {
+          try payloadBytes(symbols + [symbol], format: format, docs: docs) > $0
+        } == true
+      if maximumSymbols.map({ symbols.count >= $0 }) == true || exceedsBytes {
+        omitted.append(symbol.id)
+      } else {
+        symbols.append(symbol)
+      }
+    }
+    return SliceResult(
+      snapshot: snapshotID, configuration: evidence.id,
+      state: omitted.isEmpty ? "complete" : "truncated",
+      symbols: symbols, relationships: [], omittedReferences: omitted,
+      diagnostics: omitted.isEmpty ? [] : ["Symbol payload budget exhausted"],
+      symbolBytes: try payloadBytes(symbols, format: format, docs: docs))
+  }
+
+  /// Encodes a result in its snapshot context. Readable formats include explicit omission diagnostics.
+  public func encode(
+    _ result: SliceResult, format: QueryFormat = .json, docs: DocumentationStyle = .summary
+  ) throws -> Data {
+    guard result.snapshot == snapshotID, result.configuration == evidence.id else {
+      throw DistillerError(.usage, "Query result belongs to another snapshot")
+    }
+    if format == .json { return try CanonicalJSON.encode(result) }
+    let snapshot = try EvidenceSnapshot(configurations: [evidence])
+    var header = InterfaceRenderer.header(snapshot)
+    header += "Snapshot: \(snapshotID.prefix(12)) · Selection: \(result.state)\n"
+    if !result.omittedReferences.isEmpty {
+      header +=
+        "Omitted references: "
+        + result.omittedReferences.map(InterfaceRenderer.oneLine).joined(separator: ", ") + "\n"
+    }
+    for diagnostic in result.diagnostics { header += InterfaceRenderer.oneLine(diagnostic) + "\n" }
+    if format == .swift {
+      header = header.components(separatedBy: "\n").map { "// " + $0 }.joined(separator: "\n")
+    }
+    let body = try InterfaceRenderer.body(
+      result.symbols, evidence: evidence, format: format, docs: docs)
+    return Data((header + "\n" + body).utf8)
+  }
+
+  func payloadBytes(_ symbols: [SymbolRecord], format: QueryFormat, docs: DocumentationStyle) throws
+    -> Int
+  {
+    if format == .json { return try symbols.reduce(0) { try $0 + CanonicalJSON.encode($1).count } }
+    return try InterfaceRenderer.body(symbols, evidence: evidence, format: format, docs: docs).utf8
+      .count
   }
 
   private func related(to identifier: String, kinds: Set<String>) -> QueryResult {

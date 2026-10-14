@@ -10,5 +10,7 @@ permissions:
 jobs:
   policy:
     uses: swift-library/.github/.github/workflows/policy.yml@77682726e1767b1daea9dc935173cfafee60102d
+    with:
+      allow-terms: Codex
   validate:
     uses: swift-library/.github/.github/workflows/swift-package-ci.yml@77682726e1767b1daea9dc935173cfafee60102d

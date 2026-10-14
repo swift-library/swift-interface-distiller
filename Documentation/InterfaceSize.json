@@ -1,0 +1,227 @@
+{
+  "date": "2026-10-14",
+  "records": [
+    {
+      "commit": "d69fed4872300bbf78f7e172c82499052b7032c7",
+      "package": "swift-appstoreconnect",
+      "reason": "Directory symlinks are not a closed source input",
+      "sourceBytes": 1354387,
+      "sourceFiles": 48,
+      "status": "unavailable"
+    },
+    {
+      "commit": "f54079d4a1e31d39dbedc6bef9822c429b361ee7",
+      "package": "swift-benchmark",
+      "reason": "Compiler cannot load BenchmarkTesting: missing Testing and _Testing_Foundation modules.",
+      "sourceBytes": 343591,
+      "sourceFiles": 58,
+      "status": "unavailable"
+    },
+    {
+      "commit": "80e68cfafd8275e2eb249c2be06e1bf5c4a20fc9",
+      "package": "swift-codex",
+      "reason": "Directory symlinks are not a closed source input",
+      "sourceBytes": 348627,
+      "sourceFiles": 88,
+      "status": "unavailable"
+    },
+    {
+      "commit": "bee8707d232010040a071270d83e3ba1608fd0cd",
+      "extractorVersion": "0.1.2",
+      "interfaceBytes": 33739,
+      "interfaceSHA256": "5072cf3b2207c7fb859f297b66fb088edb424f041b606f1d8343bfb4912bf51a",
+      "jsonBytes": 776465,
+      "modules": [
+        "SwiftDataWritable"
+      ],
+      "package": "swift-data-writable",
+      "snapshotSHA256": "3c26db84c118be51fe8027dba8f64762f7b2c8f110e5e5007920393864280791",
+      "sourceBytes": 66039,
+      "sourceFiles": 17,
+      "status": "collected",
+      "symbols": 151
+    },
+    {
+      "commit": "d5779b29d719afc9a744eae4c110313f5cce1a1e",
+      "extractorVersion": "0.1.2",
+      "interfaceBytes": 268,
+      "interfaceSHA256": "582b59581563ad2e5f49bd6307d8789b013254b86eebe49642122b7fa3f2c1a8",
+      "jsonBytes": 2052,
+      "modules": [],
+      "package": "swift-gyb",
+      "snapshotSHA256": "da749e34e64b8d82d7bcd35d16e38b73aa226ae2b0af43d365e3c099ddebfebf",
+      "sourceBytes": 689,
+      "sourceFiles": 1,
+      "status": "no library modules",
+      "symbols": 0
+    },
+    {
+      "commit": "v0.2.0",
+      "extractorVersion": "0.2.0",
+      "interfaceBytes": 52180,
+      "interfaceSHA256": "b80e428a9b4c138a5863665d274be493f9795ce8c6d3e8c9d6d36c2a4d5adba2",
+      "jsonBytes": 1662125,
+      "modules": [
+        "InterfaceDistiller"
+      ],
+      "package": "swift-interface-distiller",
+      "snapshotSHA256": "ac7ac27e41b3a8fd4ff478c1852878646a893db1000b45f9a0a642f003397dcf",
+      "sourceBytes": 131231,
+      "sourceFiles": 13,
+      "status": "collected",
+      "symbols": 376
+    },
+    {
+      "commit": "5a0411b33c6b17af002dd799cabe9405e6a3ac97",
+      "extractorVersion": "0.1.2",
+      "interfaceBytes": 100107,
+      "interfaceSHA256": "4abf279f6d6d28a8b42fd604f3b8418ba4278e28a8d6ed79023612921e24baec",
+      "jsonBytes": 2583296,
+      "modules": [
+        "JSONSchema",
+        "JSONSchemaBuilder",
+        "JSONSchemaConversion",
+        "JSONSchemaFoundationModels",
+        "JSONValue"
+      ],
+      "package": "swift-json-schema",
+      "snapshotSHA256": "7b9e9b7f89d6fc6044d39ecb21272dd571268ded558df353992d1dab32e9c9bf",
+      "sourceBytes": 207888,
+      "sourceFiles": 28,
+      "status": "collected",
+      "symbols": 508
+    },
+    {
+      "commit": "64e8138302beacbcee6d09da759737714884214c",
+      "package": "swift-package-template",
+      "reason": "Swift subprocess exited 133 without stderr.",
+      "sourceBytes": 164,
+      "sourceFiles": 1,
+      "status": "unavailable"
+    },
+    {
+      "commit": "e9ceecc992e628b7f555694eafb9f631ac0818eb",
+      "extractorVersion": "0.1.2",
+      "interfaceBytes": 838663,
+      "interfaceSHA256": "5135400a05d7bdc2b971a22ac131ab99bd6f6e322f5bfd7d61e30421756ac850",
+      "jsonBytes": 14947269,
+      "modules": [
+        "PDF"
+      ],
+      "package": "swift-pdf",
+      "snapshotSHA256": "29374b042a937200a47a5d2d5665d33bc286e6e48673f4391903ab53421a5312",
+      "sourceBytes": 54576,
+      "sourceFiles": 40,
+      "status": "collected",
+      "symbols": 1768
+    },
+    {
+      "commit": "b79420e28d6add8ddd725d7ab29f1265e9471b73",
+      "extractorVersion": "0.1.2",
+      "interfaceBytes": 9161,
+      "interfaceSHA256": "d8b460795ae36f67b358e1f2341b3aa49dcd09b1db460e8b7cb94896e584c556",
+      "jsonBytes": 175852,
+      "modules": [
+        "Redux",
+        "ReduxComponent",
+        "ReduxDSL",
+        "ReduxShim",
+        "ReduxThunk"
+      ],
+      "package": "swift-redux",
+      "snapshotSHA256": "127973899b5aef809ae2f32d5593341e03f45398487aa650cd07363f17b93994",
+      "sourceBytes": 17073,
+      "sourceFiles": 14,
+      "status": "collected",
+      "symbols": 37
+    },
+    {
+      "commit": "38d82eeba787e1ff6b2f615068621632811ce6ca",
+      "extractorVersion": "0.1.2",
+      "interfaceBytes": 14802,
+      "interfaceSHA256": "7644d8db7934fa4e7f104ed1a32f1355d55bc030d07b3a0e31508c95568ec231",
+      "jsonBytes": 385866,
+      "modules": [
+        "SemVer"
+      ],
+      "package": "swift-semver",
+      "snapshotSHA256": "7b421f48f296e6d582daea7a74e7c948281352b114eba17f2530185c04edb1dd",
+      "sourceBytes": 26753,
+      "sourceFiles": 5,
+      "status": "collected",
+      "symbols": 82
+    },
+    {
+      "commit": "3035a02639ca99af57d302358425efdf3d57d50d",
+      "package": "swift-sh",
+      "reason": "Directory symlinks are not a closed source input",
+      "sourceBytes": 48031,
+      "sourceFiles": 18,
+      "status": "unavailable"
+    },
+    {
+      "commit": "6e01cfa1b626e559e5cdcd2c1ae1dcec9098f47b",
+      "extractorVersion": "0.1.2",
+      "interfaceBytes": 12345,
+      "interfaceSHA256": "88be4efbcc5d0f4a7b56875d6e4c29f4bafa2f6f9d05b927fb7534c68c1d283e",
+      "jsonBytes": 192501,
+      "modules": [
+        "UserDefault",
+        "UserDefaultUtils"
+      ],
+      "package": "swift-userdefault",
+      "snapshotSHA256": "91a8005782d7136b198f74a46cb65b2fba890de8bd95303edb208b9748875d3f",
+      "sourceBytes": 13506,
+      "sourceFiles": 5,
+      "status": "collected",
+      "symbols": 33
+    }
+  ],
+  "rendererVersion": "0.2.0",
+  "sdk": "macOS:26A425",
+  "sourceExtensions": [
+    ".swift",
+    ".c",
+    ".h",
+    ".m",
+    ".mm",
+    ".cpp",
+    ".cc"
+  ],
+  "target": "arm64-apple-macosx27.0.0",
+  "toolchain": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.0.0",
+  "versionSlice": {
+    "budgetOmissions": 0,
+    "format": "swift",
+    "inScopeSymbols": 49,
+    "maximumBytes": 8000,
+    "outputBytes": 7313,
+    "payloadBytes": 6459,
+    "state": "truncated",
+    "unresolvedReferences": [
+      "s:SE",
+      "s:SH",
+      "s:SL",
+      "s:SN",
+      "s:SQ",
+      "s:SS",
+      "s:Sb",
+      "s:Se",
+      "s:Si",
+      "s:Sn",
+      "s:s16PartialRangeFromV",
+      "s:s16PartialRangeUpToV",
+      "s:s16SendableMetatypeP",
+      "s:s19PartialRangeThroughV",
+      "s:s23CustomStringConvertibleP",
+      "s:s25LosslessStringConvertibleP",
+      "s:s5ErrorP",
+      "s:s6HasherV",
+      "s:s7DecoderP",
+      "s:s7EncoderP",
+      "s:s8CopyableP",
+      "s:s8SendableP",
+      "s:s9EscapableP"
+    ]
+  }
+}

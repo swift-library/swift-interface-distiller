@@ -41,6 +41,9 @@ a baseline; ``CompilerDiagnostics`` keeps toolchain diagnostics separate.
 ### Consumption
 - ``SnapshotQuery``
 - ``MarkdownRenderer``
+- ``InterfaceRenderer``
+- ``DocumentationStyle``
+- ``QueryFormat``
 - ``DocumentationCoverage``
 - ``SnapshotComparator``
 - ``BaselineStore``

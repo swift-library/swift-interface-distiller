@@ -2,7 +2,8 @@
 
 The examples use `.build/` for generated files. `--help` lists the command grammar;
 `--version` prints the product version. Errors are JSON on stderr. Command data is
-JSON on stdout unless `--output` writes it atomically to a file.
+JSON on stdout by default; query and slice can emit Swift or Markdown. `--output`
+writes the chosen format atomically to a file.
 
 ```sh
 interface-distiller configuration --output .build/configuration.json
@@ -13,12 +14,36 @@ interface-distiller query .build/api.json conformers MyProtocol
 interface-distiller query .build/api.json initializers MyType
 interface-distiller query .build/api.json returning MyType
 interface-distiller query .build/api.json slice MyType --max-symbols 100 --max-bytes 60000
+interface-distiller slice .build/api.json MyType --format swift --max-bytes 8000
+interface-distiller query .build/api.json members MyType --format markdown --docs full
 interface-distiller coverage .build/api.json
 interface-distiller render .build/api.json --output-dir .build/markdown --byte-budget 12000
 interface-distiller baseline write .build/api.json .build/baseline.json
 interface-distiller baseline check .build/api.json .build/baseline.json
 interface-distiller compare .build/baseline.json .build/api.json
 ```
+
+`render` defaults to `--view interface --docs summary`. It writes one Swift code
+block per top-level declaration, nests members, includes reported attributes,
+access, generics and conformances, and groups external extensions separately.
+`--docs full` keeps all comment paragraphs; `--docs none` omits documentation.
+`--view evidence` preserves the detailed evidence view and its original content.
+The render result on stdout remains a JSON list of parts (or names and sizes when
+`--output-dir` is supplied). Part names are `part-000001.md`, `part-000002.md`, etc.
+A render byte budget never splits a type's members; an oversized declaration fails
+with `minimumBytes` rather than dropping members.
+
+All query kinds and `slice` accept `--format json|swift|markdown`, defaulting to
+JSON. `slice SNAPSHOT SYMBOL...` is an alias for `query SNAPSHOT slice SYMBOL...`.
+`--max-symbols` and `--max-bytes` bound the selected payload; byte counts use the
+chosen format, including UTF-8 documentation and declaration context. The snapshot
+header and explicit omission diagnostics are outside the query budget, so total
+stdout can exceed it. Render budgets, by contrast, include the whole Markdown part.
+A budgeted non-slice query returns the slice-shaped JSON envelope with state,
+omissions, diagnostics and `symbolBytes`; an unbudgeted JSON query keeps its
+original result shape. Text views carry those diagnostics as text or Swift comments.
+Unresolved external references still make a slice `truncated`, even when all
+in-scope declarations fit the budget. No view turns those gaps into complete evidence.
 
 For custom builds, edit the configuration JSON explicitly, then supply
 `--configuration .build/configuration.json`. Compiler builds must match the

@@ -122,13 +122,45 @@ A slice follows declaration references, outgoing relationships and contained
 members/requirements until closure. Cycles terminate by identity. Missing and
 budget-omitted references are explicit. Its state is `complete` only if no
 reference was omitted; external references produce `truncated`. Symbol-count and
-byte budgets constrain the selected symbol payload, not the diagnostic envelope.
+byte budgets constrain the selected symbol payload in the requested format, not
+the snapshot header or diagnostic envelope. JSON retains its sum of independently
+encoded symbol records; Swift and Markdown measure the rendered UTF-8 payload,
+including declaration context, documentation, fences and anchors. `symbolBytes`
+reports that payload size. Text views include ancestor declarations as context
+for member queries; those context declarations also count toward their budget.
 A consumer must inspect both the state and omitted references.
 
-Markdown renders this same evidence model. Full SHA-256 anchors are stable for
-configuration and symbol identity. Splitting names parts deterministically and
-uses explicit cross-part links. A byte budget is strict; an evidence block that
-cannot fit alone yields an error reporting the required size.
+The default Markdown interface view projects the same evidence without altering
+schema 1.0. One snapshot header records modules, extractor, toolchain, 12-character
+configuration IDs, scope and a summary of every recorded gap category. Short IDs
+are display labels; canonical JSON retains the authoritative full identities.
+Declarations preserve the compiler's ordered fragments (including generic parameters,
+where clauses, isolation and signatures), add reported access and availability,
+and join observed inheritance and conformance relationships. These are reported
+interfaces, not compilable source replacements: bodies, unreported default arguments,
+uncollected attributes and witness selection cannot be recovered. Missing declaration
+fragments are labelled explicitly. C and Objective-C blocks keep their language view.
+
+Members follow `memberOf`, `requirementOf` and `optionalRequirementOf`. Protocol
+extension members and constrained members retain extension contexts. Conditional
+conformances keep their conditions; external extensions form a separate group.
+Documentation uses `///` lines, with the first paragraph by default; `full` and
+`none` select other projections. Compiler-synthesized observations remain included.
+
+Interface anchors use lowercase module and path components, joining alphanumeric
+runs with hyphens. Collisions add a deterministic prefix of the symbol identity's
+SHA-256; repeated symbols in multiple configurations also include configuration
+identity. Adding documentation, moving checkouts or changing input order does not
+change anchors. Collisions can change an otherwise unsuffixed anchor. The mapping
+is computed from the whole snapshot, including for subset queries. Member anchors
+resolve to their containing declaration block.
+
+Splitting keeps a top-level declaration, all nested members and its constrained
+extensions together. Every part includes snapshot and module context, and the
+byte budget includes that context. An indivisible declaration that cannot fit
+produces an error with the minimum required size. `--view evidence` retains the
+full metadata, SHA-256 anchors, explicit cross-part links and per-evidence-block
+splitting of the evidence view; documentation selection affects only interface views.
 
 Comparison reports added/removed symbols and JSON-pointer field changes in
 interface, documentation, availability and provenance categories. Different

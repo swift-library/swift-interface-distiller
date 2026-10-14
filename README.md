@@ -112,8 +112,9 @@ products. Select modules with `--module`, add resolved dependency modules with
 exclusion takes precedence. SPI and source locations are opt-in.
 
 ```sh
-interface-distiller query .build/api.json members MyType
-interface-distiller query .build/api.json slice MyType --max-symbols 100
+interface-distiller query .build/api.json members MyType --format swift
+interface-distiller query .build/api.json slice MyType --format swift --max-bytes 8000
+interface-distiller render .build/api.json --output-dir .build/interface --docs summary
 interface-distiller coverage .build/api.json
 interface-distiller baseline write .build/api.json .build/baseline.json
 interface-distiller baseline check .build/api.json .build/baseline.json
@@ -121,8 +122,13 @@ interface-distiller baseline check .build/api.json .build/baseline.json
 
 Use the installed executable, or substitute `.build/release/interface-distiller`
 when running from a checkout. Command data goes to stdout, errors are JSON on
-stderr, and failed writes preserve existing baselines. A bounded slice reports
-omitted references explicitly. [Commands](Documentation/Commands.md) covers
+stderr, and failed writes preserve existing baselines. Queries default to JSON;
+`--format swift|markdown` selects a readable view.
+Rendering defaults to a nested Swift interface with summary documentation; use
+`--docs full|none` or `--view evidence` for the detailed evidence view. Query byte
+budgets count the chosen payload format; headers and omission diagnostics remain
+outside that budget. A bounded slice reports omitted references explicitly.
+[Commands](Documentation/Commands.md) covers
 configuration, graph normalization, binary modules, headers and API diagnostics.
 
 ## Requirements

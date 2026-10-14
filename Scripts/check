@@ -10,6 +10,7 @@ swift format lint --strict --recursive Sources Tests Examples Package.swift
 swift test --build-system native
 swift build --build-system native --configuration release
 python3 Scripts/check-cli.py
+python3 Scripts/check-interface-size.py --check
 Scripts/check-docs
 python3 - <<'PY'
 import json, pathlib

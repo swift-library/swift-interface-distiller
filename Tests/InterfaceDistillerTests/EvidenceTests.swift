@@ -6,9 +6,13 @@ import Testing
 
 @testable import InterfaceDistiller
 
-let fixtureConfiguration = BuildConfiguration(
-  toolchain: "fixture compiler", sdk: "fixture-sdk", triple: "fixture-target",
-  deploymentTarget: "fixture-floor")
+let fixtureConfiguration: BuildConfiguration = {
+  var config = BuildConfiguration(
+    toolchain: "fixture compiler", sdk: "fixture-sdk", triple: "fixture-target",
+    deploymentTarget: "fixture-floor")
+  config.extractorVersion = "0.1.2"
+  return config
+}()
 
 func fixtureGraphs() throws -> [SymbolGraphInput] {
   try SymbolGraphInput.load(
@@ -187,7 +191,7 @@ func testDirectory(_ name: String) throws -> URL {
 
 @Test func markdownStableAnchorsAndStrictBudgets() throws {
   let snapshot = try fixtureSnapshot()
-  let parts = try MarkdownRenderer.render(snapshot, byteBudget: 3000)
+  let parts = try MarkdownRenderer.render(snapshot, byteBudget: 3000, view: .evidence)
   #expect(parts.allSatisfy { $0.markdown.utf8.count <= 3000 })
   #expect(parts.count > 1)
   let content = parts.map(\.markdown).joined()
@@ -198,7 +202,9 @@ func testDirectory(_ name: String) throws -> URL {
           + MarkdownRenderer.anchor(configuration: snapshot.configurations[0].id, symbol: s.id)
           + "\""))
   }
-  #expect(throws: DistillerError.self) { try MarkdownRenderer.render(snapshot, byteBudget: 256) }
+  #expect(throws: DistillerError.self) {
+    try MarkdownRenderer.render(snapshot, byteBudget: 256, view: .evidence)
+  }
 }
 
 @Test func loaderRejectsMissingEmptyAndMalformedInputs() throws {
