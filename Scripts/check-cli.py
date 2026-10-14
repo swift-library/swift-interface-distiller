@@ -28,6 +28,15 @@ snapshot = OUT / 'snapshot.json'
 run('normalize', 'Tests/InterfaceDistillerTests/Fixtures/Graphs', '--configuration', config, '--include-spi', '--output', snapshot)
 evidence = json.loads(snapshot.read_bytes())
 assert len(evidence['configurations'][0]['symbols']) == 18
+assert evidence['schemaVersion'] == '2.0'
+assert evidence['configurations'][0]['scope']['includeSynthesized'] is False
+all_snapshot = OUT / 'all-snapshot.json'
+run('normalize', 'Tests/InterfaceDistillerTests/Fixtures/Graphs', '--configuration', config,
+    '--include-spi', '--include-synthesized', '--output', all_snapshot)
+all_evidence = json.loads(all_snapshot.read_bytes())
+assert all_evidence['configurations'][0]['scope']['includeSynthesized'] is True
+assert len(all_evidence['configurations'][0]['symbols']) == 19
+assert not any(g['state'] == 'unresolved' for g in evidence['configurations'][0]['gaps'])
 for kind in ['lookup', 'members', 'conformers', 'initializers', 'returning', 'slice']:
     selector = 'Named' if kind == 'conformers' else 'Item'
     data = json.loads(run('query', snapshot, kind, selector).stdout)
