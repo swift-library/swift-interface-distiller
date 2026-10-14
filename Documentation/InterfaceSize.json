@@ -47,8 +47,8 @@
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 0,
       "generatedSwiftFiles": 0,
-      "interfaceBytes": 140860,
-      "interfaceSHA256": "9c1cd725b693391b691b77ca883150f9fec0e195275c121bd1dc94f349a56318",
+      "interfaceBytes": 140904,
+      "interfaceSHA256": "ee0a4800eeb75c92765cd4d88926e4fb83185b1f5fbaa0c4cdb410d1fb3e314d",
       "jsonBytes": 4928218,
       "modules": [
         "Benchmark",
@@ -87,8 +87,8 @@
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 2109916,
       "generatedSwiftFiles": 1540,
-      "interfaceBytes": 3729232,
-      "interfaceSHA256": "0592f0734494b1b4ef6ea2d501fba4f0ef82db754252b67f439ccbb8a93bfe12",
+      "interfaceBytes": 3729244,
+      "interfaceSHA256": "8e2eeadf57cb5abd79a4ab4364a5222608797f6505395d2bce7e9b8d2a36cc3a",
       "jsonBytes": 94362934,
       "modules": [
         "Codex",
@@ -190,14 +190,14 @@
       "symbols": 0
     },
     {
-      "commit": "ed2bd0edf53839740023d90f93872a52dad677e2",
+      "commit": "99f66fd4356a1082f7409dbe3ea5de8910f65475",
       "externalReferenceCount": 19,
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 0,
       "generatedSwiftFiles": 0,
       "interfaceBytes": 42857,
       "interfaceSHA256": "86e32ca716ac1a2ed2b48a7f3473cb1842fc1b0b091ad1ad5b16464390b7b5f4",
-      "jsonBytes": 1435985,
+      "jsonBytes": 1436124,
       "modules": [
         "InterfaceDistiller"
       ],
@@ -213,9 +213,9 @@
         ],
         "sourceLocations": false
       },
-      "snapshotSHA256": "d0c5cbb2b3986dd3049bb57bc058b1efaf760f241f269e6b46c2941ab6291ea5",
-      "sourceBytes": 138317,
-      "sourceFiles": 13,
+      "snapshotSHA256": "d51703cd0ff10496b835cbf05cc9ddccf3937bea5881af1fa0993c974b70d2eb",
+      "sourceBytes": 140084,
+      "sourceFiles": 14,
       "status": "collected",
       "symbols": 335
     },
@@ -225,8 +225,8 @@
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 0,
       "generatedSwiftFiles": 0,
-      "interfaceBytes": 60752,
-      "interfaceSHA256": "5b298d712721be5e30e3639d8fc7ffd4768fa1047bb125165d726fbec63485ad",
+      "interfaceBytes": 60741,
+      "interfaceSHA256": "9f13ff839999eb685c6b8072956571fba525d4b6733b4e2119097c5db2e7ee53",
       "jsonBytes": 1669084,
       "modules": [
         "JSONSchema",
@@ -319,8 +319,8 @@
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 0,
       "generatedSwiftFiles": 0,
-      "interfaceBytes": 8040,
-      "interfaceSHA256": "328dd76098e13aee691a46def0bd5146ef636da1aa9eeb8ef5e555e6a785075c",
+      "interfaceBytes": 8057,
+      "interfaceSHA256": "35df501de448ccee26a7ac62fa8d98398cd0b398f427f406758f561aea181d41",
       "jsonBytes": 155477,
       "modules": [
         "Redux",
@@ -407,8 +407,8 @@
       "extractorVersion": "0.2.0",
       "generatedSwiftBytes": 24185,
       "generatedSwiftFiles": 2,
-      "interfaceBytes": 12179,
-      "interfaceSHA256": "94d65a0b27d388e6b16706404bc621f3efd84e0e488dfc38e3eedbdb4c857bed",
+      "interfaceBytes": 12340,
+      "interfaceSHA256": "f11cd6cc303f21dccaf3b8705d5445746e6f9aaed1acd8a9d1feba8ed8c3143d",
       "jsonBytes": 190908,
       "modules": [
         "UserDefault",
