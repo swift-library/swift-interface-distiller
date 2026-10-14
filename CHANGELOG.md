@@ -1,5 +1,15 @@
 ## Unreleased
 
+## 0.3.0
+
+- Emit interface anchors only for top-level declaration blocks and standalone
+  extension groups. Member links returned by `InterfaceRenderer.anchors(in:)`
+  target their containing block, and repeated values are expected. Update links
+  that targeted member IDs to use the containing top-level anchor. The evidence
+  view retains per-symbol anchors; canonical JSON stays at schema 2.0.
+- Publish complete interface size and density measurements with block-level
+  anchors for all 13 organization packages.
+
 ## 0.2.0
 
 - Render a compact Swift interface by default: nested members, reported attributes,

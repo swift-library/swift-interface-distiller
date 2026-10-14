@@ -202,20 +202,26 @@ conformance relationships are omitted from the interface projection; JSON and
 `--view evidence` retain them. Reported declaration fragments, including explicit
 constraints, remain authoritative.
 
-Interface anchors use lowercase module, immediate owner and declaration name,
+Interface views emit one anchor immediately before each top-level declaration block,
+including external extension groups with their own blocks. Nested types, members
+and constrained extensions within that block share its anchor. `InterfaceRenderer.anchors(in:)`
+maps every symbol to this containing block's destination; multiple symbols can
+therefore return the same anchor. Evidence views retain one SHA-256 anchor per symbol.
+Top-level anchors use lowercase module, immediate owner and declaration name,
 joining alphanumeric runs with hyphens. Parameter-label lists are excluded and
 an all-punctuation name becomes `symbol`. Collisions add a deterministic prefix
-of the symbol identity's SHA-256; repeated symbols in multiple configurations
+of the top-level symbol identity's SHA-256; repeated blocks in multiple configurations
 also include configuration identity. Adding documentation, moving checkouts or
 changing input order does not change anchors. Collisions can change an otherwise
 unsuffixed anchor. The mapping is computed from the whole snapshot, including
-for subset queries. Member anchors resolve to their containing declaration block.
+for subset queries. Members neither create anchor IDs nor participate in collisions.
 
 `--by-module` produces a module index and linked interface parts without excluding
 any selected API. Reported declaration counts include collapsed requirements.
 `InterfaceRenderer.measure` and `render --report` account for UTF-8 bytes in the
 whole unsplit interface. Each symbol owns its declaration, documentation and
-anchor bytes; header, headings, fences and remaining spacing are overhead.
+anchor bytes when it owns a top-level block; members have zero anchor bytes.
+Header, headings, fences and remaining spacing are overhead.
 Collapsed symbols have zero rendered bytes and retain their standard-requirement
 category. Reports describe presentation, separately from canonical evidence.
 

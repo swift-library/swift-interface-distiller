@@ -62,7 +62,7 @@ import Testing
   snapshot.configurations[0].symbols.append(overload)
   let first = InterfaceRenderer.anchors(in: snapshot)
   #expect(first[key]?.hasPrefix("evidenceexample-item-") == true)
-  #expect(Set(first.values).count == first.count)
+  #expect(Set(first.values).count == 8)
   snapshot.configurations[0].symbols.reverse()
   #expect(InterfaceRenderer.anchors(in: snapshot) == first)
   overload.fields["docComment"] = EvidenceField(.null, provenance: .derived)
@@ -184,7 +184,8 @@ import Testing
   let result = try query.bounded(query.members(of: "Item"), format: .markdown)
   let text = String(decoding: try query.encode(result, format: .markdown), as: UTF8.self)
   #expect(text.contains("public struct Item"))
-  #expect(text.contains("evidenceexample-item-name"))
+  #expect(text.contains("<a id=\"evidenceexample-item\"></a>"))
+  #expect(text.components(separatedBy: "<a id=").count == 2)
   #expect(!text.contains("public struct Shelf"))
   let empty = try query.bounded(query.lookup("missing"), format: .swift)
   #expect(empty.symbolBytes == 0)
@@ -197,7 +198,7 @@ import Testing
   other.id = try other.configuration.identity()
   snapshot.configurations.append(other)
   let anchors = InterfaceRenderer.anchors(in: snapshot)
-  #expect(Set(anchors.values).count == anchors.count)
+  #expect(Set(anchors.values).count == 14)
   #expect(
     try MarkdownRenderer.render(snapshot).map(\.markdown).joined().contains(
       String(other.id.prefix(12))))
@@ -218,7 +219,7 @@ import Testing
       module: item.module, language: item.language, preciseIdentifier: "suffix-collision",
       fields: fields))
   let distinct = InterfaceRenderer.anchors(in: snapshot)
-  #expect(Set(distinct.values).count == distinct.count)
+  #expect(Set(distinct.values).count == 9)
 }
 
 @Test func genericConstraintDoesNotHideATypeConformance() throws {
@@ -233,17 +234,54 @@ import Testing
   #expect(text.contains("public struct Shelf<T>: Named where T : Named"))
 }
 
-@Test func operatorAnchorsDoNotRenameTheirContainingType() throws {
+@Test func memberLinksShareBlockAnchorsWithoutChangingTypeCollisions() throws {
   var snapshot = try fixtureSnapshot()
   let item = try #require(snapshot.configurations[0].symbols.first { $0.name == "Item" })
   var fields = item.fields
   fields["pathComponents"]?.value = .array([.string("Item"), .string("==(_:_:)")])
-  snapshot.configurations[0].symbols.append(
-    SymbolRecord(
-      module: item.module, language: item.language, preciseIdentifier: "operator", fields: fields))
+  let member = SymbolRecord(
+    module: item.module, language: item.language, preciseIdentifier: "operator", fields: fields)
+  snapshot.configurations[0].symbols.append(member)
+  snapshot.configurations[0].relationships.append(
+    Relationship(
+      module: item.module, language: item.language, kind: "memberOf",
+      source: member.preciseIdentifier, target: item.preciseIdentifier, fields: [:]))
   let anchors = InterfaceRenderer.anchors(in: snapshot)
   #expect(anchors[snapshot.configurations[0].id + ":" + item.id] == "evidenceexample-item")
-  #expect(anchors.values.contains("evidenceexample-item-symbol"))
+  #expect(anchors[snapshot.configurations[0].id + ":" + member.id] == "evidenceexample-item")
+  let text = try MarkdownRenderer.render(snapshot).map(\.markdown).joined()
+  #expect(text.components(separatedBy: "<a id=").count == Set(anchors.values).count + 1)
+  for symbol in try SnapshotQuery(snapshot).members(of: "Item").symbols {
+    #expect(anchors[snapshot.configurations[0].id + ":" + symbol.id] == "evidenceexample-item")
+  }
+  let original = try CanonicalJSON.encode(snapshot)
+  _ = try MarkdownRenderer.render(snapshot, view: .evidence)
+  #expect(try CanonicalJSON.encode(snapshot) == original)
+}
+
+@Test func nestedAndExtensionMembersNavigateToTheirContainingBlocks() throws {
+  var snapshot = try fixtureSnapshot()
+  let c = snapshot.configurations[0]
+  let item = try #require(c.symbols.first { $0.name == "Item" })
+  let shelf = try #require(c.symbols.first { $0.name == "Shelf" })
+  let external = try #require(c.symbols.first { $0.name == "Array" })
+  snapshot.configurations[0].relationships.append(
+    Relationship(
+      module: shelf.module, language: shelf.language, kind: "memberOf",
+      source: shelf.preciseIdentifier, target: item.preciseIdentifier, fields: [:]))
+  let anchors = InterfaceRenderer.anchors(in: snapshot)
+  let query = try SnapshotQuery(snapshot)
+  for symbol in query.members(of: "Shelf").symbols + [shelf] {
+    #expect(anchors[c.id + ":" + symbol.id] == anchors[c.id + ":" + item.id])
+  }
+  for symbol in query.members(of: external.id).symbols {
+    #expect(anchors[c.id + ":" + symbol.id] == anchors[c.id + ":" + external.id])
+  }
+  #expect(anchors[c.id + ":" + external.id] == "evidenceexample-array")
+  let subset = try query.bounded(query.members(of: "Shelf"), format: .markdown)
+  let text = String(decoding: try query.encode(subset, format: .markdown), as: UTF8.self)
+  #expect(text.contains("<a id=\"evidenceexample-item\"></a>"))
+  #expect(text.components(separatedBy: "<a id=").count == 2)
 }
 
 @Test func markerConformancesAndExternalReferencesStayInEvidence() throws {

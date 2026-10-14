@@ -11,11 +11,19 @@ public enum QueryFormat: String, Sendable { case json, swift, markdown }
 
 /// Projects compiler observations into a readable interface without changing evidence.
 public enum InterfaceRenderer {
-  /// Anchors depend on module and reported path; colliding paths add an identity digest.
+  /// Link destinations for every symbol. Members share their containing top-level block's anchor.
+  /// Colliding top-level paths add an identity digest.
   public static func anchors(in snapshot: EvidenceSnapshot) -> [String: String] {
     var groups: [String: [String]] = [:]
+    var owners: [String: String] = [:]
     for c in snapshot.configurations {
-      for s in c.symbols {
+      let blockOwners = InterfaceProjection(
+        evidence: c, docs: .none, showImplied: true, implied: [:]
+      ).blockOwners()
+      for (symbol, owner) in blockOwners {
+        owners[c.id + ":" + symbol] = c.id + ":" + owner
+      }
+      for s in c.symbols where blockOwners[s.id] == s.id {
         let path = s.fields["pathComponents"]?.value.strings ?? [s.name]
         var components = Array(path.suffix(2)).map { component in
           slug(String(component.prefix { $0 != "(" }))
@@ -56,7 +64,7 @@ public enum InterfaceRenderer {
         }
       }
     }
-    return result
+    return owners.mapValues { result[$0]! }
   }
 
   public static func render(
@@ -354,8 +362,8 @@ private struct InterfaceProjection {
     (a.module, path(a), a.id) < (b.module, path(b), b.id)
   }
 
-  func blocks(anchors: [String: String], markdown: Bool) -> [InterfaceBlock] {
-    let symbols = evidence.symbols.filter { showImplied || implied[$0.id] == nil }.sorted(by: order)
+  private func parents() -> [String: String] {
+    let symbols = evidence.symbols.sorted(by: order)
     let byPrecise = symbolsByPrecise
     var parent: [String: String] = [:]
     let ownership = DeclarationNesting.parents(in: evidence)
@@ -377,6 +385,22 @@ private struct InterfaceProjection {
         next = parent[id]
       }
     }
+    return parent
+  }
+
+  func blockOwners() -> [String: String] {
+    let parent = parents()
+    return Dictionary(
+      uniqueKeysWithValues: evidence.symbols.map { symbol in
+        var owner = symbol.id
+        while let next = parent[owner] { owner = next }
+        return (symbol.id, owner)
+      })
+  }
+
+  func blocks(anchors: [String: String], markdown: Bool) -> [InterfaceBlock] {
+    let symbols = evidence.symbols.filter { showImplied || implied[$0.id] == nil }.sorted(by: order)
+    let parent = parents()
     let children = Dictionary(
       grouping: symbols.filter { parent[$0.id] != nil }, by: { parent[$0.id]! })
     let roots = symbols.filter { parent[$0.id] == nil }
@@ -385,31 +409,22 @@ private struct InterfaceProjection {
       for external in [false, true] {
         let group = roots.filter { $0.module == module && isExternal($0) == external }
         for root in group {
-          var members: [SymbolRecord] = []
-          func gather(_ s: SymbolRecord) {
-            members.append(s)
-            for child in children[s.id] ?? [] { gather(child) }
-          }
-          gather(root)
           var extensions: [String] = []
           let accounting = InterfaceAccounting(configuration: evidence.id, implied: implied)
           let declaration = declarationTree(
             root, children: children, level: 0, extensions: &extensions, accounting: accounting)
           let source = declaration + extensions.joined()
           if markdown {
-            let ids = members.compactMap { symbol -> String? in
-              guard let anchor = anchors[evidence.id + ":" + symbol.id] else { return nil }
-              let text = "<a id=\"\(anchor)\"></a>"
-              accounting.add(symbol, anchor: text.utf8.count + 1)
-              return text
-            }.joined(separator: "\n")
+            let anchor = anchors[evidence.id + ":" + root.id]!
+            let id = "<a id=\"\(anchor)\"></a>"
+            accounting.add(root, anchor: id.utf8.count + 1)
             let heading = "## " + module + (external ? " — External extensions" : "") + "\n\n"
             // A fence longer than any reported run preserves arbitrary documentation and operators.
             let fence = String(repeating: "`", count: max(3, longestBackticks(source) + 1))
             result.append(
               InterfaceBlock(
                 module: module, heading: heading,
-                content: ids + "\n\n" + fence + root.language + "\n" + source + fence + "\n\n",
+                content: id + "\n\n" + fence + root.language + "\n" + source + fence + "\n\n",
                 sizes: Array(accounting.symbols.values)))
           } else {
             result.append(

@@ -75,25 +75,26 @@ private func impliedSnapshot() throws -> EvidenceSnapshot {
   }
 }
 
-@Test func compactAnchorsUseOwnerAndNameWithStableCollisionSuffixes() throws {
+@Test func topLevelAnchorsUseOwnerAndNameWithStableCollisionSuffixes() throws {
   var snapshot = try fixtureSnapshot()
   let item = try #require(snapshot.configurations[0].symbols.first { $0.name == "Item" })
   var fields = item.fields
   let labels = (0..<100).map { "parameter\($0):" }.joined()
+  fields["kind"]?.value = .object(["identifier": .string("swift.func")])
   fields["pathComponents"]?.value = .array([
-    .string("Namespace"), .string("DenseItem"), .string("init(" + labels + ")"),
+    .string("Namespace"), .string("build(" + labels + ")"),
   ])
   let first = SymbolRecord(
-    module: item.module, language: "swift", preciseIdentifier: "first-init", fields: fields)
+    module: item.module, language: "swift", preciseIdentifier: "first-build", fields: fields)
   snapshot.configurations[0].symbols.append(first)
   let key = snapshot.configurations[0].id + ":" + first.id
-  #expect(InterfaceRenderer.anchors(in: snapshot)[key] == "evidenceexample-denseitem-init")
+  #expect(InterfaceRenderer.anchors(in: snapshot)[key] == "evidenceexample-namespace-build")
   let second = SymbolRecord(
-    module: item.module, language: "swift", preciseIdentifier: "second-init", fields: fields)
+    module: item.module, language: "swift", preciseIdentifier: "second-build", fields: fields)
   snapshot.configurations[0].symbols.append(second)
   let anchors = InterfaceRenderer.anchors(in: snapshot)
-  #expect(anchors[key]?.hasPrefix("evidenceexample-denseitem-init-") == true)
-  #expect(Set(anchors.values).count == anchors.count)
+  #expect(anchors[key]?.hasPrefix("evidenceexample-namespace-build-") == true)
+  #expect(anchors[key] != anchors[snapshot.configurations[0].id + ":" + second.id])
   snapshot.configurations[0].symbols.reverse()
   #expect(InterfaceRenderer.anchors(in: snapshot) == anchors)
 }
@@ -133,6 +134,15 @@ private func impliedSnapshot() throws -> EvidenceSnapshot {
         .reduce(0) { $0 + $1.markdown.utf8.count })
     #expect(report.symbols.count == snapshot.configurations[0].symbols.count)
     #expect(report.overheadBytes >= 0)
+    let anchors = InterfaceRenderer.anchors(in: snapshot)
+    let emitted = report.symbols.filter { $0.anchorBytes > 0 }
+    #expect(emitted.count == Set(anchors.values).count)
+    for size in emitted {
+      #expect(
+        size.anchorBytes
+          == ("<a id=\"" + anchors[size.configuration + ":" + size.symbol]! + "\"></a>\n").utf8
+          .count)
+    }
     #expect(
       report.symbols.reduce(report.overheadBytes) {
         $0 + $1.declarationBytes + $1.documentationBytes + $1.anchorBytes

@@ -10,7 +10,6 @@ Completeness: 1/1 modules; 10 declarations; 3 external references; no recorded g
 ## MacroExample
 
 <a id="macroexample-childcounter"></a>
-<a id="macroexample-childcounter-value"></a>
 
 ```swift
 /// A protocol with an inherited requirement.
@@ -24,8 +23,6 @@ extension ChildCounter {
 ```
 
 <a id="macroexample-counter"></a>
-<a id="macroexample-counter-count-96ce1e02"></a>
-<a id="macroexample-counter-count-a2ef3c31"></a>
 
 ```swift
 /// A counter value.
@@ -41,7 +38,6 @@ extension Counter {
 ```
 
 <a id="macroexample-defaultcounter"></a>
-<a id="macroexample-defaultcounter-init"></a>
 
 ```swift
 /// A value using the counter default.
@@ -51,7 +47,6 @@ public struct DefaultCounter: Counter {
 ```
 
 <a id="macroexample-parentcounter"></a>
-<a id="macroexample-parentcounter-value"></a>
 
 ```swift
 /// A protocol requirement inherited by a child.
