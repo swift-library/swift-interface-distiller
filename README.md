@@ -36,7 +36,7 @@ Read public declarations reported by the compiler without walking a package’s 
 
 ## Quick look
 
-Collect a package, then query one declaration within a byte budget:
+Collect swift-semver, then query its incrementing declaration within a byte budget:
 
 <p align="center">
   <picture>

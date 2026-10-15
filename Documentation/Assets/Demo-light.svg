@@ -14,12 +14,12 @@
     <text x="20" y="152" fill="#24292f" xml:space="preserve">// </text>
     <text x="20" y="173" fill="#24292f" xml:space="preserve">// Modules: SemVer</text>
     <text x="20" y="194" fill="#24292f" xml:space="preserve">// View: summary docs; 6 conformance-implied members collapsed</text>
-    <text x="20" y="215" fill="#24292f" xml:space="preserve">// Extractor: 0.2.0 · Configuration: a320d683f90a</text>
+    <text x="20" y="215" fill="#24292f" xml:space="preserve">// Extractor: 0.3.1 · Configuration: 2ecff2463ff0</text>
     <text x="20" y="236" fill="#24292f" xml:space="preserve">// Toolchain: Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1) Target: arm64-apple-macosx27.0.0</text>
     <text x="20" y="257" fill="#24292f" xml:space="preserve">// Scope: public/open; SemVer; synthesized excluded by policy</text>
     <text x="20" y="278" fill="#24292f" xml:space="preserve">// Completeness: 1/1 modules; 67 declarations; 20 external references; no recorded gaps</text>
     <text x="20" y="299" fill="#24292f" xml:space="preserve">// </text>
-    <text x="20" y="320" fill="#24292f" xml:space="preserve">// Snapshot: 1a93ff0e0326 · Selection: complete</text>
+    <text x="20" y="320" fill="#24292f" xml:space="preserve">// Snapshot: 3135979f97ee · Selection: complete</text>
     <text x="20" y="341" fill="#24292f" xml:space="preserve">// External references: 0</text>
     <text x="20" y="362" fill="#24292f" xml:space="preserve">// </text>
     <text x="20" y="383" fill="#24292f" xml:space="preserve">// Module: SemVer</text>
