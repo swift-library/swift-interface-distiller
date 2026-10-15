@@ -1,7 +1,7 @@
 # Interface size measurements
 
-Measured 2026-10-15 with renderer 0.3.0 and recorded snapshots
-from extractors 0.2.0, 0.3.0, summary documentation,
+Measured 2026-10-15 with renderer 0.3.1 and recorded snapshots
+from extractors 0.2.0, 0.3.1, summary documentation,
 collapsed conformance requirements, top-level block anchors, and the default
 public/open library-product scope.
 Synthesized per-conformer copies are excluded; original protocol extensions and
@@ -13,7 +13,7 @@ Toolchain: `Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1) Tar
 Target: `arm64-apple-macosx27.0.0`. Language mode: `package` (each package's
 manifest controls its language mode). Input commits, file counts, module names,
 scope and SHA-256 digests are in [the measurement record](InterfaceSize.json).
-Renderer implementation: `c29f8a29192742e1889590122213730a74d0ea2d`. Existing snapshots were
+Renderer implementation: `caa2444d4e6cc2fc7f11afded6a1c4361e49844c`. Existing snapshots were
 rerendered to isolate this presentation change; their JSON and per-row collection
 dates are retained. The distiller self-row was recollected at that signed implementation
 commit before this report;
@@ -34,7 +34,7 @@ the source denominator.
 | [swift-codex](https://github.com/swift-library/swift-codex/tree/34ffd22fcd05991411c2e74d1e077105e4980ec1) | 348,627 | 1,294,628 | 94,362,934 | 371.4% |
 | [swift-data-writable](https://github.com/swift-library/swift-data-writable/tree/bee8707d232010040a071270d83e3ba1608fd0cd) | 66,039 | 23,333 | 763,863 | 35.3% |
 | [swift-gyb](https://github.com/swift-library/swift-gyb/tree/d5779b29d719afc9a744eae4c110313f5cce1a1e) | 689 | 399 | 2,109 | 57.9% |
-| [swift-interface-distiller](https://github.com/swift-library/swift-interface-distiller/tree/c29f8a29192742e1889590122213730a74d0ea2d) | 158,233 | 23,425 | 1,517,438 | 14.8% |
+| [swift-interface-distiller](https://github.com/swift-library/swift-interface-distiller/tree/caa2444d4e6cc2fc7f11afded6a1c4361e49844c) | 158,233 | 23,425 | 1,517,438 | 14.8% |
 | [swift-json-schema](https://github.com/swift-library/swift-json-schema/tree/236b9a10041c57400a5c05e9e0db37c33efb6ec3) | 207,888 | 44,647 | 1,669,084 | 21.5% |
 | [swift-package-template](https://github.com/swift-library/swift-package-template/tree/64e8138302beacbcee6d09da759737714884214c) | 164 | 399 | 1,845 | 243.3% |
 | [swift-pdf](https://github.com/swift-library/swift-pdf/tree/e9ceecc992e628b7f555694eafb9f631ac0818eb) | 54,576 | 8,854 | 247,106 | 16.2% |
@@ -75,7 +75,7 @@ requirements remain collapsed and summary docs keep leading prose. `--by-module`
 adds an index with links and full byte counts for every module. Its index is a
 navigation surface, not a replacement for measuring the complete interface.
 
-| Package | 0.2.0 interface bytes | 0.3.0 interface bytes |
+| Package | 0.2.0 interface bytes | 0.3.1 interface bytes |
 | --- | ---: | ---: |
 | `swift-appstoreconnect` | 4,886,009 | 2,781,942 |
 | `swift-benchmark` | 122,216 | 79,825 |
@@ -104,7 +104,7 @@ retained in JSON; the Swift view shows their count.
 
 For exact reproduction, use the recorded commits, toolchain, SDK and each row's
 extractor version to collect its default scope, then render that canonical JSON
-with release 0.3.0. Rerendering captured snapshots isolates
+with release 0.3.1. Rerendering captured snapshots isolates
 presentation changes from compiler observations:
 
 ```sh

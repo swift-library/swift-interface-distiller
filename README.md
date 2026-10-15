@@ -54,7 +54,7 @@ Add the package and the `InterfaceDistiller` product to `Package.swift`:
 dependencies: [
   .package(
     url: "https://github.com/swift-library/swift-interface-distiller.git",
-    .upToNextMinor(from: "0.3.0")
+    .upToNextMinor(from: "0.3.1")
   ),
 ],
 targets: [
