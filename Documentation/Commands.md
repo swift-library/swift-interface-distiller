@@ -34,6 +34,10 @@ RawRepresentable and CaseIterable conformances are collapsed in readable views.
 `--show-implied` expands the collected requirements in render, query and slice;
 JSON and the evidence view retain all collected symbols.
 
+Interface links target top-level declaration blocks. Members and nested declarations
+link to their containing block; standalone extension groups have their own anchors.
+The evidence view retains per-symbol anchors.
+
 For large APIs, `--by-module` writes `index.md` and linked module parts. Each part
 keeps top-level declaration boundaries and the same snapshot context. The index
 records module declaration counts and the full file sizes. `render --report FILE`

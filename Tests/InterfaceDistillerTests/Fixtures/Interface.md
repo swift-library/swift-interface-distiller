@@ -10,9 +10,6 @@ Completeness: 1/1 modules; 18 declarations; 5 external references; no recorded g
 ## EvidenceExample
 
 <a id="evidenceexample-item"></a>
-<a id="evidenceexample-item-init"></a>
-<a id="evidenceexample-item-make"></a>
-<a id="evidenceexample-item-name"></a>
 
 ```swift
 /// A named value.
@@ -25,8 +22,6 @@ public struct Item: Named, Sendable {
 ```
 
 <a id="evidenceexample-named"></a>
-<a id="evidenceexample-named-label"></a>
-<a id="evidenceexample-named-name"></a>
 
 ```swift
 /// A value that can supply its display name.
@@ -49,9 +44,6 @@ public typealias OldItem = Item
 ```
 
 <a id="evidenceexample-shelf"></a>
-<a id="evidenceexample-shelf-firstname"></a>
-<a id="evidenceexample-shelf-init"></a>
-<a id="evidenceexample-shelf-item"></a>
 
 ```swift
 /// A generic collection.
@@ -66,8 +58,6 @@ extension Shelf where T == Item {
 ```
 
 <a id="evidenceexample-store"></a>
-<a id="evidenceexample-store-init"></a>
-<a id="evidenceexample-store-load"></a>
 
 ```swift
 @MainActor public final class Store: Sendable {
@@ -85,7 +75,6 @@ public func inspect() -> String
 ## EvidenceExample — External extensions
 
 <a id="evidenceexample-array"></a>
-<a id="evidenceexample-array-names"></a>
 
 ```swift
 extension Array where Element == Item {

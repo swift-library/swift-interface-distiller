@@ -21,7 +21,7 @@ def run(*args, code=0):
     return result
 
 
-assert run('--version').stdout.strip() == b'0.2.0'
+assert run('--version').stdout.strip() == b'0.3.0'
 config = OUT / 'configuration.json'
 config.write_bytes(run('configuration').stdout)
 snapshot = OUT / 'snapshot.json'
@@ -69,6 +69,11 @@ assert 'Compiler identifier:' in evidence_parts[0]['markdown']
 interface_parts = json.loads(run('render', snapshot).stdout)
 assert 'public struct Item' in interface_parts[0]['markdown']
 assert 'Compiler identifier:' not in interface_parts[0]['markdown']
+assert interface_parts[0]['markdown'].count('<a id=') == 7
+member_view = run('query', snapshot, 'members', 'Item', '--format', 'markdown').stdout
+assert member_view.count(b'<a id=') == 1
+assert b'<a id="evidenceexample-item"></a>' in member_view
+assert evidence_parts[0]['markdown'].count('<a id=') == 18
 report = OUT / 'interface-size.json'
 indexed = json.loads(run('render', snapshot, '--by-module', '--report', report).stdout)
 assert indexed[0]['name'] == 'index.md'

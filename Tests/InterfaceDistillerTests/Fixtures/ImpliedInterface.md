@@ -10,9 +10,6 @@ Completeness: 1/1 modules; 25 declarations; 17 external references; no recorded 
 ## ImpliedExample
 
 <a id="impliedexample-codingkeys"></a>
-<a id="impliedexample-codingkeys-init-c17e8fa1"></a>
-<a id="impliedexample-codingkeys-init-2a9a731b"></a>
-<a id="impliedexample-codingkeys-value"></a>
 
 ```swift
 /// A public coding-key declaration is not implied by Codable.
@@ -26,8 +23,6 @@ public enum CodingKeys: CodingKey, CustomDebugStringConvertible, CustomStringCon
 ```
 
 <a id="impliedexample-decoderdefaults"></a>
-<a id="impliedexample-decoderdefaults-init"></a>
-<a id="impliedexample-decoderdefaults-make"></a>
 
 ```swift
 public protocol DecoderDefaults : Decodable {
@@ -41,7 +36,6 @@ extension DecoderDefaults {
 ```
 
 <a id="impliedexample-flags"></a>
-<a id="impliedexample-flags-init-f1fda54e"></a>
 
 ```swift
 /// Public declarations whose signatures are stated by standard conformances.
@@ -51,8 +45,6 @@ public struct Flags: CaseIterable, Equatable, Hashable, RawRepresentable {
 ```
 
 <a id="impliedexample-mode"></a>
-<a id="impliedexample-mode-first"></a>
-<a id="impliedexample-mode-second"></a>
 
 ```swift
 /// A raw enum with compiler-derived requirements.
@@ -63,9 +55,6 @@ public enum Mode: CaseIterable, Decodable, Encodable, Equatable, Hashable, RawRe
 ```
 
 <a id="impliedexample-model"></a>
-<a id="impliedexample-model-init-1c3a8fb5"></a>
-<a id="impliedexample-model-init-f5c2afc1"></a>
-<a id="impliedexample-model-value"></a>
 
 ```swift
 /// A model with compiler-derived decoding support.
