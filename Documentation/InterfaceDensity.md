@@ -1,7 +1,7 @@
 # Interface density
 
 Measured 2026-10-15 from the recorded snapshots with renderer implementation
-`c29f8a29192742e1889590122213730a74d0ea2d`. The comparison is renderer 0.2.0 to 0.3.0 with summary
+`caa2444d4e6cc2fc7f11afded6a1c4361e49844c`. The comparison is renderer 0.2.0 to 0.3.1 with summary
 docs and collapsed implied members in both. Source, generated Swift and JSON definitions are shared with
 [Interface size measurements](InterfaceSize.md). Canonical snapshots are unchanged
 for these two packages. `render --report` provides the current per-symbol byte
@@ -24,7 +24,7 @@ a type's block share the type's destination. Evidence views keep per-symbol IDs.
 Each row measures the complete unsplit interface, including metadata and fences.
 The self-row was recollected at the new renderer implementation.
 
-| Package | 0.2.0 bytes | 0.3.0 bytes | Anchors before | Anchors after | Anchor bytes before | Anchor bytes after |
+| Package | 0.2.0 bytes | 0.3.1 bytes | Anchors before | Anchors after | Anchor bytes before | Anchor bytes after |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `swift-appstoreconnect` | 4,886,009 | 2,781,942 | 28,749 | 407 | 2,133,592 | 29,525 |
 | `swift-benchmark` | 122,216 | 79,825 | 1,004 | 143 | 48,206 | 5,815 |

@@ -2,7 +2,7 @@
   "date": "2026-10-15",
   "extractorVersions": [
     "0.2.0",
-    "0.3.0"
+    "0.3.1"
   ],
   "languageMode": "package",
   "records": [
@@ -205,13 +205,13 @@
     {
       "beforeInterfaceBytes": 38547,
       "collectionDate": "2026-10-15",
-      "commit": "c29f8a29192742e1889590122213730a74d0ea2d",
+      "commit": "caa2444d4e6cc2fc7f11afded6a1c4361e49844c",
       "externalReferenceCount": 19,
-      "extractorVersion": "0.3.0",
+      "extractorVersion": "0.3.1",
       "generatedSwiftBytes": 0,
       "generatedSwiftFiles": 0,
       "interfaceBytes": 23425,
-      "interfaceSHA256": "90d7f4ca828fb5080b7e9fabcd6b48fc34141a8461da8ad738f64382430c66a3",
+      "interfaceSHA256": "07b24b5244134d67a68d9173b9f0075de5756c48443615ea41e542be04934574",
       "jsonBytes": 1517438,
       "modules": [
         "InterfaceDistiller"
@@ -228,7 +228,7 @@
         ],
         "sourceLocations": false
       },
-      "snapshotSHA256": "4e01c47e0a33f4cb9d442f5ddf85b26653919fc1bf8b49bdc0720f5d9ecce09b",
+      "snapshotSHA256": "31cc571405f90bc4ba5169d16c191ed805e56c926f76f38081ecb88b34763ade",
       "sourceBytes": 158233,
       "sourceFiles": 16,
       "status": "collected",
@@ -463,8 +463,8 @@
       "symbols": 33
     }
   ],
-  "rendererCommit": "c29f8a29192742e1889590122213730a74d0ea2d",
-  "rendererVersion": "0.3.0",
+  "rendererCommit": "caa2444d4e6cc2fc7f11afded6a1c4361e49844c",
+  "rendererVersion": "0.3.1",
   "schemaVersion": "2.0",
   "sdk": "macOS:26A425",
   "sourceExtensions": [

@@ -761,8 +761,8 @@
       "sourceBytes": 13506
     }
   ],
-  "rendererCommit": "c29f8a29192742e1889590122213730a74d0ea2d",
-  "rendererVersion": "0.3.0",
+  "rendererCommit": "caa2444d4e6cc2fc7f11afded6a1c4361e49844c",
+  "rendererVersion": "0.3.1",
   "summary": [
     {
       "afterAnchorBytes": 29525,
