@@ -1,6 +1,17 @@
 ## Unreleased
 
+## 0.3.1
+
+- Validate terminal recordings against their captured extractor provenance and
+  package revision, independently of the renderer and measurement input versions.
+- Ship the 0.3.0 top-level interface anchor behavior: member links target their
+  containing block. Update links to removed member IDs to that block's anchor;
+  evidence views keep per-symbol anchors and JSON stays at schema 2.0.
+
 ## 0.3.0
+
+Publication did not complete because the recording checker required a single
+measurement extractor version. The immutable tag is superseded by 0.3.1.
 
 - Emit interface anchors only for top-level declaration blocks and standalone
   extension groups. Member links returned by `InterfaceRenderer.anchors(in:)`

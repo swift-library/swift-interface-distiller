@@ -11,6 +11,7 @@ swift test --build-system native
 swift build --build-system native --configuration release
 python3 Scripts/check-cli.py
 Scripts/check-demo
+python3 -B -m unittest discover -s Tests/Automation
 python3 Scripts/check-interface-size.py --check
 Scripts/check-docs
 python3 - <<'PY'

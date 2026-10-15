@@ -10,33 +10,54 @@ import subprocess
 from urllib.request import urlopen
 
 
-root = Path(__file__).resolve().parent.parent
-parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--renderer", type=Path)
-parser.add_argument("--design", type=Path)
-args = parser.parse_args()
-if bool(args.renderer) != bool(args.design):
-    parser.error("Use --renderer and --design together")
-config = json.loads((root / ".github/presentation.json").read_text())
-revision = config["design_revision"]
-if not re.fullmatch(r"[0-9a-f]{40}", revision):
-    raise SystemExit("Pin the shared design and renderer to a full commit SHA")
-if args.renderer:
-    renderer, design = args.renderer.resolve(), args.design.resolve()
-else:
-    scratch = root / ".build/presentation/shared"
-    scratch.mkdir(parents=True, exist_ok=True)
-    for source, name in [("Scripts/render-terminal.py", "render-terminal.py"), ("DESIGN.md", "DESIGN.md")]:
-        with urlopen(f"https://raw.githubusercontent.com/swift-library/.github/{revision}/{source}", timeout=30) as response:
-            (scratch / name).write_bytes(response.read())
-    renderer, design = scratch / "render-terminal.py", scratch / "DESIGN.md"
-record_path = root / "Documentation/Assets/Demo-record.json"
-record = json.loads(record_path.read_text())
-provenance = json.loads((record_path.parent / "Demo-provenance.json").read_text())
-measurement = json.loads((root / "Documentation/InterfaceSize.json").read_text())
-if provenance["extractor_version"] != measurement["extractorVersion"] or len(record["commands"]) != 2:
-    raise SystemExit("Record the published collector and query again")
-if "public func incrementing(" not in record["commands"][1]["stdout"]:
-    raise SystemExit("The recording has no demonstrated declaration")
-subprocess.run(["python3", "-B", str(renderer), "--design", str(design),
-                "--record", str(record_path), "--output-dir", str(record_path.parent), "--check"], check=True)
+def validate_record(record, provenance, measurement):
+    commands = record["commands"]
+    version = provenance["extractor_version"]
+    if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version) or len(commands) != 2:
+        raise SystemExit("Record the published collector and query again")
+    versions = re.findall(r"^// Extractor: ([0-9]+\.[0-9]+\.[0-9]+) · Configuration:",
+                          commands[1]["stdout"], re.MULTILINE)
+    if versions != [version]:
+        raise SystemExit("The recording and its extractor provenance differ")
+    if provenance["command_exit_codes"] != [command["exit_code"] for command in commands] or any(command["exit_code"] != 0 for command in commands):
+        raise SystemExit("The recording has an unsuccessful command")
+    package = provenance["package"].rsplit("/", 1)[-1]
+    inputs = [row for row in measurement["records"] if row["package"] == package]
+    if len(inputs) != 1 or inputs[0]["commit"] != provenance["package_revision"]:
+        raise SystemExit("The recording and measured package revisions differ")
+    if "public func incrementing(" not in commands[1]["stdout"]:
+        raise SystemExit("The recording has no demonstrated declaration")
+
+
+def main():
+    root = Path(__file__).resolve().parent.parent
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--renderer", type=Path)
+    parser.add_argument("--design", type=Path)
+    args = parser.parse_args()
+    if bool(args.renderer) != bool(args.design):
+        parser.error("Use --renderer and --design together")
+    config = json.loads((root / ".github/presentation.json").read_text())
+    revision = config["design_revision"]
+    if not re.fullmatch(r"[0-9a-f]{40}", revision):
+        raise SystemExit("Pin the shared design and renderer to a full commit SHA")
+    if args.renderer:
+        renderer, design = args.renderer.resolve(), args.design.resolve()
+    else:
+        scratch = root / ".build/presentation/shared"
+        scratch.mkdir(parents=True, exist_ok=True)
+        for source, name in [("Scripts/render-terminal.py", "render-terminal.py"), ("DESIGN.md", "DESIGN.md")]:
+            with urlopen(f"https://raw.githubusercontent.com/swift-library/.github/{revision}/{source}", timeout=30) as response:
+                (scratch / name).write_bytes(response.read())
+        renderer, design = scratch / "render-terminal.py", scratch / "DESIGN.md"
+    record_path = root / "Documentation/Assets/Demo-record.json"
+    record = json.loads(record_path.read_text())
+    provenance = json.loads((record_path.parent / "Demo-provenance.json").read_text())
+    measurement = json.loads((root / "Documentation/InterfaceSize.json").read_text())
+    validate_record(record, provenance, measurement)
+    subprocess.run(["python3", "-B", str(renderer), "--design", str(design),
+                    "--record", str(record_path), "--output-dir", str(record_path.parent), "--check"], check=True)
+
+
+if __name__ == "__main__":
+    main()

@@ -80,7 +80,7 @@ requirements remain collapsed and summary docs keep leading prose. `--by-module`
 adds an index with links and full byte counts for every module. Its index is a
 navigation surface, not a replacement for measuring the complete interface.
 
-| Package | 0.2.0 interface bytes | 0.3.0 interface bytes |
+| Package | 0.2.0 interface bytes | ''' + data['rendererVersion'] + ''' interface bytes |
 | --- | ---: | ---: |
 '''
 for row in data['records']:
@@ -117,7 +117,7 @@ density = json.loads((root / 'Documentation/InterfaceDensity.json').read_text())
 density_text = f"""# Interface density
 
 Measured {density['date']} from the recorded snapshots with renderer implementation
-`{density['rendererCommit']}`. The comparison is renderer 0.2.0 to 0.3.0 with summary
+`{density['rendererCommit']}`. The comparison is renderer 0.2.0 to {density['rendererVersion']} with summary
 docs and collapsed implied members in both. Source, generated Swift and JSON definitions are shared with
 [Interface size measurements](InterfaceSize.md). Canonical snapshots are unchanged
 for these two packages. `render --report` provides the current per-symbol byte
@@ -141,7 +141,7 @@ a type's block share the type's destination. Evidence views keep per-symbol IDs.
 Each row measures the complete unsplit interface, including metadata and fences.
 The self-row was recollected at the new renderer implementation.
 
-| Package | 0.2.0 bytes | 0.3.0 bytes | Anchors before | Anchors after | Anchor bytes before | Anchor bytes after |
+| Package | 0.2.0 bytes | """ + density['rendererVersion'] + """ bytes | Anchors before | Anchors after | Anchor bytes before | Anchor bytes after |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 """
 for row in density['summary']:
