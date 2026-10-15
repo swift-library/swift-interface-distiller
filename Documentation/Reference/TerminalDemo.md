@@ -1,6 +1,6 @@
 # Terminal demonstration
 
-The README records collect, then query, using the released 0.2.0 executable and
+The README records collect, then query, using the released 0.3.1 executable and
 the swift-semver revision in the published measurement record. Complete standard
 output and exit codes live in `Documentation/Assets/Demo-record.json`; its
 provenance file records the executable, input archive and snapshot digests.

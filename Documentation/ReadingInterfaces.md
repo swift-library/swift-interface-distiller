@@ -10,23 +10,32 @@ and [capability matrix](Capabilities.md) define those boundaries.
 
 ## A measured package
 
-The published [0.2.0 measurement page](https://github.com/swift-library/swift-interface-distiller/blob/v0.2.0/Documentation/InterfaceSize.md)
-and its [record](https://github.com/swift-library/swift-interface-distiller/blob/v0.2.0/Documentation/InterfaceSize.json)
+The published [0.3.1 measurement page](https://github.com/swift-library/swift-interface-distiller/blob/v0.3.1/Documentation/InterfaceSize.md)
+and its [record](https://github.com/swift-library/swift-interface-distiller/blob/v0.3.1/Documentation/InterfaceSize.json)
 report swift-semver at commit `38d82eeba787e1ff6b2f615068621632811ce6ca`:
 
 | Representation | Bytes |
 | --- | ---: |
 | Tracked implementation source | 26,753 |
-| Default interface Markdown | 9,995 |
+| Default interface Markdown | 7,281 |
 | Canonical JSON | 297,002 |
 
 The snapshot contains 67 symbols in the default public/open library-product
-scope, excluding synthesized per-conformer copies. The interface is 37.4% of the
+scope, excluding synthesized per-conformer copies. The interface is 27.2% of the
 tracked source size. Source bytes exclude documentation, tests, dependencies and
 build outputs; interface bytes include headings, anchors and fences; JSON counts
 the whole canonical snapshot. The measurement page records the compiler, SDK,
 configuration and counting rules. It also includes packages whose generated APIs
 exceed their tracked source size. These are measured outputs, not a size guarantee.
+
+The sizes use the 0.3.1 renderer. The measurement record retains each input’s
+collector version; a fresh 0.3.1 collection reproduces these SemVer sizes.
+Its interface begins:
+
+```swift
+/// An immutable semantic version with SemVer 2.0.0 precedence.
+public struct Version: Comparable, CustomStringConvertible, Decodable, Encodable, Equatable, Hashable, LosslessStringConvertible, Sendable {
+```
 
 ## Read, query and slice
 
@@ -40,6 +49,17 @@ budget counts the chosen payload format; snapshot context and explicit omission
 diagnostics are outside that budget. Truncation, external references and collection
 gaps remain separate observations. [Commands](Commands.md) documents selectors,
 formats, budgets and the complete-slice contract.
+
+A complete Swift slice rooted at `Version` selects 37 symbols: 3,910 payload
+bytes and 4,414 stdout bytes within an 8,000-byte payload budget. It reports
+18 external references and zero budget omissions. From a directory containing
+the measured `swift-semver` checkout:
+
+```sh
+interface-distiller collect package swift-semver --output .build/semver-api.json
+interface-distiller query .build/semver-api.json slice Version --format swift --max-bytes 8000
+interface-distiller render .build/semver-api.json --docs summary --output-dir .build/interface
+```
 
 ## Compare releases
 
