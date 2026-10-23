@@ -110,7 +110,7 @@ wc -c .build/api.json .build/interface/*.md
 
 The source count uses file bytes, not lines or compressed size. When comparing new
 measurements, record compiler, SDK, source commit, scope and extractor changes.
-`python3 Scripts/check-interface-size.py --check` verifies this page against its
+`python3 scripts/check-interface-size.py --check` verifies this page against its
 recorded inputs; it does not claim to rerun extraction.
 '''
 density = json.loads((root / 'Documentation/InterfaceDensity.json').read_text())
@@ -201,6 +201,6 @@ for name, content in outputs.items():
     path = root / 'Documentation' / name
     if args.check:
         if not path.exists() or path.read_text() != content:
-            raise SystemExit(name + ' differs from its measurement record; run Scripts/check-interface-size.py')
+            raise SystemExit(name + ' differs from its measurement record; run scripts/check-interface-size.py')
     else:
         path.write_text(content)

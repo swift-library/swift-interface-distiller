@@ -1,27 +1,34 @@
 # Terminal demonstration
 
-The README records collect, then query, using the released 0.3.1 executable and
-the swift-semver revision in the published measurement record. Complete standard
-output and exit codes live in `Documentation/Assets/Demo-record.json`; its
-provenance file records the executable, input archive and snapshot digests.
-Build diagnostics remain under `.build/demo-session`.
+The README demonstrates collecting swift-semver and querying its incrementing
+declaration within a byte budget. The commands and fixture setup live in
+[script.yml](../../.github/assets/terminal/script.yml); complete displayed output
+lives in [recording.json](../../.github/assets/terminal/recording.json).
+The [fixture](../../.github/assets/terminal/fixture/README.md) identifies its
+fixed upstream input.
 
-From the repository root:
+Build the executable and record from the repository root with Node 24.22.0 and
+the shared `github-readme-design` toolchain:
 
 ```sh
 swift build --build-system native -c release
-mkdir -p .build
-git clone https://github.com/swift-library/swift-semver.git .build/demo-source
-python3 Scripts/record-demo.py --package .build/demo-source
-Scripts/check-demo
+node <toolchain>/src/cli.ts terminal record \
+  --script .github/assets/terminal/script.yml \
+  --executable .build/release/interface-distiller \
+  --out .github/assets/terminal/recording.json
+node <toolchain>/src/cli.ts terminal check --recording-only \
+  --assets .github/assets/terminal \
+  --executable .build/release/interface-distiller
 ```
 
-The recording script archives the fixed input revision into the ignored session
-directory. It does not copy a checkout or Git directory. Query byte budgets cover
-the chosen payload; snapshot context and omission diagnostics remain visible
-outside the budget. The complete slice contract is in [Commands](../Commands.md).
+Use the same compiler and SDK as the shared demo job: compiler headers and
+snapshot identities are part of the recording. The recorder copies the fixture
+into an isolated temporary home and removes it after the commands complete.
+Query byte budgets cover the selected payload; snapshot context and omission
+diagnostics remain visible outside the budget. See [Commands](../Commands.md).
 
-The full SHA in `.github/presentation.json` pins the shared renderer and DESIGN.md.
-`Scripts/check-demo` fetches those public files into `.build/presentation/shared`
-and checks both terminal SVG variants. To regenerate, run the fetched renderer
-with the same design, record and output directory, omitting `--check`.
+The `demo` declaration in
+[swift-package.json](../../.github/swift-package.json) builds the release product
+and checks the recording through the shared workflow. Render `terminal-dark.svg`
+and `terminal-light.svg` separately with the organization's current DESIGN and
+fonts using the shared toolchain; the README's `<picture>` references those files.

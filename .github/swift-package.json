@@ -1,0 +1,37 @@
+{
+  "compilers": [
+    {
+      "name": "macos-26-swift-6.3",
+      "runner": "macos-26",
+      "xcode": "26.6"
+    }
+  ],
+  "build_system": "native",
+  "format": {
+    "paths": ["Package.swift", "Sources", "Tests"]
+  },
+  "platforms": {
+    "linux": [
+      {
+        "name": "linux-swift-6.3",
+        "image": "swift:6.3.1-noble@sha256:af0181a2fe491b45c935a962a45ab77db3d0b867016e481ac164704f09c656fa"
+      }
+    ]
+  },
+  "docs": {
+    "targets": ["InterfaceDistiller"]
+  },
+  "demo": {
+    "product": "interface-distiller"
+  },
+  "commands": [
+    {
+      "name": "cli",
+      "run": "python3 scripts/check-cli.py"
+    },
+    {
+      "name": "interface-size",
+      "run": "python3 scripts/check-interface-size.py --check"
+    }
+  ]
+}

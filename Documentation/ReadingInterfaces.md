@@ -63,8 +63,6 @@ interface-distiller render .build/semver-api.json --docs summary --output-dir .b
 
 ## Compare releases
 
-The organization’s [shared workflows](https://github.com/swift-library/.github/blob/master/Documentation/Reference/WorkflowIntegration.md)
-attach public API snapshots to releases and report API changes on pull requests.
 The distiller compares declarations, documentation, availability and provenance;
 compiler compatibility diagnostics remain a separate artifact. This gives people
 Markdown they can review and machines JSON they can query and diff.

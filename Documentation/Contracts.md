@@ -264,5 +264,5 @@ snapshot schema and identities. A cache is a disposable trusted local derivative
 
 Baseline write validates before atomic replacement. Missing expected modules,
 failed/unsupported collection and conflicts cannot replace a valid baseline.
-External references remain explicit and may exist in a valid scoped baseline. Baseline check never writes the baseline. Shared organization workflows
-own comparison targets, release interpretation and baseline governance.
+External references remain explicit and may exist in a valid scoped baseline.
+Baseline check never writes the baseline.

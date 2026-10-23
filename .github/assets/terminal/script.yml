@@ -1,0 +1,11 @@
+title: swift-semver · collect and query
+executable: interface-distiller
+copy:
+  - from: fixture/semver
+    to: project/semver
+steps:
+  - run: interface-distiller collect package semver --output api.json
+  - run: interface-distiller query api.json lookup 'incrementing(_:)' --format swift --max-bytes 1200
+expect:
+  - file: project/api.json
+    contains: SemVer
