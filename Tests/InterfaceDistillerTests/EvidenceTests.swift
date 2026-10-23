@@ -90,6 +90,26 @@ func testDirectory(_ name: String) throws -> URL {
   #expect(coverage.undocumented.count == coverage.eligible - coverage.documented)
 }
 
+@Test func emptyGraphRetainsModuleAndHasNoCoverage() throws {
+  var graph = try #require(fixtureGraphs().first).value.object
+  graph["symbols"] = .array([])
+  graph["relationships"] = .array([])
+  let snapshot = try SymbolGraphNormalizer.normalize(
+    [.init(value: .object(graph))], configuration: fixtureConfiguration,
+    expectedModules: ["EvidenceExample"])
+  let query = try SnapshotQuery(snapshot)
+  #expect(query.evidence.collectedModules == ["EvidenceExample"])
+  #expect(query.evidence.symbols.isEmpty)
+  #expect(query.lookup("missing").symbols.isEmpty)
+  let coverage = DocumentationCoverage.measure(query.evidence)
+  #expect(coverage.eligible == 0)
+  #expect(coverage.documented == 0)
+  #expect(coverage.fraction == nil)
+  #expect(
+    try JSONDecoder().decode(EvidenceSnapshot.self, from: CanonicalJSON.encode(snapshot))
+      == snapshot)
+}
+
 @Test func sliceReportsOmittedReferencesAndBudgets() throws {
   let query = try SnapshotQuery(fixtureSnapshot())
   let result = try query.slice(roots: ["Item"], maximumSymbols: 1)

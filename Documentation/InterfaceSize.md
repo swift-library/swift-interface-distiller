@@ -116,5 +116,5 @@ wc -c .build/api.json .build/interface/*.md
 
 The source count uses file bytes, not lines or compressed size. When comparing new
 measurements, record compiler, SDK, source commit, scope and extractor changes.
-`python3 Scripts/check-interface-size.py --check` verifies this page against its
+`python3 scripts/check-interface-size.py --check` verifies this page against its
 recorded inputs; it does not claim to rerun extraction.

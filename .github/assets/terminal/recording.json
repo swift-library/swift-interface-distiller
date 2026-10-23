@@ -1,0 +1,13 @@
+{
+  "title": "swift-semver · collect and query",
+  "steps": [
+    {
+      "command": "interface-distiller collect package semver --output api.json",
+      "output": ""
+    },
+    {
+      "command": "interface-distiller query api.json lookup 'incrementing(_:)' --format swift --max-bytes 1200",
+      "output": "// # Swift interface\n// \n// Modules: SemVer\n// View: summary docs; 6 conformance-implied members collapsed\n// Extractor: 0.3.1 · Configuration: 2ecff2463ff0\n// Toolchain: Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1) Target: arm64-apple-macosx27.0.0\n// Scope: public/open; SemVer; synthesized excluded by policy\n// Completeness: 1/1 modules; 67 declarations; 20 external references; no recorded gaps\n// \n// Snapshot: a7867271a5fb · Selection: complete\n// External references: 0\n// \n// Module: SemVer\n/// An immutable semantic version with SemVer 2.0.0 precedence.\npublic struct Version: Comparable, CustomStringConvertible, Decodable, Encodable, Equatable, Hashable, LosslessStringConvertible, Sendable {\n  /// Increments a core component, resetting lower components and clearing identifiers.\n  public func incrementing(_ component: Version.Component) throws(Version.IncrementError) -> Version\n}\n"
+    }
+  ]
+}

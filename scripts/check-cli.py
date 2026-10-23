@@ -9,6 +9,7 @@ import subprocess
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / '.build/check'
 OUT.mkdir(parents=True, exist_ok=True)
+subprocess.run(['swift', 'build', '--build-system', 'native', '-c', 'release'], cwd=ROOT, check=True)
 binary_dir = subprocess.check_output(['swift', 'build', '--build-system', 'native', '-c', 'release', '--show-bin-path'], cwd=ROOT, text=True).strip()
 CLI = str(pathlib.Path(binary_dir) / 'interface-distiller')
 
@@ -29,6 +30,8 @@ run('normalize', 'Tests/InterfaceDistillerTests/Fixtures/Graphs', '--configurati
 evidence = json.loads(snapshot.read_bytes())
 assert len(evidence['configurations'][0]['symbols']) == 18
 assert evidence['schemaVersion'] == '2.0'
+schema = json.loads((ROOT / 'Documentation/Schema/Evidence.schema.json').read_text())
+assert schema['properties']['schemaVersion']['pattern'] == r'^2\.[0-9]+$'
 assert evidence['configurations'][0]['scope']['includeSynthesized'] is False
 all_snapshot = OUT / 'all-snapshot.json'
 run('normalize', 'Tests/InterfaceDistillerTests/Fixtures/Graphs', '--configuration', config,

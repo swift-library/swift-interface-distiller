@@ -40,9 +40,9 @@ Collect swift-semver, then query its incrementing declaration within a byte budg
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="Documentation/Assets/Demo-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="Documentation/Assets/Demo-light.svg">
-    <img src="Documentation/Assets/Demo-light.svg" alt="Terminal: collect swift-semver and query its incrementing declaration in Swift format within a byte budget.">
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/terminal/terminal-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset=".github/assets/terminal/terminal-light.svg">
+    <img src=".github/assets/terminal/terminal-light.svg" alt="Terminal: collect swift-semver and query its incrementing declaration in Swift format within a byte budget.">
   </picture>
 </p>
 
@@ -76,7 +76,6 @@ brew install swift-library/tap/swift-interface-distiller
 On macOS, the formula requires macOS 15 or later and Xcode 26 or later with
 Swift 6.3 or later selected. See the [tap requirements](https://github.com/swift-library/homebrew-tap/blob/master/Documentation/Tools.md).
 
-The [versioned consumer](Examples/Consumer) is a complete downstream example.
 Build the executable from a checkout with
 `swift build --build-system native -c release`; it is written to
 `.build/release/interface-distiller`.
@@ -98,8 +97,9 @@ Choose the package, modules, configuration, and optional scope explicitly. Query
 
 CI selects Xcode 26.6 on macOS 26 and Swift 6.3 on Ubuntu 24.04. The
 [capability matrix](Documentation/Capabilities.md) records tested combinations and
-compiler/SDK limits. Run `Scripts/check` for package validation and
-`Scripts/check-consumer` for a fresh versioned consumer after publication.
+compiler/SDK limits. The [validation configuration](.github/swift-package.json)
+declares the compiler matrix, formatting paths, Linux image, DocC target, terminal
+demo and repository checks. See [Contributing](CONTRIBUTING.md) for local validation.
 Temporary output belongs in `.build/`.
 
 ## Documentation
@@ -113,11 +113,12 @@ Temporary output belongs in `.build/`.
 - [Extension proposals](Documentation/Proposals/Extensions.md)
 - [Development sources](Documentation/DevelopmentSources.md) and [changelog](CHANGELOG.md)
 - [Versioning and release policy](https://github.com/swift-library/.github/blob/master/VERSIONING.md)
+- [Release configuration](Documentation/Reference/Release.md) and [terminal demo](Documentation/Reference/TerminalDemo.md)
 
 ## Contributing
 
-Read the shared [contributing guide](https://github.com/swift-library/.github/blob/master/CONTRIBUTING.md)
-and run `Scripts/check` before submitting a pull request. Report vulnerabilities
+Read the [contributing guide](CONTRIBUTING.md) and run its local checks before
+submitting a pull request. Report vulnerabilities
 through the private route in the [security policy](https://github.com/swift-library/.github/blob/master/SECURITY.md).
 This project follows the [code of conduct](https://github.com/swift-library/.github/blob/master/CODE_OF_CONDUCT.md).
 

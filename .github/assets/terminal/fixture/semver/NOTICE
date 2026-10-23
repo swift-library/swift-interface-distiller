@@ -1,0 +1,26 @@
+swift-semver
+Copyright (c) 2026 Xudong Xu and the swift-library project authors
+
+Licensed under Apache License 2.0 with the Swift Runtime Library Exception.
+See LICENSE.txt for the complete terms.
+
+Incorporated source: Swift Package Manager, PackageDescription.Version
+Copyright (c) 2018-2021 Apple Inc. and the Swift project authors
+Repository: https://github.com/swiftlang/swift-package-manager
+Revision: cf583daa3d7083fb1d599bbdfe973e886c16e2f5 (swift-6.3.1-RELEASE)
+Files:
+  Sources/Runtimes/PackageDescription/Version.swift
+  Sources/Runtimes/PackageDescription/Version+StringLiteralConvertible.swift
+Licensed under Apache License 2.0 with the Swift Runtime Library Exception.
+Contributors: https://github.com/swiftlang/swift-package-manager/graphs/contributors
+
+The adapted implementation provides standalone failable and throwing parsing,
+structured diagnostics, prerelease and stable version status, strict ASCII
+identifier validation, canonical core and numeric prerelease validation,
+overflow-safe numeric prerelease ordering, Hashable and string Codable support.
+Version precedence follows SwiftPM, including equality that ignores build metadata.
+This package is independently maintained by swift-library.
+
+Version requirements and increment operations are original swift-library code.
+Half-open requirement matching follows SwiftPM's prerelease eligibility rules;
+additional comparison syntax and increment behavior are defined by this package.
