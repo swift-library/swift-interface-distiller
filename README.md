@@ -97,7 +97,7 @@ Choose the package, modules, configuration, and optional scope explicitly. Query
 - Clang ExtractAPI for C and Objective-C headers.
 
 The shared CI compiler matrix selects only the latest stable Xcode, currently
-Xcode 26.6 on macOS 26. Linux tests use Swift 6.3.1 on Ubuntu 24.04. Older macOS
+Xcode 26.6 on macOS 26. Linux tests use Swift 6.3.3 on Ubuntu 24.04. Older macOS
 generations are covered by compile-time availability checking against the latest
 SDK. The [capability matrix](Documentation/Capabilities.md) records tested combinations and
 compiler/SDK limits. The [validation configuration](.github/swift-package.json)

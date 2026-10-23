@@ -11,7 +11,7 @@ These configurations have execution coverage:
 | Ubuntu 24.04 x86_64, Swift 6.3.1 | Tested | Tested | Toolchain Clang, tested | SwiftPM and digester tested |
 
 The shared CI compiler matrix selects only the latest stable Xcode, currently
-Xcode 26.6 on macOS 26 (`macos-26-xcode-26.6`). Linux tests run Swift 6.3.1 on
+Xcode 26.6 on macOS 26 (`macos-26-xcode-26.6`). Linux tests run Swift 6.3.3 on
 Ubuntu 24.04. Each job records its actual compiler version in the
 validation evidence. The package tools floor is 6.3; the
 macOS deployment floor is 15 for both the library and bundled executable. The
