@@ -1,6 +1,6 @@
 {
   "repository": "swift-library/swift-interface-distiller",
-  "version_file": "Sources/InterfaceDistiller/Evidence.swift",
+  "version_file": "Sources/InterfaceDistiller/InterfaceSnapshot.swift",
   "version_pattern": "public static let current = \"([0-9]+\\.[0-9]+\\.[0-9]+)\"",
   "changelog": "CHANGELOG.md",
   "minimum_swift": "6.3",

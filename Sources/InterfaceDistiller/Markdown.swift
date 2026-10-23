@@ -9,16 +9,16 @@ public struct MarkdownPart: Codable, Sendable {
 }
 
 public enum MarkdownRenderer {
-  public enum View: String, Sendable { case interface, evidence }
+  public enum View: String, Sendable { case interface, symbols }
 
-  /// The evidence view anchor. Use InterfaceRenderer.anchors(in:) for interface links.
+  /// The symbols view anchor. Use InterfaceRenderer.anchors(in:) for interface links.
   public static func anchor(configuration: String, symbol: String) -> String {
     "symbol-" + Digest.sha256(Data((configuration + ":" + symbol).utf8))
   }
 
   /// A budget is strict. An indivisible declaration exceeding it produces a machine-readable error.
   public static func render(
-    _ snapshot: EvidenceSnapshot, byteBudget: Int? = nil, view: View = .interface,
+    _ snapshot: InterfaceSnapshot, byteBudget: Int? = nil, view: View = .interface,
     docs: DocumentationStyle = .summary, showImplied: Bool = false, byModule: Bool = false
   ) throws -> [MarkdownPart] {
     if view == .interface {
@@ -32,19 +32,19 @@ public enum MarkdownRenderer {
     guard !byModule else {
       throw DistillerError(.usage, "Module indexing requires the interface view")
     }
-    return try evidence(snapshot, byteBudget: byteBudget)
+    return try symbols(snapshot, byteBudget: byteBudget)
   }
 
-  private static func evidence(_ snapshot: EvidenceSnapshot, byteBudget: Int?) throws
+  private static func symbols(_ snapshot: InterfaceSnapshot, byteBudget: Int?) throws
     -> [MarkdownPart]
   {
     try snapshot.validate()
     if let byteBudget, byteBudget < 256 {
       throw DistillerError(.usage, "Markdown budget must be at least 256 bytes")
     }
-    let header = "# Interface evidence\n\nSnapshot: `\(try snapshot.identity())`\n\n"
+    let header = "# Interface symbols\n\nSnapshot: `\(try snapshot.identity())`\n\n"
     var blocks: [(String, String)] = []
-    var symbolBlocks: [String: (SymbolRecord, ConfigurationEvidence)] = [:]
+    var symbolBlocks: [String: (SymbolRecord, ConfigurationSnapshot)] = [:]
     for configuration in snapshot.configurations {
       let configText = String(
         decoding: try CanonicalJSON.encode(configuration.configuration), as: UTF8.self
@@ -54,7 +54,7 @@ public enum MarkdownRenderer {
       blocks.append(
         (
           "configuration:" + configuration.id,
-          "## Configuration `\(configuration.id)`\n\n    \(configText)\n\nScope:\n\n    \(scopeText)\n\nExpected modules: \(configuration.expectedModules.map(escape).joined(separator: ", ")).  \nCollected modules: \(configuration.collectedModules.map(escape).joined(separator: ", ")).\n\n"
+          "## Configuration `\(configuration.id)`\n\n    \(configText)\n\nScope:\n\n    \(scopeText)\n\nExpected modules: \(configuration.expectedModules.map(escape).joined(separator: ", ")).\\\nCollected modules: \(configuration.collectedModules.map(escape).joined(separator: ", ")).\n\n"
         ))
       for symbol in configuration.symbols {
         let key = configuration.id + ":" + symbol.id
@@ -92,7 +92,7 @@ public enum MarkdownRenderer {
     for (key, text) in blocks {
       if let budget = byteBudget, text.utf8.count + header.utf8.count > budget {
         throw DistillerError(
-          .usage, "An evidence block exceeds the Markdown byte budget",
+          .usage, "A rendered block exceeds the Markdown byte budget",
           context: ["subject": key, "minimumBytes": String(text.utf8.count + header.utf8.count)])
       }
       if let budget = byteBudget, currentBytes + text.utf8.count > budget {
@@ -122,7 +122,7 @@ public enum MarkdownRenderer {
   }
 
   private static func block(
-    _ symbol: SymbolRecord, configuration: ConfigurationEvidence,
+    _ symbol: SymbolRecord, configuration: ConfigurationSnapshot,
     destination: (String) -> String
   ) -> String {
     let anchor = anchor(configuration: configuration.id, symbol: symbol.id)
@@ -134,7 +134,7 @@ public enum MarkdownRenderer {
         separator: "\n") ?? ""
     var text = "<a id=\"\(anchor)\"></a>\n\n## \(escape(symbol.module)).\(escape(symbol.name))\n\n"
     text +=
-      "Configuration: `\(configuration.id)`  \nCompiler identifier: `\(symbol.preciseIdentifier)`\n\n"
+      "Configuration: `\(configuration.id)`\\\nCompiler identifier: `\(symbol.preciseIdentifier)`\n\n"
     // Indented code preserves arbitrary declaration text, including backtick operators.
     text +=
       declaration.components(separatedBy: "\n").map { "    " + $0 }.joined(separator: "\n") + "\n\n"

@@ -4,6 +4,6 @@
 import PackageDescription
 
 let package = Package(
-  name: "EvidenceExample",
-  products: [.library(name: "EvidenceExample", targets: ["EvidenceExample"])],
-  targets: [.target(name: "EvidenceExample")])
+  name: "SnapshotExample",
+  products: [.library(name: "SnapshotExample", targets: ["SnapshotExample"])],
+  targets: [.target(name: "SnapshotExample")])

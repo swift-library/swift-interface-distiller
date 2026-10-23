@@ -1,4 +1,4 @@
-# Evidence contracts
+# Contracts
 
 ## Inputs and reproducibility
 
@@ -32,12 +32,12 @@ inferred from source, and no build matrix is scheduled.
 
 The run report owns timestamps, duration, cache hit state, executable arguments
 and absolute execution paths. It is an operational artifact, separate from
-portable evidence. Store evidence, run reports and caches under `.build/`.
+portable snapshots. Store snapshots, run reports and caches under `.build/`.
 
 ## Format and provenance
 
-Product version and schema version are independent. New evidence uses schema `2.0`, described in
-[Evidence.schema.json](Schema/Evidence.schema.json). Readers accept unknown object
+Product version and schema version are independent. New snapshots use schema `2.0`, described in
+[InterfaceSnapshot.schema.json](Schema/InterfaceSnapshot.schema.json). Readers accept unknown object
 keys in the same major schema and ignore them; consumers needing round-trip
 preservation should retain the original JSON. Unknown major schemas, unknown
 required enum values, invalid identities and malformed required fields fail.
@@ -49,8 +49,8 @@ configuration. These fields record a deliberate collection policy and distinguis
 out-of-scope references from missing observations. This is a major schema change
 because the fields are required and completeness semantics changed. Readers also
 accept schema 1.x snapshots with their recorded scope and gaps intact; a missing
-synthesized policy means the legacy collector included copies. Its evidence view
-remains unchanged. The [schema 1.0 contract](https://github.com/swift-library/swift-interface-distiller/blob/v0.1.2/Documentation/Schema/Evidence.schema.json)
+synthesized policy means the legacy collector included copies. The symbols view
+renders those snapshots unchanged. The [schema 1.0 contract](https://github.com/swift-library/swift-interface-distiller/blob/v0.1.2/Documentation/Schema/Evidence.schema.json)
 remains available at the immutable release tag.
 
 Compiler symbol fields retain unknown mixins as JSON values. Declaration
@@ -95,7 +95,7 @@ with different observations is an error.
 
 JSON uses UTF-8, sorted object keys, stable set ordering and one terminal newline.
 Numbers use Foundation Decimal representation. Numeric spelling is normalized;
-unbounded numeric precision is not an evidence contract. Ordered sequences
+unbounded numeric precision is not part of the snapshot contract. Ordered sequences
 (declaration fragments, parameters, comment lines) keep order.
 Symbols and configurations are sorted by identity. Graph and relationship sets
 are canonicalized before their content identities are computed.
@@ -165,11 +165,11 @@ reports that payload size. Text views include ancestor declarations as context
 for member queries; those context declarations also count toward their budget.
 A consumer must inspect both the state and omitted references.
 
-The default Markdown interface view projects the collected evidence. One snapshot
+The default Markdown interface view projects the collected observations. One snapshot
 header records modules, extractor, toolchain, 12-character configuration IDs,
 scope, declaration and external-reference counts, and every recorded gap category.
 The header and query diagnostics use counts; compiler identifier lists remain in
-JSON and the evidence view. Short IDs
+JSON and the symbols view. Short IDs
 are display labels; canonical JSON retains the authoritative full identities.
 Declarations preserve the compiler's ordered fragments (including generic parameters,
 where clauses, isolation and signatures), add reported access and availability,
@@ -195,18 +195,18 @@ extra overloads, unknown signatures and original protocol-extension declarations
 remain. An unfiltered enum's single failable raw-value initializer is an
 unambiguous RawRepresentable presentation candidate. This is a presentation
 policy, not a claim about compiler synthesis or conformance witness selection.
-`--show-implied` expands these collected declarations; JSON and the evidence
+`--show-implied` expands these collected declarations; JSON and the symbols
 view retain them. Public CodingKeys declarations remain visible because Codable
 does not require that named type. Implicit Copyable, Escapable and SendableMetatype
 conformance relationships are omitted from the interface projection; JSON and
-`--view evidence` retain them. Reported declaration fragments, including explicit
+`--view symbols` retain them. Reported declaration fragments, including explicit
 constraints, remain authoritative.
 
 Interface views emit one anchor immediately before each top-level declaration block,
 including external extension groups with their own blocks. Nested types, members
 and constrained extensions within that block share its anchor. `InterfaceRenderer.anchors(in:)`
 maps every symbol to this containing block's destination; multiple symbols can
-therefore return the same anchor. Evidence views retain one SHA-256 anchor per symbol.
+therefore return the same anchor. The symbols view retains one SHA-256 anchor per symbol.
 Top-level anchors use lowercase module, immediate owner and declaration name,
 joining alphanumeric runs with hyphens. Parameter-label lists are excluded and
 an all-punctuation name becomes `symbol`. Collisions add a deterministic prefix
@@ -223,14 +223,14 @@ whole unsplit interface. Each symbol owns its declaration, documentation and
 anchor bytes when it owns a top-level block; members have zero anchor bytes.
 Header, headings, fences and remaining spacing are overhead.
 Collapsed symbols have zero rendered bytes and retain their standard-requirement
-category. Reports describe presentation, separately from canonical evidence.
+category. Reports describe presentation, separately from canonical snapshots.
 
 Splitting keeps a top-level declaration, all nested members and its constrained
 extensions together. Every part includes snapshot and module context, and the
 byte budget includes that context. An indivisible declaration that cannot fit
-produces an error with the minimum required size. `--view evidence` retains the
-full metadata, SHA-256 anchors, explicit cross-part links and per-evidence-block
-splitting of the evidence view; documentation selection affects only interface views.
+produces an error with the minimum required size. `--view symbols` retains the
+full metadata, SHA-256 anchors, explicit cross-part links and per-symbol-block
+splitting of the symbols view; documentation selection affects only interface views.
 
 Comparison reports added/removed symbols and JSON-pointer field changes in
 interface, documentation, availability and provenance categories. Different
@@ -259,7 +259,7 @@ timeout kills the process group, including children holding pipe descriptors.
 
 Collected and normalized caches are content-keyed separately. SwiftPM owns
 compilation incrementality. A file lock serializes package collection sharing a
-cache, and completed evidence is written atomically. Cache hits validate the
+cache, and completed snapshots are written atomically. Cache hits validate the
 snapshot schema and identities. A cache is a disposable trusted local derivative.
 
 Baseline write validates before atomic replacement. Missing expected modules,

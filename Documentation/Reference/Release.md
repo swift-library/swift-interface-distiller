@@ -6,10 +6,10 @@ standards.
 
 [`.github/release.json`](../../.github/release.json) declares the repository,
 version source and pattern, changelog, minimum Swift version and supported
-platforms. `DistillerVersion.current` in `Sources/InterfaceDistiller/Evidence.swift`
+platforms. `DistillerVersion.current` in `Sources/InterfaceDistiller/InterfaceSnapshot.swift`
 owns the package and executable version; `CHANGELOG.md` owns release notes.
 The schema version is a separate compatibility declaration documented in
-[Evidence contracts](../Contracts.md).
+[Contracts](../Contracts.md).
 
 The Swift tools minimum is 6.3. The library and bundled executable support the
 three macOS generations 15, 26 and 27, with a deployment floor of macOS 15.

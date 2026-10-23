@@ -1,6 +1,6 @@
 # ``InterfaceDistiller``
 
-Distill a Swift package to its public API: a compact interface to read, evidence to query and diff.
+Distill a Swift package to its public API: a compact interface to read, snapshots to query and diff.
 
 @Metadata {
     @PageImage(purpose: icon, source: "Logo.png", alt: "Interface Distiller")
@@ -20,12 +20,12 @@ Read public declarations reported by the compiler without walking a package’s 
 - ``SymbolGraphNormalizer``
 - ``CollectionScope``
 
-### Evidence
-- ``EvidenceSnapshot``
-- ``ConfigurationEvidence``
+### Snapshots
+- ``InterfaceSnapshot``
+- ``ConfigurationSnapshot``
 - ``BuildConfiguration``
 - ``SymbolRecord``
-- ``EvidenceField``
+- ``ObservedField``
 - ``ObservationState``
 - ``ProvenanceKind``
 - ``PackageStructure``

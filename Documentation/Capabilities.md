@@ -1,6 +1,6 @@
 # Platform and toolchain capabilities
 
-Collection uses installed tools. Evidence consumption needs only the library.
+Collection uses installed tools. Reading snapshots needs only the library.
 These configurations have execution coverage:
 
 | Configuration | Package/graphs | Matching binary modules | C and Objective-C | API diagnostics |
@@ -12,8 +12,8 @@ These configurations have execution coverage:
 
 The shared CI compiler matrix selects only the latest stable Xcode, currently
 Xcode 26.6 on macOS 26 (`macos-26-xcode-26.6`). Linux tests run Swift 6.3.3 on
-Ubuntu 24.04. Each job records its actual compiler version in the
-validation evidence. The package tools floor is 6.3; the
+Ubuntu 24.04. Each job records its actual compiler version in its
+compiler-version record. The package tools floor is 6.3; the
 macOS deployment floor is 15 for both the library and bundled executable. The
 supported macOS generations are 15, 26 and 27; older generations are covered by
 compile-time availability checking against the latest SDK. Newer compilers and
@@ -41,6 +41,6 @@ Package collection accepts internal directory symlinks, normalizes filesystem
 aliases for build tools and C modules, and honors dependency manifest language
 modes. Apple platform developer search paths make Testing and its Foundation
 overlay available to library extraction. Empty default library scopes return
-empty evidence; libraries receiving generated declarations from build plugins
+empty snapshots; libraries receiving generated declarations from build plugins
 remain selected. These cases have regression fixtures and succeed in the
 [13-package measurement sweep](InterfaceSize.md).

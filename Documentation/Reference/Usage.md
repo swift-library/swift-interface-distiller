@@ -17,8 +17,8 @@ The query includes this compiler identity for `Item`:
 ```json
 {
   "language": "swift",
-  "module": "EvidenceExample",
-  "preciseIdentifier": "s:15EvidenceExample4ItemV"
+  "module": "SnapshotExample",
+  "preciseIdentifier": "s:15SnapshotExample4ItemV"
 }
 ```
 
@@ -51,7 +51,7 @@ stderr, and failed writes preserve existing baselines. Queries default to JSON;
 `--format swift|markdown` selects a readable view.
 Rendering defaults to a nested Swift interface with summary documentation; use
 `--docs full|none`, `--show-implied` to expand standard conformance requirements,
-or `--view evidence` for the detailed evidence view. `--by-module` adds an index
+or `--view symbols` for the detailed symbols view. `--by-module` adds an index
 and linked module files for large APIs. Query byte
 budgets count the chosen payload format; headers and omission diagnostics remain
 outside that budget. A slice is complete when every in-snapshot reference fits;

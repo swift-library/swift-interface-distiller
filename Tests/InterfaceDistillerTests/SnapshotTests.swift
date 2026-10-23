@@ -20,23 +20,24 @@ func fixtureGraphs() throws -> [SymbolGraphInput] {
   )
 }
 
-func fixtureSnapshot(scope: CollectionScope = .init(includeSPI: true)) throws -> EvidenceSnapshot {
+func fixtureSnapshot(scope: CollectionScope = .init(includeSPI: true)) throws -> InterfaceSnapshot {
   try SymbolGraphNormalizer.normalize(
     fixtureGraphs(), configuration: fixtureConfiguration, scope: scope)
 }
 
 @Test func compilerFixtureMatchesGoldenProjection() throws {
-  let evidence = try fixtureSnapshot().configurations[0]
+  let configuration = try fixtureSnapshot().configurations[0]
   let projection: JSONValue = .object([
     "symbols": .array(
-      evidence.symbols.map {
+      configuration.symbols.map {
         .string(
           $0.name + "|" + ($0.fields["kind"]?.value["identifier"].string ?? "") + "|"
             + $0.preciseIdentifier)
       }.sorted { ($0.string ?? "") < ($1.string ?? "") }),
     "relationships": .array(
-      Set(evidence.relationships.map { $0.kind + "|" + $0.source + "|" + $0.target }).sorted().map(
-        JSONValue.string)),
+      Set(configuration.relationships.map { $0.kind + "|" + $0.source + "|" + $0.target }).sorted()
+        .map(
+          JSONValue.string)),
   ])
   let expected = try JSONValue.read(
     #require(
@@ -84,7 +85,7 @@ func testDirectory(_ name: String) throws -> URL {
   #expect(query.returning("Item").symbols.contains { $0.name == "make()" })
   #expect(query.observedConformers(to: "Named").symbols.contains { $0.name == "Item" })
   #expect(query.lookup("unknown-symbol").symbols.isEmpty)
-  let coverage = DocumentationCoverage.measure(query.evidence)
+  let coverage = DocumentationCoverage.measure(query.configurationSnapshot)
   #expect(coverage.eligible == 17)
   #expect(coverage.documented == 6)
   #expect(coverage.undocumented.count == coverage.eligible - coverage.documented)
@@ -96,17 +97,17 @@ func testDirectory(_ name: String) throws -> URL {
   graph["relationships"] = .array([])
   let snapshot = try SymbolGraphNormalizer.normalize(
     [.init(value: .object(graph))], configuration: fixtureConfiguration,
-    expectedModules: ["EvidenceExample"])
+    expectedModules: ["SnapshotExample"])
   let query = try SnapshotQuery(snapshot)
-  #expect(query.evidence.collectedModules == ["EvidenceExample"])
-  #expect(query.evidence.symbols.isEmpty)
+  #expect(query.configurationSnapshot.collectedModules == ["SnapshotExample"])
+  #expect(query.configurationSnapshot.symbols.isEmpty)
   #expect(query.lookup("missing").symbols.isEmpty)
-  let coverage = DocumentationCoverage.measure(query.evidence)
+  let coverage = DocumentationCoverage.measure(query.configurationSnapshot)
   #expect(coverage.eligible == 0)
   #expect(coverage.documented == 0)
   #expect(coverage.fraction == nil)
   #expect(
-    try JSONDecoder().decode(EvidenceSnapshot.self, from: CanonicalJSON.encode(snapshot))
+    try JSONDecoder().decode(InterfaceSnapshot.self, from: CanonicalJSON.encode(snapshot))
       == snapshot)
 }
 
@@ -178,7 +179,7 @@ func testDirectory(_ name: String) throws -> URL {
   changed.configurations[0].symbols[index].fields["docComment"]?.value = .object([
     "lines": .array([.object(["text": .string("Updated documentation")])])
   ])
-  changed.configurations[0].symbols[index].fields["availability"] = EvidenceField(
+  changed.configurations[0].symbols[index].fields["availability"] = ObservedField(
     .array([.object(["domain": .string("*"), "isUnconditionallyDeprecated": .bool(true)])]),
     sources: base.configurations[0].symbols[index].fields["identifier"]!.sources)
   changed.configurations[0].symbols[index].fields["declarationFragments"]?.value = .array([])
@@ -195,25 +196,25 @@ func testDirectory(_ name: String) throws -> URL {
 @Test func schemaAndMultipleConfigurationContracts() throws {
   let base = try fixtureSnapshot()
   let data = try CanonicalJSON.encode(base)
-  #expect(try JSONDecoder().decode(EvidenceSnapshot.self, from: data) == base)
+  #expect(try JSONDecoder().decode(InterfaceSnapshot.self, from: data) == base)
   var incompatible = base
   incompatible.schemaVersion = "3.0"
   #expect(throws: DistillerError.self) { try incompatible.validate() }
   var otherConfig = fixtureConfiguration
   otherConfig.conditions = ["EXTRA"]
   let other = try SymbolGraphNormalizer.normalize(fixtureGraphs(), configuration: otherConfig)
-  let merged = try EvidenceSnapshot.merge([other, base])
+  let merged = try InterfaceSnapshot.merge([other, base])
   #expect(merged.configurations.count == 2)
   #expect(throws: DistillerError.self) { try SnapshotQuery(merged) }
   #expect(
-    try SnapshotQuery(merged, configuration: base.configurations[0].id).evidence.id
+    try SnapshotQuery(merged, configuration: base.configurations[0].id).configurationSnapshot.id
       == base.configurations[0].id)
   #expect(try SnapshotComparator.compare(base, other).incomparableConfigurations.count == 2)
 }
 
 @Test func markdownStableAnchorsAndStrictBudgets() throws {
   let snapshot = try fixtureSnapshot()
-  let parts = try MarkdownRenderer.render(snapshot, byteBudget: 3000, view: .evidence)
+  let parts = try MarkdownRenderer.render(snapshot, byteBudget: 3000, view: .symbols)
   #expect(parts.allSatisfy { $0.markdown.utf8.count <= 3000 })
   #expect(parts.count > 1)
   let content = parts.map(\.markdown).joined()
@@ -225,7 +226,7 @@ func testDirectory(_ name: String) throws -> URL {
           + "\""))
   }
   #expect(throws: DistillerError.self) {
-    try MarkdownRenderer.render(snapshot, byteBudget: 256, view: .evidence)
+    try MarkdownRenderer.render(snapshot, byteBudget: 256, view: .symbols)
   }
 }
 
@@ -286,7 +287,7 @@ func testDirectory(_ name: String) throws -> URL {
   #expect(Set(difference.changes.map(\.path)) == ["/inputDigest", "/graphs"])
   let first = Relationship(
     module: "Example", language: "swift", kind: "memberOf", source: "a", target: "b",
-    fields: ["condition": EvidenceField(.string("same"), sources: ["first"])])
+    fields: ["condition": ObservedField(.string("same"), sources: ["first"])])
   var second = first
   second.fields["condition"]?.sources = ["second"]
   let merged = try SymbolGraphNormalizer.mergedRelationships([first, second])

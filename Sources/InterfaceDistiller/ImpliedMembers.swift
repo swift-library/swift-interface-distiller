@@ -6,18 +6,18 @@ import Foundation
 /// Presentation categories for standard requirements already stated by a conformance.
 /// This does not identify a synthesized implementation or select a witness.
 enum ImpliedMembers {
-  static func categories(in evidence: ConfigurationEvidence) -> [String: String] {
-    let parents = DeclarationNesting.parents(in: evidence)
-    let symbols = Dictionary(grouping: evidence.symbols, by: \.preciseIdentifier)
+  static func categories(in configuration: ConfigurationSnapshot) -> [String: String] {
+    let parents = DeclarationNesting.parents(in: configuration)
+    let symbols = Dictionary(grouping: configuration.symbols, by: \.preciseIdentifier)
     let conformances = Dictionary(
-      grouping: evidence.relationships.filter { $0.kind == "conformsTo" }, by: \.source)
+      grouping: configuration.relationships.filter { $0.kind == "conformsTo" }, by: \.source)
     let members = Dictionary(
-      grouping: evidence.symbols.flatMap { symbol in
+      grouping: configuration.symbols.flatMap { symbol in
         (parents[symbol.id] ?? []).map { (parent: $0, symbol: symbol) }
       }, by: \.parent
     ).mapValues { $0.map(\.symbol) }
     var result: [String: String] = [:]
-    for symbol in evidence.symbols where symbol.language == "swift" {
+    for symbol in configuration.symbols where symbol.language == "swift" {
       for parentID in parents[symbol.id] ?? [] {
         for parent in symbols[parentID] ?? [] where parent.module == symbol.module {
           let kind = parent.fields["kind"]?.value["identifier"].string
@@ -34,7 +34,7 @@ enum ImpliedMembers {
           let protocols = Set(requirements.map(\.target))
           if let category = category(
             symbol, parent: parent, members: members[parentID] ?? [], protocols: protocols,
-            unfiltered: evidence.scope.include.isEmpty && evidence.scope.exclude.isEmpty)
+            unfiltered: configuration.scope.include.isEmpty && configuration.scope.exclude.isEmpty)
           {
             result[symbol.id] = category
           }

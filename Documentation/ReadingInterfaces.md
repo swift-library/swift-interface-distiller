@@ -67,7 +67,7 @@ The distiller compares declarations, documentation, availability and provenance;
 compiler compatibility diagnostics remain a separate artifact. This gives people
 Markdown they can review and machines JSON they can query and diff.
 
-Normalization produces byte-identical evidence for identical observations on
+Normalization produces byte-identical snapshots for identical observations on
 macOS and Linux. That is separate from reproducing a compiler build: sources,
 dependencies, compiler, SDK, target and selected configuration belong to snapshot
 identity. The [determinism contract](Contracts.md) defines the inputs and the tests

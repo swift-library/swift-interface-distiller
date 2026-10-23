@@ -26,7 +26,7 @@ public struct SnapshotDifference: Codable, Sendable {
 
 /// Observational comparison deliberately contains no versioning or release decision.
 public enum SnapshotComparator {
-  public static func compare(_ baseline: EvidenceSnapshot, _ candidate: EvidenceSnapshot) throws
+  public static func compare(_ baseline: InterfaceSnapshot, _ candidate: InterfaceSnapshot) throws
     -> SnapshotDifference
   {
     try baseline.validate()
@@ -136,7 +136,7 @@ public enum SnapshotComparator {
 }
 
 public enum BaselineStore {
-  public static func write(_ snapshot: EvidenceSnapshot, to url: URL) throws {
+  public static func write(_ snapshot: InterfaceSnapshot, to url: URL) throws {
     try snapshot.validate()
     guard !snapshot.configurations.isEmpty else {
       throw DistillerError(.incomplete, "An empty snapshot cannot become a baseline")
@@ -152,14 +152,14 @@ public enum BaselineStore {
     try CanonicalJSON.write(snapshot, to: url)
   }
 
-  public static func check(_ snapshot: EvidenceSnapshot, against url: URL) throws
+  public static func check(_ snapshot: InterfaceSnapshot, against url: URL) throws
     -> SnapshotDifference
   {
-    try SnapshotComparator.compare(EvidenceSnapshot.read(url), snapshot)
+    try SnapshotComparator.compare(InterfaceSnapshot.read(url), snapshot)
   }
 }
 
-/// Compiler diagnostics remain separate evidence; exit status does not become release policy.
+/// Compiler diagnostics remain a separate artifact; exit status does not become release policy.
 public struct CompilerDiagnostics: Codable, Sendable {
   public var producer: String
   public var baseline: String

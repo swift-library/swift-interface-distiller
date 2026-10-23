@@ -24,12 +24,12 @@ public struct SliceResult: Codable, Sendable {
 /// Queries cannot mix observations from separate snapshots or configurations.
 public struct SnapshotQuery: Sendable {
   public let snapshotID: String
-  public let evidence: ConfigurationEvidence
+  public let configurationSnapshot: ConfigurationSnapshot
   private let schemaVersion: String
   private let parentReferences: [String: [String]]
   private let childrenByParent: [String: [String]]
 
-  public init(_ snapshot: EvidenceSnapshot, configuration: String? = nil) throws {
+  public init(_ snapshot: InterfaceSnapshot, configuration: String? = nil) throws {
     try snapshot.validate()
     guard
       let selected = configuration.flatMap({ id in snapshot.configurations.first { $0.id == id } })
@@ -40,7 +40,7 @@ public struct SnapshotQuery: Sendable {
     }
     self.schemaVersion = snapshot.schemaVersion
     self.snapshotID = try snapshot.identity()
-    self.evidence = selected
+    self.configurationSnapshot = selected
     let parents = DeclarationNesting.parents(in: selected)
     self.parentReferences = parents
     self.childrenByParent = Dictionary(
@@ -52,7 +52,7 @@ public struct SnapshotQuery: Sendable {
 
   public func lookup(_ identifierOrName: String) -> QueryResult {
     result(
-      evidence.symbols.filter {
+      configurationSnapshot.symbols.filter {
         $0.id == identifierOrName || $0.preciseIdentifier == identifierOrName
           || $0.name == identifierOrName
           || $0.fields["pathComponents"]?.value.strings.joined(separator: ".") == identifierOrName
@@ -78,7 +78,7 @@ public struct SnapshotQuery: Sendable {
   public func returning(_ identifier: String) -> QueryResult {
     let precise = Set(lookup(identifier).symbols.map(\.preciseIdentifier) + [identifier])
     return result(
-      evidence.symbols.filter { symbol in
+      configurationSnapshot.symbols.filter { symbol in
         let returns = symbol.fields["functionSignature"]?.value["returns"] ?? .null
         return !precise.isDisjoint(with: SymbolGraphNormalizer.references(in: returns))
       })
@@ -135,7 +135,8 @@ public struct SnapshotQuery: Sendable {
         selected[symbol.id] = symbol
         bytes = size
         pending += symbol.references
-        for edge in evidence.relationships where edge.source == symbol.preciseIdentifier {
+        for edge in configurationSnapshot.relationships
+        where edge.source == symbol.preciseIdentifier {
           pending.append(edge.target)
         }
         pending += childrenByParent[symbol.preciseIdentifier] ?? []
@@ -148,10 +149,10 @@ public struct SnapshotQuery: Sendable {
     }
     let identities = Set(selected.values.map(\.preciseIdentifier))
     return SliceResult(
-      snapshot: snapshotID, configuration: evidence.id,
+      snapshot: snapshotID, configuration: configurationSnapshot.id,
       state: omitted.isEmpty ? "complete" : "truncated",
       symbols: selected.values.sorted { $0.id < $1.id },
-      relationships: evidence.relationships.filter {
+      relationships: configurationSnapshot.relationships.filter {
         identities.contains($0.source) && identities.contains($0.target)
       },
       omittedReferences: omitted.sorted(), externalReferences: external.sorted(),
@@ -163,7 +164,7 @@ public struct SnapshotQuery: Sendable {
     _ result: QueryResult, maximumSymbols: Int? = nil, maximumBytes: Int? = nil,
     format: QueryFormat = .json, docs: DocumentationStyle = .summary, showImplied: Bool = false
   ) throws -> SliceResult {
-    guard result.snapshot == snapshotID, result.configuration == evidence.id,
+    guard result.snapshot == snapshotID, result.configuration == configurationSnapshot.id,
       maximumSymbols.map({ $0 > 0 }) ?? true, maximumBytes.map({ $0 > 0 }) ?? true
     else { throw DistillerError(.usage, "Invalid query result or budget") }
     var symbols: [SymbolRecord] = []
@@ -181,7 +182,7 @@ public struct SnapshotQuery: Sendable {
       }
     }
     return SliceResult(
-      snapshot: snapshotID, configuration: evidence.id,
+      snapshot: snapshotID, configuration: configurationSnapshot.id,
       state: omitted.isEmpty ? "complete" : "truncated",
       symbols: symbols, relationships: [], omittedReferences: omitted, externalReferences: [],
       diagnostics: omitted.isEmpty ? [] : ["Symbol payload budget exhausted"],
@@ -193,11 +194,12 @@ public struct SnapshotQuery: Sendable {
     _ result: SliceResult, format: QueryFormat = .json, docs: DocumentationStyle = .summary,
     showImplied: Bool = false
   ) throws -> Data {
-    guard result.snapshot == snapshotID, result.configuration == evidence.id else {
+    guard result.snapshot == snapshotID, result.configuration == configurationSnapshot.id else {
       throw DistillerError(.usage, "Query result belongs to another snapshot")
     }
     if format == .json { return try CanonicalJSON.encode(result) }
-    let snapshot = try EvidenceSnapshot(configurations: [evidence], schemaVersion: schemaVersion)
+    let snapshot = try InterfaceSnapshot(
+      configurations: [configurationSnapshot], schemaVersion: schemaVersion)
     var header = InterfaceRenderer.header(snapshot, docs: docs, showImplied: showImplied)
     header += "Snapshot: \(snapshotID.prefix(12)) · Selection: \(result.state)\n"
     if !result.omittedReferences.isEmpty {
@@ -210,7 +212,8 @@ public struct SnapshotQuery: Sendable {
       header = header.components(separatedBy: "\n").map { "// " + $0 }.joined(separator: "\n")
     }
     let body = try InterfaceRenderer.body(
-      result.symbols, evidence: evidence, format: format, docs: docs, showImplied: showImplied)
+      result.symbols, configuration: configurationSnapshot, format: format, docs: docs,
+      showImplied: showImplied)
     return Data((header + "\n" + body).utf8)
   }
 
@@ -222,7 +225,8 @@ public struct SnapshotQuery: Sendable {
   {
     if format == .json { return try symbols.reduce(0) { try $0 + CanonicalJSON.encode($1).count } }
     return try InterfaceRenderer.body(
-      symbols, evidence: evidence, format: format, docs: docs, showImplied: showImplied
+      symbols, configuration: configurationSnapshot, format: format, docs: docs,
+      showImplied: showImplied
     ).utf8
       .count
   }
@@ -231,19 +235,22 @@ public struct SnapshotQuery: Sendable {
     let ids = Set(lookup(identifier).symbols.map(\.preciseIdentifier) + [identifier])
     if kinds == DeclarationNesting.kinds {
       return result(
-        evidence.symbols.filter {
+        configurationSnapshot.symbols.filter {
           !ids.isDisjoint(with: parentReferences[$0.id] ?? [])
         })
     }
     let sources = Set(
-      evidence.relationships.filter { kinds.contains($0.kind) && ids.contains($0.target) }.map(
+      configurationSnapshot.relationships.filter {
+        kinds.contains($0.kind) && ids.contains($0.target)
+      }.map(
         \.source))
-    return result(evidence.symbols.filter { sources.contains($0.preciseIdentifier) })
+    return result(configurationSnapshot.symbols.filter { sources.contains($0.preciseIdentifier) })
   }
 
   private func result(_ symbols: [SymbolRecord]) -> QueryResult {
     QueryResult(
-      snapshot: snapshotID, configuration: evidence.id, symbols: symbols.sorted { $0.id < $1.id })
+      snapshot: snapshotID, configuration: configurationSnapshot.id,
+      symbols: symbols.sorted { $0.id < $1.id })
   }
 }
 
@@ -255,8 +262,8 @@ public struct DocumentationCoverage: Codable, Sendable {
   public var fraction: Double?
 
   /// Denominator: all collected non-extension symbols; a nonblank raw comment counts once.
-  public static func measure(_ evidence: ConfigurationEvidence) -> Self {
-    let eligible = evidence.symbols.filter {
+  public static func measure(_ configuration: ConfigurationSnapshot) -> Self {
+    let eligible = configuration.symbols.filter {
       $0.fields["kind"]?.value["identifier"].string != "swift.extension"
     }
     let missing = eligible.filter {
@@ -265,7 +272,7 @@ public struct DocumentationCoverage: Codable, Sendable {
       }
     }.map(\.id).sorted()
     return Self(
-      configuration: evidence.id, eligible: eligible.count,
+      configuration: configuration.id, eligible: eligible.count,
       documented: eligible.count - missing.count,
       undocumented: missing,
       fraction: eligible.isEmpty
