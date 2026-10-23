@@ -3,6 +3,12 @@
 Follow the shared [contributing guide](https://github.com/swift-library/.github/blob/master/CONTRIBUTING.md).
 Use signed Conventional Commits and reviewed pull requests.
 
+The package requires Swift 6.3 or later and targets macOS 15 or later, or Linux.
+The shared CI compiler matrix uses the latest stable Xcode only: Xcode 26.6 on
+macOS 26. Linux tests use the separately configured Swift 6.3.1 image. Older
+macOS generations are checked for API availability at compile time against the
+latest SDK.
+
 Run these checks from the repository root:
 
 ```sh

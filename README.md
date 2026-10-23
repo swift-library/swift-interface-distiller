@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://github.com/swift-library/swift-interface-distiller/actions/workflows/ci.yml"><img src="https://github.com/swift-library/swift-interface-distiller/actions/workflows/ci.yml/badge.svg?branch=master" alt="CI"></a>
   <img src="https://img.shields.io/badge/Swift-6.3%2B-F05138?style=flat" alt="Swift 6.3+">
-  <img src="https://img.shields.io/badge/platforms-macOS%2012%2B%20%7C%20Linux-lightgrey?style=flat" alt="Platforms: macOS 12+ | Linux">
+  <img src="https://img.shields.io/badge/platforms-macOS%2015%2B%20%7C%20Linux-lightgrey?style=flat" alt="Platforms: macOS 15+ | Linux">
   <a href="LICENSE.txt"><img src="https://img.shields.io/badge/license-Apache--2.0-blue?style=flat" alt="License: Apache-2.0 WITH Swift-exception"></a>
 </p>
 
@@ -73,7 +73,7 @@ Install the command-line tool with Homebrew:
 brew install swift-library/tap/swift-interface-distiller
 ```
 
-On macOS, the formula requires macOS 15 or later and Xcode 26 or later with
+On macOS, the formula requires macOS 15 or later and Xcode 26.6 or later with
 Swift 6.3 or later selected. See the [tap requirements](https://github.com/swift-library/homebrew-tap/blob/master/Documentation/Tools.md).
 
 Build the executable from a checkout with
@@ -90,13 +90,16 @@ Choose the package, modules, configuration, and optional scope explicitly. Query
 
 ## Requirements
 
-- Swift 6.3 or later; macOS deployment floor 12, or Linux.
+- Swift 6.3 or later; macOS 15 or later, or Linux. The library and bundled
+  command-line tool share the macOS deployment floor.
 - A matching compiler, SDK and target configuration for collection. Consuming
   existing evidence through the library does not run a compiler.
 - Clang ExtractAPI for C and Objective-C headers.
 
-CI selects Xcode 26.6 on macOS 26 and Swift 6.3 on Ubuntu 24.04. The
-[capability matrix](Documentation/Capabilities.md) records tested combinations and
+The shared CI compiler matrix selects only the latest stable Xcode, currently
+Xcode 26.6 on macOS 26. Linux tests use Swift 6.3.1 on Ubuntu 24.04. Older macOS
+generations are covered by compile-time availability checking against the latest
+SDK. The [capability matrix](Documentation/Capabilities.md) records tested combinations and
 compiler/SDK limits. The [validation configuration](.github/swift-package.json)
 declares the compiler matrix, formatting paths, Linux image, DocC target, terminal
 demo and repository checks. See [Contributing](CONTRIBUTING.md) for local validation.

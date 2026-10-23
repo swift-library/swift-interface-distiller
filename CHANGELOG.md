@@ -1,5 +1,10 @@
 ## Unreleased
 
+- **Breaking**: Raise the macOS deployment minimum to 15 for the library and
+  bundled command-line tool. The minimum Swift tools version remains 6.3.
+- Use Xcode 26.6 on macOS 26 as the single shared CI compiler configuration and
+  update the shared workflows.
+
 ## 0.3.1
 
 - Validate terminal recordings against their captured extractor provenance and

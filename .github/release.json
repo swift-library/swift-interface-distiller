@@ -5,7 +5,7 @@
   "changelog": "CHANGELOG.md",
   "minimum_swift": "6.3",
   "platforms": {
-    "macOS": "12",
+    "macOS": [15, 26, 27],
     "Linux": "Ubuntu 24.04"
   }
 }

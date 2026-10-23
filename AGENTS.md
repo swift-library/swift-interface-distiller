@@ -5,6 +5,11 @@ The library owns evidence, collection, queries, rendering and comparison. The
 executable owns argument handling and streams. Release policy belongs to the
 organization's shared standards.
 
+The Swift tools minimum is 6.3. The library and bundled executable share the
+macOS 15 deployment floor. Shared CI uses one compiler entry: Xcode 26.6 on
+macOS 26, with older deployment targets covered by compile-time availability
+checking against the latest SDK. Linux validation is declared separately.
+
 Run the local checks in CONTRIBUTING.md before pushing. Validation is declared
 in `.github/swift-package.json`; required checks are `policy / policy` and
 `validate / result`. Keep repository-specific automation in lowercase `scripts/`
