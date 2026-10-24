@@ -1,7 +1,7 @@
 {
   "compilers": [
     {
-      "name": "macos-26-swift-6.3",
+      "name": "macos-26-xcode-26.6",
       "runner": "macos-26",
       "xcode": "26.6"
     }
@@ -14,7 +14,7 @@
     "linux": [
       {
         "name": "linux-swift-6.3",
-        "image": "swift:6.3.1-noble@sha256:af0181a2fe491b45c935a962a45ab77db3d0b867016e481ac164704f09c656fa"
+        "image": "swift:6.3.3-noble@sha256:c2f3ac2eb806ce43f68859c3d52bd3bb1cfc88672fb3a948b76e136d98e39278"
       }
     ]
   },

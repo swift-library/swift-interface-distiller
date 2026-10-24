@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
   name: "swift-interface-distiller",
-  platforms: [.macOS(.v12)],
+  platforms: [.macOS(.v15)],
   products: [
     .library(name: "InterfaceDistiller", targets: ["InterfaceDistiller"]),
     .executable(name: "interface-distiller", targets: ["InterfaceDistillerCLI"]),

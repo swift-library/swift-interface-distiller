@@ -10,10 +10,14 @@ These configurations have execution coverage:
 | macOS 26 arm64, Xcode 26.6, Apple Swift 6.3.3 | Tested | Tested | Apple Clang, tested | SwiftPM and digester tested |
 | Ubuntu 24.04 x86_64, Swift 6.3.1 | Tested | Tested | Toolchain Clang, tested | SwiftPM and digester tested |
 
-CI runs Swift 6.3.1 on Ubuntu 24.04 and selects Xcode 26.6 with Apple Swift 6.3.3 on macOS 26
-(`macos-26-swift-6.3`). Each job records its actual compiler version in the
+The shared CI compiler matrix selects only the latest stable Xcode, currently
+Xcode 26.6 on macOS 26 (`macos-26-xcode-26.6`). Linux tests run Swift 6.3.3 on
+Ubuntu 24.04. Each job records its actual compiler version in the
 validation evidence. The package tools floor is 6.3; the
-macOS deployment floor is 12. Newer compilers and SDKs are not assumed equivalent.
+macOS deployment floor is 15 for both the library and bundled executable. The
+supported macOS generations are 15, 26 and 27; older generations are covered by
+compile-time availability checking against the latest SDK. Newer compilers and
+SDKs are not assumed equivalent.
 In particular, the installed Swift 6.3.1 compiler cannot import Foundation from
 the macOS 27 SDK; that pairing is not a supported validation configuration.
 
