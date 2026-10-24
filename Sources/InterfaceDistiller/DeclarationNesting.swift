@@ -6,15 +6,15 @@
 enum DeclarationNesting {
   static let kinds: Set<String> = ["memberOf", "requirementOf", "optionalRequirementOf"]
 
-  static func parents(in evidence: ConfigurationEvidence) -> [String: [String]] {
-    let edges = Dictionary(grouping: evidence.relationships, by: \.source)
+  static func parents(in configuration: ConfigurationSnapshot) -> [String: [String]] {
+    let edges = Dictionary(grouping: configuration.relationships, by: \.source)
     let protocols = Dictionary(
-      grouping: evidence.symbols.filter {
+      grouping: configuration.symbols.filter {
         $0.fields["kind"]?.value["identifier"].string == "swift.protocol"
       }
     ) { [$0.module, $0.language] + ($0.fields["pathComponents"]?.value.strings ?? []) }
     var result: [String: [String]] = [:]
-    for symbol in evidence.symbols {
+    for symbol in configuration.symbols {
       let outgoing = (edges[symbol.preciseIdentifier] ?? []).filter {
         $0.module == symbol.module && $0.language == symbol.language
       }

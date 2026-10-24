@@ -48,7 +48,7 @@ import InterfaceDistiller
     if values.isEmpty || values == ["--help"] {
       print(
         """
-        interface-distiller — public-interface evidence
+        interface-distiller — public-interface snapshots
 
         configuration                           Print detected build configuration
         collect package PATH                    Collect a local package
@@ -56,7 +56,7 @@ import InterfaceDistiller
         collect headers NAME --header PATH --language c|objective-c
         normalize GRAPH... --configuration CONFIG
         merge SNAPSHOT...
-        render SNAPSHOT --output-dir DIR [--view interface|evidence] [--byte-budget N]
+        render SNAPSHOT --output-dir DIR [--view interface|symbols] [--byte-budget N]
         query SNAPSHOT lookup|members|conformers|initializers|returning|slice SYMBOL...
         slice SNAPSHOT SYMBOL...                Query a reference closure
         compare BASELINE CANDIDATE
@@ -170,13 +170,13 @@ import InterfaceDistiller
         throw DistillerError(.usage, "Merge requires snapshots")
       }
       try emit(
-        EvidenceSnapshot.merge(
-          args.positionals.dropFirst().map { try EvidenceSnapshot.read(file($0)) }))
+        InterfaceSnapshot.merge(
+          args.positionals.dropFirst().map { try InterfaceSnapshot.read(file($0)) }))
     case "render":
-      guard view != .evidence || args.one("report") == nil else {
+      guard view != .symbols || args.one("report") == nil else {
         throw DistillerError(.usage, "Interface size reports require the interface view")
       }
-      let snapshot = try EvidenceSnapshot.read(file(position(1)))
+      let snapshot = try InterfaceSnapshot.read(file(position(1)))
       let parts = try MarkdownRenderer.render(
         snapshot, byteBudget: args.integer("byte-budget"), view: view, docs: docs,
         showImplied: showImplied, byModule: args.flag("by-module"))
@@ -198,7 +198,7 @@ import InterfaceDistiller
       }
     case "query", "slice":
       let query = try SnapshotQuery(
-        EvidenceSnapshot.read(file(position(1))), configuration: args.one("configuration-id"))
+        InterfaceSnapshot.read(file(position(1))), configuration: args.one("configuration-id"))
       let sliceCommand = args.positionals[0] == "slice"
       let kind = try sliceCommand ? "slice" : position(2)
       let selectorIndex = sliceCommand ? 2 : 3
@@ -239,12 +239,12 @@ import InterfaceDistiller
       }
     case "compare":
       let difference = try SnapshotComparator.compare(
-        EvidenceSnapshot.read(file(position(1))), EvidenceSnapshot.read(file(position(2))))
+        InterfaceSnapshot.read(file(position(1))), InterfaceSnapshot.read(file(position(2))))
       try emit(difference)
       return difference.equal ? 0 : 1
     case "baseline":
       let mode = try position(1)
-      let snapshot = try EvidenceSnapshot.read(file(position(2)))
+      let snapshot = try InterfaceSnapshot.read(file(position(2)))
       let target = try file(position(3))
       if mode == "write" {
         try BaselineStore.write(snapshot, to: target)
@@ -258,7 +258,7 @@ import InterfaceDistiller
       }
     case "coverage":
       try emit(
-        EvidenceSnapshot.read(file(position(1))).configurations.map(DocumentationCoverage.measure))
+        InterfaceSnapshot.read(file(position(1))).configurations.map(DocumentationCoverage.measure))
     case "diagnose":
       let cache =
         args.one("cache").map(file)

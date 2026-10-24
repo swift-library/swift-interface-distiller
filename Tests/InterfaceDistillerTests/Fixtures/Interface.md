@@ -1,15 +1,15 @@
 # Swift interface
 
-Modules: EvidenceExample
+Modules: SnapshotExample
 View: summary docs; 0 conformance-implied members collapsed
 Extractor: 0.2.0 · Configuration: 9cc03895807a
 Toolchain: fixture compiler
 Scope: public/open; library products; SPI included; synthesized excluded by policy
 Completeness: 1/1 modules; 18 declarations; 5 external references; no recorded gaps
 
-## EvidenceExample
+## SnapshotExample
 
-<a id="evidenceexample-item"></a>
+<a id="snapshotexample-item"></a>
 
 ```swift
 /// A named value.
@@ -21,7 +21,7 @@ public struct Item: Named, Sendable {
 }
 ```
 
-<a id="evidenceexample-named"></a>
+<a id="snapshotexample-named"></a>
 
 ```swift
 /// A value that can supply its display name.
@@ -36,14 +36,14 @@ extension Named {
 }
 ```
 
-<a id="evidenceexample-olditem"></a>
+<a id="snapshotexample-olditem"></a>
 
 ```swift
 @available(*, deprecated, renamed: "Item")
 public typealias OldItem = Item
 ```
 
-<a id="evidenceexample-shelf"></a>
+<a id="snapshotexample-shelf"></a>
 
 ```swift
 /// A generic collection.
@@ -57,7 +57,7 @@ extension Shelf where T == Item {
 }
 ```
 
-<a id="evidenceexample-store"></a>
+<a id="snapshotexample-store"></a>
 
 ```swift
 @MainActor public final class Store: Sendable {
@@ -66,19 +66,18 @@ extension Shelf where T == Item {
 }
 ```
 
-<a id="evidenceexample-inspect"></a>
+<a id="snapshotexample-inspect"></a>
 
 ```swift
 public func inspect() -> String
 ```
 
-## EvidenceExample — External extensions
+## SnapshotExample — External extensions
 
-<a id="evidenceexample-array"></a>
+<a id="snapshotexample-array"></a>
 
 ```swift
 extension Array where Element == Item {
   public var names: [String] { get }
 }
 ```
-

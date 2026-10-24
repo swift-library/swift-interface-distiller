@@ -7,7 +7,7 @@
 <h1 align="center">swift-interface-distiller</h1>
 
 <p align="center">
-  Distill a Swift package to its public API: a compact interface to read, evidence to query and diff.
+  Distill a Swift package to its public API: a compact interface to read, snapshots to query and diff.
 </p>
 
 <p align="center">
@@ -93,7 +93,7 @@ Choose the package, modules, configuration, and optional scope explicitly. Query
 - Swift 6.3 or later; macOS 15 or later, or Linux. The library and bundled
   command-line tool share the macOS deployment floor.
 - A matching compiler, SDK and target configuration for collection. Consuming
-  existing evidence through the library does not run a compiler.
+  existing snapshots through the library does not run a compiler.
 - Clang ExtractAPI for C and Objective-C headers.
 
 The shared CI compiler matrix selects only the latest stable Xcode, currently
@@ -111,7 +111,7 @@ Temporary output belongs in `.build/`.
 
 - [Usage guide](Documentation/Reference/Usage.md): examples, behavior, and limits.
 - [InterfaceDistiller module](Sources/InterfaceDistiller/InterfaceDistiller.docc/InterfaceDistiller.md)
-- [Evidence contracts](Documentation/Contracts.md) and [JSON schema](Documentation/Schema/Evidence.schema.json)
+- [Contracts](Documentation/Contracts.md) and [JSON schema](Documentation/Schema/InterfaceSnapshot.schema.json)
 - [Commands](Documentation/Commands.md) and [capabilities](Documentation/Capabilities.md)
 - [Extension proposals](Documentation/Proposals/Extensions.md)
 - [Development sources](Documentation/DevelopmentSources.md) and [changelog](CHANGELOG.md)

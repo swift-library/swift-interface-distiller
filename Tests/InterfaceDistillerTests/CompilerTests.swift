@@ -6,10 +6,10 @@ import Testing
 
 @testable import InterfaceDistiller
 
-@Test func macroDeclarationsAndDefaultImplementationsAreCompilerEvidence() async throws {
+@Test func macroDeclarationsAndDefaultImplementationsAreCompilerObservations() async throws {
   let root = try testDirectory("macro-declarations")
   try writeExample(to: root)
-  let source = root.appendingPathComponent("Sources/EvidenceExample/Example.swift")
+  let source = root.appendingPathComponent("Sources/SnapshotExample/Example.swift")
   var text = try String(contentsOf: source, encoding: .utf8)
   text += """
 
@@ -21,13 +21,15 @@ import Testing
   try text.write(to: source, atomically: true, encoding: .utf8)
   let toolchain = try await Toolchain.discover(directory: root)
   let result = try await InterfaceCollector().package(at: root, toolchain: toolchain)
-  let evidence = result.snapshot.configurations[0]
+  let configuration = result.snapshot.configurations[0]
   #expect(
-    evidence.symbols.contains { $0.fields["kind"]?.value["identifier"].string == "swift.macro" })
-  #expect(evidence.relationships.contains { $0.kind == "defaultImplementationOf" })
-  #expect(evidence.relationships.contains { $0.kind == "requirementOf" })
+    configuration.symbols.contains {
+      $0.fields["kind"]?.value["identifier"].string == "swift.macro"
+    })
+  #expect(configuration.relationships.contains { $0.kind == "defaultImplementationOf" })
+  #expect(configuration.relationships.contains { $0.kind == "requirementOf" })
   #expect(
-    evidence.symbols.contains {
+    configuration.symbols.contains {
       $0.fields["swiftGenerics"]?.value["constraints"].array.isEmpty == false
     })
 }
@@ -46,7 +48,7 @@ import Testing
   let revisionOutput = try await runner.checked("git", ["rev-parse", "HEAD"], directory: root)
   let revision = String(decoding: revisionOutput.stdout, as: UTF8.self).trimmingCharacters(
     in: .whitespacesAndNewlines)
-  let source = root.appendingPathComponent("Sources/EvidenceExample/Example.swift")
+  let source = root.appendingPathComponent("Sources/SnapshotExample/Example.swift")
   let before = try String(contentsOf: source, encoding: .utf8)
   let after = before.replacingOccurrences(
     of: "public static func make()", with: "static func make()")
@@ -60,7 +62,7 @@ import Testing
   #expect(!diagnostics.stdout.contains(root.path))
   #expect(!diagnostics.stderr.contains(root.path))
   let dump = root.appendingPathComponent(
-    ".build/diagnostics/baseline/" + revision + "/EvidenceExample.json")
+    ".build/diagnostics/baseline/" + revision + "/SnapshotExample.json")
   #if os(macOS)
     let located = try await runner.checked(
       "/usr/bin/xcrun", ["--find", "swift-api-digester"], directory: root)

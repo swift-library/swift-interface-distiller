@@ -6,14 +6,37 @@ import Testing
 
 @testable import InterfaceDistiller
 
-@Test func readableAndEvidenceViewsMatchSnapshots() throws {
-  for (view, name) in [(MarkdownRenderer.View.interface, "Interface"), (.evidence, "Evidence")] {
+@Test func renderedPartsEndWithASingleNewline() throws {
+  let snapshot = try fixtureSnapshot()
+  var emptyModule = snapshot
+  emptyModule.configurations[0].symbols = []
+  emptyModule.configurations[0].relationships = []
+  for snapshot in [snapshot, emptyModule, try InterfaceSnapshot(configurations: [])] {
+    for budget: Int? in [nil, 3000] {
+      let parts =
+        try MarkdownRenderer.render(snapshot, byteBudget: budget, view: .symbols)
+        + InterfaceRenderer.render(snapshot, byteBudget: budget)
+        + InterfaceRenderer.modules(snapshot, byteBudget: budget)
+      #expect(parts.allSatisfy { $0.markdown.hasSuffix("\n") && !$0.markdown.hasSuffix("\n\n") })
+    }
+  }
+}
+
+@Test func partEndingsKeepRenderedContent() {
+  #expect(markdownPartContent("    echo foo\\ \n\n") == "    echo foo\\ \n")
+  #expect(markdownPartContent("line  \n\n\n") == "line  \n")
+  #expect(markdownPartContent("header") == "header\n")
+  #expect(markdownPartContent("done\n") == "done\n")
+}
+
+@Test func readableAndSymbolsViewsMatchSnapshots() throws {
+  for (view, name) in [(MarkdownRenderer.View.interface, "Interface"), (.symbols, "Symbols")] {
     let snapshot =
-      try view == .evidence
-      ? EvidenceSnapshot.read(
+      try view == .symbols
+      ? InterfaceSnapshot.read(
         #require(
           Bundle.module.url(
-            forResource: "Evidence-v1", withExtension: "json", subdirectory: "Fixtures")))
+            forResource: "Snapshot-v1", withExtension: "json", subdirectory: "Fixtures")))
       : fixtureSnapshot()
     let expected = try String(
       contentsOf: #require(
@@ -55,17 +78,17 @@ import Testing
   var snapshot = try fixtureSnapshot()
   let item = try #require(snapshot.configurations[0].symbols.first { $0.name == "Item" })
   let key = snapshot.configurations[0].id + ":" + item.id
-  #expect(InterfaceRenderer.anchors(in: snapshot)[key] == "evidenceexample-item")
+  #expect(InterfaceRenderer.anchors(in: snapshot)[key] == "snapshotexample-item")
   var overload = SymbolRecord(
     module: item.module, language: item.language, preciseIdentifier: "overloaded-item",
     fields: item.fields)
   snapshot.configurations[0].symbols.append(overload)
   let first = InterfaceRenderer.anchors(in: snapshot)
-  #expect(first[key]?.hasPrefix("evidenceexample-item-") == true)
+  #expect(first[key]?.hasPrefix("snapshotexample-item-") == true)
   #expect(Set(first.values).count == 8)
   snapshot.configurations[0].symbols.reverse()
   #expect(InterfaceRenderer.anchors(in: snapshot) == first)
-  overload.fields["docComment"] = EvidenceField(.null, provenance: .derived)
+  overload.fields["docComment"] = ObservedField(.null, provenance: .derived)
   snapshot.configurations[0].symbols = snapshot.configurations[0].symbols.map {
     $0.id == overload.id ? overload : $0
   }
@@ -159,8 +182,8 @@ import Testing
       source: shelf.preciseIdentifier,
       target: "external-protocol",
       fields: [
-        "targetFallback": EvidenceField(.string("Other.Protocol"), provenance: .derived),
-        "swiftConstraints": EvidenceField(constraint, provenance: .derived),
+        "targetFallback": ObservedField(.string("Other.Protocol"), provenance: .derived),
+        "swiftConstraints": ObservedField(constraint, provenance: .derived),
       ]))
   snapshot.configurations[0].relationships.append(
     Relationship(
@@ -184,7 +207,7 @@ import Testing
   let result = try query.bounded(query.members(of: "Item"), format: .markdown)
   let text = String(decoding: try query.encode(result, format: .markdown), as: UTF8.self)
   #expect(text.contains("public struct Item"))
-  #expect(text.contains("<a id=\"evidenceexample-item\"></a>"))
+  #expect(text.contains("<a id=\"snapshotexample-item\"></a>"))
   #expect(text.components(separatedBy: "<a id=").count == 2)
   #expect(!text.contains("public struct Shelf"))
   let empty = try query.bounded(query.lookup("missing"), format: .swift)
@@ -212,7 +235,7 @@ import Testing
   let colliding = try #require(InterfaceRenderer.anchors(in: snapshot)[key])
   var fields = item.fields
   fields["pathComponents"]?.value = .array([
-    .string(String(colliding.dropFirst("evidenceexample-".count)))
+    .string(String(colliding.dropFirst("snapshotexample-".count)))
   ])
   snapshot.configurations[0].symbols.append(
     SymbolRecord(
@@ -247,15 +270,15 @@ import Testing
       module: item.module, language: item.language, kind: "memberOf",
       source: member.preciseIdentifier, target: item.preciseIdentifier, fields: [:]))
   let anchors = InterfaceRenderer.anchors(in: snapshot)
-  #expect(anchors[snapshot.configurations[0].id + ":" + item.id] == "evidenceexample-item")
-  #expect(anchors[snapshot.configurations[0].id + ":" + member.id] == "evidenceexample-item")
+  #expect(anchors[snapshot.configurations[0].id + ":" + item.id] == "snapshotexample-item")
+  #expect(anchors[snapshot.configurations[0].id + ":" + member.id] == "snapshotexample-item")
   let text = try MarkdownRenderer.render(snapshot).map(\.markdown).joined()
   #expect(text.components(separatedBy: "<a id=").count == Set(anchors.values).count + 1)
   for symbol in try SnapshotQuery(snapshot).members(of: "Item").symbols {
-    #expect(anchors[snapshot.configurations[0].id + ":" + symbol.id] == "evidenceexample-item")
+    #expect(anchors[snapshot.configurations[0].id + ":" + symbol.id] == "snapshotexample-item")
   }
   let original = try CanonicalJSON.encode(snapshot)
-  _ = try MarkdownRenderer.render(snapshot, view: .evidence)
+  _ = try MarkdownRenderer.render(snapshot, view: .symbols)
   #expect(try CanonicalJSON.encode(snapshot) == original)
 }
 
@@ -277,14 +300,14 @@ import Testing
   for symbol in query.members(of: external.id).symbols {
     #expect(anchors[c.id + ":" + symbol.id] == anchors[c.id + ":" + external.id])
   }
-  #expect(anchors[c.id + ":" + external.id] == "evidenceexample-array")
+  #expect(anchors[c.id + ":" + external.id] == "snapshotexample-array")
   let subset = try query.bounded(query.members(of: "Shelf"), format: .markdown)
   let text = String(decoding: try query.encode(subset, format: .markdown), as: UTF8.self)
-  #expect(text.contains("<a id=\"evidenceexample-item\"></a>"))
+  #expect(text.contains("<a id=\"snapshotexample-item\"></a>"))
   #expect(text.components(separatedBy: "<a id=").count == 2)
 }
 
-@Test func markerConformancesAndExternalReferencesStayInEvidence() throws {
+@Test func markerConformancesAndExternalReferencesStayInSymbols() throws {
   let snapshot = try fixtureSnapshot()
   let configuration = snapshot.configurations[0]
   #expect(configuration.relationships.contains { $0.target == "s:s16SendableMetatypeP" })
@@ -293,7 +316,7 @@ import Testing
   let interface = try MarkdownRenderer.render(snapshot).map(\.markdown).joined()
   #expect(!interface.contains("SendableMetatype"))
   #expect(!interface.contains("s:SS"))
-  let detailed = try MarkdownRenderer.render(snapshot, view: .evidence).map(\.markdown).joined()
+  let detailed = try MarkdownRenderer.render(snapshot, view: .symbols).map(\.markdown).joined()
   #expect(detailed.contains("s:SS"))
   #expect(detailed.contains("s:s16SendableMetatypeP"))
   let query = try SnapshotQuery(snapshot)
@@ -327,10 +350,10 @@ import Testing
       == true)
 }
 
-@Test func legacyEvidenceCanBeReadAndQueriedWithoutMixingSchemaMajors() throws {
-  let legacy = try EvidenceSnapshot.read(
+@Test func legacySnapshotsCanBeReadAndQueriedWithoutMixingSchemaMajors() throws {
+  let legacy = try InterfaceSnapshot.read(
     #require(
-      Bundle.module.url(forResource: "Evidence-v1", withExtension: "json", subdirectory: "Fixtures")
+      Bundle.module.url(forResource: "Snapshot-v1", withExtension: "json", subdirectory: "Fixtures")
     ))
   #expect(legacy.schemaVersion == "1.0")
   #expect(legacy.configurations[0].scope.includeSynthesized == nil)
@@ -340,8 +363,8 @@ import Testing
   let text = String(decoding: try query.encode(result, format: .swift), as: UTF8.self)
   #expect(text.contains("external references"))
   #expect(!text.contains("unresolved"))
-  #expect(throws: DistillerError.self) { try EvidenceSnapshot.merge([legacy, fixtureSnapshot()]) }
-  #expect(try EvidenceSnapshot.merge([legacy]).schemaVersion == "1.0")
+  #expect(throws: DistillerError.self) { try InterfaceSnapshot.merge([legacy, fixtureSnapshot()]) }
+  #expect(try InterfaceSnapshot.merge([legacy]).schemaVersion == "1.0")
 }
 
 @Test func macroPackageInterfaceMatchesSnapshot() throws {

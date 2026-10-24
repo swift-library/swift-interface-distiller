@@ -27,19 +27,19 @@ config = OUT / 'configuration.json'
 config.write_bytes(run('configuration').stdout)
 snapshot = OUT / 'snapshot.json'
 run('normalize', 'Tests/InterfaceDistillerTests/Fixtures/Graphs', '--configuration', config, '--include-spi', '--output', snapshot)
-evidence = json.loads(snapshot.read_bytes())
-assert len(evidence['configurations'][0]['symbols']) == 18
-assert evidence['schemaVersion'] == '2.0'
-schema = json.loads((ROOT / 'Documentation/Schema/Evidence.schema.json').read_text())
+snapshot_data = json.loads(snapshot.read_bytes())
+assert len(snapshot_data['configurations'][0]['symbols']) == 18
+assert snapshot_data['schemaVersion'] == '2.0'
+schema = json.loads((ROOT / 'Documentation/Schema/InterfaceSnapshot.schema.json').read_text())
 assert schema['properties']['schemaVersion']['pattern'] == r'^2\.[0-9]+$'
-assert evidence['configurations'][0]['scope']['includeSynthesized'] is False
+assert snapshot_data['configurations'][0]['scope']['includeSynthesized'] is False
 all_snapshot = OUT / 'all-snapshot.json'
 run('normalize', 'Tests/InterfaceDistillerTests/Fixtures/Graphs', '--configuration', config,
     '--include-spi', '--include-synthesized', '--output', all_snapshot)
-all_evidence = json.loads(all_snapshot.read_bytes())
-assert all_evidence['configurations'][0]['scope']['includeSynthesized'] is True
-assert len(all_evidence['configurations'][0]['symbols']) == 19
-assert not any(g['state'] == 'unresolved' for g in evidence['configurations'][0]['gaps'])
+all_snapshot_data = json.loads(all_snapshot.read_bytes())
+assert all_snapshot_data['configurations'][0]['scope']['includeSynthesized'] is True
+assert len(all_snapshot_data['configurations'][0]['symbols']) == 19
+assert not any(g['state'] == 'unresolved' for g in snapshot_data['configurations'][0]['gaps'])
 for kind in ['lookup', 'members', 'conformers', 'initializers', 'returning', 'slice']:
     selector = 'Named' if kind == 'conformers' else 'Item'
     data = json.loads(run('query', snapshot, kind, selector).stdout)
@@ -67,23 +67,23 @@ for docs in ['summary', 'full', 'none']:
     output = OUT / ('interface-' + docs + '.swift')
     run('query', snapshot, 'slice', 'Item', '--format', 'swift', '--docs', docs, '--output', output)
     assert (b'///' in output.read_bytes()) == (docs != 'none')
-evidence_parts = json.loads(run('render', snapshot, '--view', 'evidence').stdout)
-assert 'Compiler identifier:' in evidence_parts[0]['markdown']
+symbols_parts = json.loads(run('render', snapshot, '--view', 'symbols').stdout)
+assert 'Compiler identifier:' in symbols_parts[0]['markdown']
 interface_parts = json.loads(run('render', snapshot).stdout)
 assert 'public struct Item' in interface_parts[0]['markdown']
 assert 'Compiler identifier:' not in interface_parts[0]['markdown']
 assert interface_parts[0]['markdown'].count('<a id=') == 7
 member_view = run('query', snapshot, 'members', 'Item', '--format', 'markdown').stdout
 assert member_view.count(b'<a id=') == 1
-assert b'<a id="evidenceexample-item"></a>' in member_view
-assert evidence_parts[0]['markdown'].count('<a id=') == 18
+assert b'<a id="snapshotexample-item"></a>' in member_view
+assert symbols_parts[0]['markdown'].count('<a id=') == 18
 report = OUT / 'interface-size.json'
 indexed = json.loads(run('render', snapshot, '--by-module', '--report', report).stdout)
 assert indexed[0]['name'] == 'index.md'
 assert all('(' + part['name'] + ')' in indexed[0]['markdown'] for part in indexed[1:])
 assert json.loads(report.read_bytes())['totalBytes'] == len(interface_parts[0]['markdown'].encode())
 run('render', snapshot, '--show-implied')
-run('render', snapshot, '--view', 'evidence', '--report', report, code=2)
+run('render', snapshot, '--view', 'symbols', '--report', report, code=2)
 
 assert json.loads(run('coverage', snapshot).stdout)[0]['eligible'] == 17
 baseline = OUT / 'baseline.json'

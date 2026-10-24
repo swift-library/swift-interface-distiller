@@ -6,7 +6,7 @@ import Testing
 
 @testable import InterfaceDistiller
 
-private func impliedSnapshot() throws -> EvidenceSnapshot {
+private func impliedSnapshot() throws -> InterfaceSnapshot {
   try SymbolGraphNormalizer.normalize(
     SymbolGraphInput.load(
       #require(
@@ -15,7 +15,7 @@ private func impliedSnapshot() throws -> EvidenceSnapshot {
     configuration: fixtureConfiguration)
 }
 
-@Test func conformanceRequirementsCollapseWithoutChangingEvidence() throws {
+@Test func conformanceRequirementsCollapseWithoutChangingSnapshots() throws {
   let snapshot = try impliedSnapshot()
   let original = try CanonicalJSON.encode(snapshot)
   let collapsed = try MarkdownRenderer.render(snapshot).map(\.markdown).joined()
@@ -40,8 +40,8 @@ private func impliedSnapshot() throws -> EvidenceSnapshot {
   #expect(collapsed.contains("public init(from decoder: any Decoder) throws"))
   #expect(try CanonicalJSON.encode(snapshot) == original)
   #expect(
-    try MarkdownRenderer.render(snapshot, view: .evidence).map(\.markdown)
-      == MarkdownRenderer.render(snapshot, view: .evidence, showImplied: true).map(\.markdown))
+    try MarkdownRenderer.render(snapshot, view: .symbols).map(\.markdown)
+      == MarkdownRenderer.render(snapshot, view: .symbols, showImplied: true).map(\.markdown))
 }
 
 @Test func documentationSummaryRecognizesMarkdownBlockBoundaries() throws {
@@ -51,8 +51,8 @@ private func impliedSnapshot() throws -> EvidenceSnapshot {
   ] {
     var snapshot = try fixtureSnapshot()
     let index = try #require(snapshot.configurations[0].symbols.firstIndex { $0.name == "Item" })
-    func docs(_ lines: [String]) -> EvidenceField {
-      EvidenceField(
+    func docs(_ lines: [String]) -> ObservedField {
+      ObservedField(
         .object(["lines": .array(lines.map { .object(["text": .string($0)]) })]),
         provenance: .derived)
     }
@@ -88,12 +88,12 @@ private func impliedSnapshot() throws -> EvidenceSnapshot {
     module: item.module, language: "swift", preciseIdentifier: "first-build", fields: fields)
   snapshot.configurations[0].symbols.append(first)
   let key = snapshot.configurations[0].id + ":" + first.id
-  #expect(InterfaceRenderer.anchors(in: snapshot)[key] == "evidenceexample-namespace-build")
+  #expect(InterfaceRenderer.anchors(in: snapshot)[key] == "snapshotexample-namespace-build")
   let second = SymbolRecord(
     module: item.module, language: "swift", preciseIdentifier: "second-build", fields: fields)
   snapshot.configurations[0].symbols.append(second)
   let anchors = InterfaceRenderer.anchors(in: snapshot)
-  #expect(anchors[key]?.hasPrefix("evidenceexample-namespace-build-") == true)
+  #expect(anchors[key]?.hasPrefix("snapshotexample-namespace-build-") == true)
   #expect(anchors[key] != anchors[snapshot.configurations[0].id + ":" + second.id])
   snapshot.configurations[0].symbols.reverse()
   #expect(InterfaceRenderer.anchors(in: snapshot) == anchors)
@@ -112,6 +112,12 @@ private func impliedSnapshot() throws -> EvidenceSnapshot {
   #expect(parts.allSatisfy { $0.markdown.utf8.count <= 1400 })
   let index = try #require(parts.first).markdown
   for part in parts.dropFirst() { #expect(index.contains("(" + part.name + ")")) }
+  for module in ["Other", item.module] {
+    let moduleParts = parts.filter { $0.name.hasPrefix("module-" + module.lowercased() + "-") }
+    let bytes = moduleParts.reduce(0) { $0 + $1.markdown.utf8.count }
+    let declarations = snapshot.configurations[0].symbols.filter { $0.module == module }.count
+    #expect(index.contains("| \(module) | \(declarations) | \(bytes) |"))
+  }
   let all = parts.dropFirst().map(\.markdown).joined()
   for anchor in InterfaceRenderer.anchors(in: snapshot).values {
     #expect(all.components(separatedBy: "id=\"" + anchor + "\"").count == 2)
@@ -120,7 +126,7 @@ private func impliedSnapshot() throws -> EvidenceSnapshot {
     try MarkdownRenderer.render(snapshot, byteBudget: 100, byModule: true)
   }
   #expect(throws: DistillerError.self) {
-    try MarkdownRenderer.render(snapshot, view: .evidence, byModule: true)
+    try MarkdownRenderer.render(snapshot, view: .symbols, byModule: true)
   }
 }
 
@@ -183,7 +189,7 @@ private func impliedSnapshot() throws -> EvidenceSnapshot {
       original[$0.id] == "Decodable"
     })
   snapshot.configurations[0].symbols[decoder].fields["functionSignature"] =
-    EvidenceField(.null, state: .notCollected, provenance: .derived)
+    ObservedField(.null, state: .notCollected, provenance: .derived)
   #expect(
     ImpliedMembers.categories(in: snapshot.configurations[0])[
       snapshot.configurations[0].symbols[decoder].id] == nil)

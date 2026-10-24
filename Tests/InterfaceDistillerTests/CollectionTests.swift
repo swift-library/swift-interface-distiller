@@ -9,7 +9,7 @@ import Testing
 func writeExample(to destination: URL) throws {
   let source = try #require(
     Bundle.module.url(forResource: "Example", withExtension: nil, subdirectory: "Fixtures"))
-  for relative in ["Package.swift", "Sources/EvidenceExample/Example.swift"] {
+  for relative in ["Package.swift", "Sources/SnapshotExample/Example.swift"] {
     let target = destination.appendingPathComponent(relative)
     try FileManager.default.createDirectory(
       at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -39,7 +39,7 @@ func writeExample(to destination: URL) throws {
   let text = String(decoding: try CanonicalJSON.encode(cold.snapshot), as: UTF8.self)
   #expect(!text.contains(root.path))
   #expect(!text.contains("file://"))
-  let source = firstRoot.appendingPathComponent("Sources/EvidenceExample/Example.swift")
+  let source = firstRoot.appendingPathComponent("Sources/SnapshotExample/Example.swift")
   var contents = try String(contentsOf: source, encoding: .utf8)
   contents += "\npublic struct AddedItem { public init() {} }\n"
   try contents.write(to: source, atomically: true, encoding: .utf8)
@@ -64,9 +64,9 @@ func writeExample(to destination: URL) throws {
   try writeExample(to: root)
   let manifest = root.appendingPathComponent("Package.swift")
   let contents = try String(contentsOf: manifest, encoding: .utf8).replacingOccurrences(
-    of: "targets: [.target(name: \"EvidenceExample\")]",
+    of: "targets: [.target(name: \"SnapshotExample\")]",
     with:
-      "targets: [.target(name: \"EvidenceExample\"), .testTarget(name: \"ExampleTests\", dependencies: [\"EvidenceExample\"])]"
+      "targets: [.target(name: \"SnapshotExample\"), .testTarget(name: \"ExampleTests\", dependencies: [\"SnapshotExample\"])]"
   )
   try contents.write(to: manifest, atomically: true, encoding: .utf8)
   let testSource = root.appendingPathComponent("Tests/ExampleTests/ExampleTests.swift")
@@ -75,7 +75,7 @@ func writeExample(to destination: URL) throws {
   try Data("import Testing\n@Test func example() {}\n".utf8).write(to: testSource)
   let tools = try await Toolchain.discover(directory: root)
   let result = try await InterfaceCollector().package(at: root, toolchain: tools)
-  #expect(result.snapshot.configurations[0].collectedModules == ["EvidenceExample"])
+  #expect(result.snapshot.configurations[0].collectedModules == ["SnapshotExample"])
   #expect(result.snapshot.configurations[0].symbols.contains { $0.name == "Item" })
 }
 
@@ -329,7 +329,7 @@ func libraryCollectionResolvesClangImports(customModuleMap: Bool) async throws {
     "import Testing\nimport Foundation\npublic func record(_ comment: Comment) { Issue.record(comment) }\n"
       .utf8
   )
-  .write(to: root.appendingPathComponent("Sources/EvidenceExample/Example.swift"))
+  .write(to: root.appendingPathComponent("Sources/SnapshotExample/Example.swift"))
   let tools = try await Toolchain.discover(directory: root)
   let result = try await InterfaceCollector().package(at: root, toolchain: tools)
   #expect(result.snapshot.configurations[0].symbols.contains { $0.name == "record(_:)" })
@@ -348,7 +348,7 @@ func libraryCollectionResolvesClangImports(customModuleMap: Bool) async throws {
   let result = try await InterfaceCollector().package(at: root, toolchain: tools)
   #expect(result.snapshot.configurations[0].symbols.contains { $0.name == "Item" })
   try Data("public struct Updated {}\n".utf8).write(
-    to: link.appendingPathComponent("EvidenceExample/Example.swift"))
+    to: link.appendingPathComponent("SnapshotExample/Example.swift"))
   #expect(try PackageDescriptionDecoder.sourceDigest(root) != before)
   try FileManager.default.removeItem(at: link)
   try FileManager.default.createSymbolicLink(atPath: link.path, withDestinationPath: "..")
@@ -358,7 +358,7 @@ func libraryCollectionResolvesClangImports(customModuleMap: Bool) async throws {
 @Test func commentOnlyLibraryAndExecutableOnlyScopesNeedNoBuild() async throws {
   let root = try testDirectory("empty-scope")
   try writeExample(to: root)
-  let source = root.appendingPathComponent("Sources/EvidenceExample/Example.swift")
+  let source = root.appendingPathComponent("Sources/SnapshotExample/Example.swift")
   try Data("// Template\n/* outer /* inner */ comment */\n".utf8).write(to: source)
   let tools = try await Toolchain.discover(directory: root)
   let empty = try await InterfaceCollector().package(at: root, toolchain: tools)

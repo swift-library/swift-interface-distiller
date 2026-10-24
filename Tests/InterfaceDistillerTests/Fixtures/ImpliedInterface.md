@@ -64,4 +64,3 @@ public struct Model: Decodable, Encodable {
   public var value: Int
 }
 ```
-

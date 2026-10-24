@@ -9,7 +9,7 @@ import Foundation
   import Glibc
 #endif
 
-/// Execution details belong in this report, never in canonical evidence.
+/// Execution details belong in this report, never in the canonical snapshot.
 public struct RunReport: Codable, Sendable {
   public var startedAt: String
   public var durationSeconds: Double
@@ -20,11 +20,11 @@ public struct RunReport: Codable, Sendable {
 }
 
 public struct CollectionResult: Sendable {
-  public var snapshot: EvidenceSnapshot
+  public var snapshot: InterfaceSnapshot
   public var report: RunReport
 }
 
-/// Compiler and SDK paths are execution inputs; their declared identities enter evidence.
+/// Compiler and SDK paths are execution inputs; their declared identities enter the snapshot.
 public struct Toolchain: Sendable {
   public var swift: String
   public var clang: String
@@ -246,7 +246,7 @@ public struct InterfaceCollector: Sendable {
       ]))
     let normalizedURL = cache.appendingPathComponent("normalized/" + key + ".json")
     if FileManager.default.fileExists(atPath: normalizedURL.path) {
-      let snapshot = try EvidenceSnapshot.read(normalizedURL)
+      let snapshot = try InterfaceSnapshot.read(normalizedURL)
       return CollectionResult(
         snapshot: snapshot, report: report(start, root, cache, true, commands))
     }
@@ -372,7 +372,7 @@ public struct InterfaceCollector: Sendable {
     let normalized = cache.appendingPathComponent("normalized/" + key + ".json")
     if FileManager.default.fileExists(atPath: normalized.path) {
       return CollectionResult(
-        snapshot: try EvidenceSnapshot.read(normalized),
+        snapshot: try InterfaceSnapshot.read(normalized),
         report: report(start, searchPaths[0], cache, true, []))
     }
     try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
@@ -421,7 +421,7 @@ public struct InterfaceCollector: Sendable {
     let normalized = cache.appendingPathComponent("normalized/" + key + ".json")
     if FileManager.default.fileExists(atPath: normalized.path) {
       return CollectionResult(
-        snapshot: try EvidenceSnapshot.read(normalized),
+        snapshot: try InterfaceSnapshot.read(normalized),
         report: report(start, sourceRoot, cache, true, []))
     }
     let output = cache.appendingPathComponent("collected/" + key)

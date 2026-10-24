@@ -6,19 +6,19 @@ import Foundation
 /// Documentation included in a readable view. Summary keeps the first prose paragraph.
 public enum DocumentationStyle: String, Sendable { case summary, full, none }
 
-/// Output encodings for snapshot queries. JSON preserves the evidence contract.
+/// Output encodings for snapshot queries. JSON preserves the snapshot contract.
 public enum QueryFormat: String, Sendable { case json, swift, markdown }
 
-/// Projects compiler observations into a readable interface without changing evidence.
+/// Projects compiler observations into a readable interface without changing the snapshot.
 public enum InterfaceRenderer {
   /// Link destinations for every symbol. Members share their containing top-level block's anchor.
   /// Colliding top-level paths add an identity digest.
-  public static func anchors(in snapshot: EvidenceSnapshot) -> [String: String] {
+  public static func anchors(in snapshot: InterfaceSnapshot) -> [String: String] {
     var groups: [String: [String]] = [:]
     var owners: [String: String] = [:]
     for c in snapshot.configurations {
       let blockOwners = InterfaceProjection(
-        evidence: c, docs: .none, showImplied: true, implied: [:]
+        configuration: c, docs: .none, showImplied: true, implied: [:]
       ).blockOwners()
       for (symbol, owner) in blockOwners {
         owners[c.id + ":" + symbol] = c.id + ":" + owner
@@ -68,7 +68,7 @@ public enum InterfaceRenderer {
   }
 
   public static func render(
-    _ snapshot: EvidenceSnapshot, byteBudget: Int? = nil, docs: DocumentationStyle = .summary,
+    _ snapshot: InterfaceSnapshot, byteBudget: Int? = nil, docs: DocumentationStyle = .summary,
     showImplied: Bool = false
   ) throws -> [MarkdownPart] {
     try snapshot.validate()
@@ -81,12 +81,12 @@ public enum InterfaceRenderer {
   }
 
   private static func blocks(
-    _ snapshot: EvidenceSnapshot, docs: DocumentationStyle, showImplied: Bool
+    _ snapshot: InterfaceSnapshot, docs: DocumentationStyle, showImplied: Bool
   ) -> [InterfaceBlock] {
     let anchors = anchors(in: snapshot)
     return snapshot.configurations.sorted { $0.id < $1.id }.flatMap {
       let configuration = $0
-      return InterfaceProjection(evidence: configuration, docs: docs, showImplied: showImplied)
+      return InterfaceProjection(configuration: configuration, docs: docs, showImplied: showImplied)
         .blocks(
           anchors: anchors, markdown: true
         ).map { block in
@@ -115,7 +115,8 @@ public enum InterfaceRenderer {
       }
       let addition = (section == block.heading ? "" : block.heading) + block.content
       if let budget = byteBudget, current.utf8.count + addition.utf8.count > budget {
-        parts.append(MarkdownPart(name: partName(parts.count + 1), markdown: current))
+        parts.append(
+          MarkdownPart(name: partName(parts.count + 1), markdown: markdownPartContent(current)))
         current = header
         section = ""
       }
@@ -127,13 +128,14 @@ public enum InterfaceRenderer {
         .usage, "Interface header exceeds the byte budget",
         context: ["minimumBytes": String(current.utf8.count)])
     }
-    parts.append(MarkdownPart(name: partName(parts.count + 1), markdown: current))
+    parts.append(
+      MarkdownPart(name: partName(parts.count + 1), markdown: markdownPartContent(current)))
     return parts
   }
 
   /// Measures the whole unsplit interface, including symbols collapsed by presentation policy.
   public static func measure(
-    _ snapshot: EvidenceSnapshot, docs: DocumentationStyle = .summary, showImplied: Bool = false
+    _ snapshot: InterfaceSnapshot, docs: DocumentationStyle = .summary, showImplied: Bool = false
   ) throws -> InterfaceSizeReport {
     try snapshot.validate()
     let blocks = blocks(snapshot, docs: docs, showImplied: showImplied)
@@ -143,11 +145,12 @@ public enum InterfaceRenderer {
     ).reduce(0) { $0 + $1.markdown.utf8.count }
     var sizes = blocks.flatMap(\.sizes)
     let rendered = Set(sizes.map { $0.configuration + ":" + $0.symbol })
-    for evidence in snapshot.configurations {
+    for configuration in snapshot.configurations {
       let accounting = InterfaceAccounting(
-        configuration: evidence.id,
-        implied: ImpliedMembers.categories(in: evidence))
-      for symbol in evidence.symbols where !rendered.contains(evidence.id + ":" + symbol.id) {
+        configuration: configuration.id,
+        implied: ImpliedMembers.categories(in: configuration))
+      for symbol in configuration.symbols
+      where !rendered.contains(configuration.id + ":" + symbol.id) {
         accounting.add(symbol)
       }
       sizes += accounting.symbols.values
@@ -162,7 +165,7 @@ public enum InterfaceRenderer {
 
   /// Splits by module and provides an index without pruning any selected declaration.
   public static func modules(
-    _ snapshot: EvidenceSnapshot, byteBudget: Int? = nil, docs: DocumentationStyle = .summary,
+    _ snapshot: InterfaceSnapshot, byteBudget: Int? = nil, docs: DocumentationStyle = .summary,
     showImplied: Bool = false
   ) throws -> [MarkdownPart] {
     try snapshot.validate()
@@ -206,13 +209,13 @@ public enum InterfaceRenderer {
   }
 
   static func body(
-    _ symbols: [SymbolRecord], evidence: ConfigurationEvidence, format: QueryFormat,
+    _ symbols: [SymbolRecord], configuration: ConfigurationSnapshot, format: QueryFormat,
     docs: DocumentationStyle, showImplied: Bool = false
   ) throws -> String {
-    var selected = evidence
+    var selected = configuration
     var included = Dictionary(uniqueKeysWithValues: symbols.map { ($0.id, $0) })
-    let parents = DeclarationNesting.parents(in: evidence)
-    let byPrecise = Dictionary(grouping: evidence.symbols, by: \.preciseIdentifier)
+    let parents = DeclarationNesting.parents(in: configuration)
+    let byPrecise = Dictionary(grouping: configuration.symbols, by: \.preciseIdentifier)
     var pending = symbols
     while let child = pending.popLast() {
       for precise in parents[child.id] ?? [] {
@@ -224,14 +227,15 @@ public enum InterfaceRenderer {
       }
     }
     selected.symbols = Array(included.values)
-    let snapshot = try EvidenceSnapshot(
-      configurations: [evidence],
-      schemaVersion: evidence.scope.includeSynthesized != nil && evidence.externalReferences != nil
+    let snapshot = try InterfaceSnapshot(
+      configurations: [configuration],
+      schemaVersion: configuration.scope.includeSynthesized != nil
+        && configuration.externalReferences != nil
         ? "2.0" : "1.0")
     var section = ""
     return InterfaceProjection(
-      evidence: selected, docs: docs, showImplied: showImplied,
-      implied: ImpliedMembers.categories(in: evidence), targets: evidence.symbols
+      configuration: selected, docs: docs, showImplied: showImplied,
+      implied: ImpliedMembers.categories(in: configuration), targets: configuration.symbols
     ).blocks(
       anchors: anchors(in: snapshot), markdown: format == .markdown
     ).map { block in
@@ -242,7 +246,7 @@ public enum InterfaceRenderer {
   }
 
   static func header(
-    _ snapshot: EvidenceSnapshot, docs: DocumentationStyle = .summary, showImplied: Bool = false
+    _ snapshot: InterfaceSnapshot, docs: DocumentationStyle = .summary, showImplied: Bool = false
   ) -> String {
     let modules = Set(snapshot.configurations.flatMap(\.collectedModules)).sorted()
     var lines = ["# Swift interface", "", "Modules: " + modules.joined(separator: ", ")]
@@ -277,7 +281,7 @@ public enum InterfaceRenderer {
     return lines.joined(separator: "\n") + "\n\n"
   }
 
-  private static func completeness(_ c: ConfigurationEvidence) -> String {
+  private static func completeness(_ c: ConfigurationSnapshot) -> String {
     let legacyExternalReasons: Set<String> = [
       "Relationship source was not collected", "Relationship target is outside collected symbols",
       "Referenced compiler identifier is outside collected symbols",
@@ -326,7 +330,7 @@ private struct InterfaceBlock {
 }
 
 private struct InterfaceProjection {
-  let evidence: ConfigurationEvidence
+  let configuration: ConfigurationSnapshot
   let docs: DocumentationStyle
   let showImplied: Bool
   let implied: [String: String]
@@ -335,17 +339,17 @@ private struct InterfaceProjection {
   let targetsByPrecise: [String: [SymbolRecord]]
 
   init(
-    evidence: ConfigurationEvidence, docs: DocumentationStyle, showImplied: Bool,
+    configuration: ConfigurationSnapshot, docs: DocumentationStyle, showImplied: Bool,
     implied: [String: String]? = nil, targets: [SymbolRecord]? = nil
   ) {
-    self.evidence = evidence
+    self.configuration = configuration
     self.docs = docs
     self.showImplied = showImplied
-    self.implied = implied ?? ImpliedMembers.categories(in: evidence)
-    self.edgesBySource = Dictionary(grouping: evidence.relationships, by: \.source)
-    self.symbolsByPrecise = Dictionary(grouping: evidence.symbols, by: \.preciseIdentifier)
+    self.implied = implied ?? ImpliedMembers.categories(in: configuration)
+    self.edgesBySource = Dictionary(grouping: configuration.relationships, by: \.source)
+    self.symbolsByPrecise = Dictionary(grouping: configuration.symbols, by: \.preciseIdentifier)
     self.targetsByPrecise = Dictionary(
-      grouping: targets ?? evidence.symbols, by: \.preciseIdentifier)
+      grouping: targets ?? configuration.symbols, by: \.preciseIdentifier)
   }
 
   private let containers: Set<String> = [
@@ -363,10 +367,10 @@ private struct InterfaceProjection {
   }
 
   private func parents() -> [String: String] {
-    let symbols = evidence.symbols.sorted(by: order)
+    let symbols = configuration.symbols.sorted(by: order)
     let byPrecise = symbolsByPrecise
     var parent: [String: String] = [:]
-    let ownership = DeclarationNesting.parents(in: evidence)
+    let ownership = DeclarationNesting.parents(in: configuration)
     for s in symbols {
       let candidates = (ownership[s.id] ?? []).flatMap { byPrecise[$0] ?? [] }.filter {
         $0.module == s.module && containers.contains(kind($0)) && $0.id != s.id
@@ -391,7 +395,7 @@ private struct InterfaceProjection {
   func blockOwners() -> [String: String] {
     let parent = parents()
     return Dictionary(
-      uniqueKeysWithValues: evidence.symbols.map { symbol in
+      uniqueKeysWithValues: configuration.symbols.map { symbol in
         var owner = symbol.id
         while let next = parent[owner] { owner = next }
         return (symbol.id, owner)
@@ -399,7 +403,8 @@ private struct InterfaceProjection {
   }
 
   func blocks(anchors: [String: String], markdown: Bool) -> [InterfaceBlock] {
-    let symbols = evidence.symbols.filter { showImplied || implied[$0.id] == nil }.sorted(by: order)
+    let symbols = configuration.symbols.filter { showImplied || implied[$0.id] == nil }.sorted(
+      by: order)
     let parent = parents()
     let children = Dictionary(
       grouping: symbols.filter { parent[$0.id] != nil }, by: { parent[$0.id]! })
@@ -410,12 +415,12 @@ private struct InterfaceProjection {
         let group = roots.filter { $0.module == module && isExternal($0) == external }
         for root in group {
           var extensions: [String] = []
-          let accounting = InterfaceAccounting(configuration: evidence.id, implied: implied)
+          let accounting = InterfaceAccounting(configuration: configuration.id, implied: implied)
           let declaration = declarationTree(
             root, children: children, level: 0, extensions: &extensions, accounting: accounting)
           let source = declaration + extensions.joined()
           if markdown {
-            let anchor = anchors[evidence.id + ":" + root.id]!
+            let anchor = anchors[configuration.id + ":" + root.id]!
             let id = "<a id=\"\(anchor)\"></a>"
             accounting.add(root, anchor: id.utf8.count + 1)
             let heading = "## " + module + (external ? " — External extensions" : "") + "\n\n"

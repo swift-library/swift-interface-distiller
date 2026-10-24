@@ -15,7 +15,7 @@ public enum ProvenanceKind: String, Codable, Sendable {
 }
 
 /// Provenance applies to a whole JSON field and its descendants unless overridden.
-public struct EvidenceField: Codable, Sendable, Equatable {
+public struct ObservedField: Codable, Sendable, Equatable {
   public var value: JSONValue
   public var state: ObservationState
   public var provenance: ProvenanceKind
@@ -110,13 +110,13 @@ public struct SymbolRecord: Codable, Sendable, Equatable {
   public var module: String
   public var language: String
   public var preciseIdentifier: String
-  public var fields: [String: EvidenceField]
+  public var fields: [String: ObservedField]
   public var references: [String]
   public var name: String { fields["names"]?.value["title"].string ?? preciseIdentifier }
 
   public init(
     module: String, language: String, preciseIdentifier: String,
-    fields: [String: EvidenceField], references: [String] = []
+    fields: [String: ObservedField], references: [String] = []
   ) {
     self.module = module
     self.language = language
@@ -137,7 +137,7 @@ public struct Relationship: Codable, Sendable, Equatable {
   public var kind: String
   public var source: String
   public var target: String
-  public var fields: [String: EvidenceField]
+  public var fields: [String: ObservedField]
 }
 
 public struct GraphSource: Codable, Sendable, Equatable {
@@ -167,7 +167,7 @@ public struct MergeRecord: Codable, Sendable, Equatable {
   public var sources: [String]
 }
 
-public struct ConfigurationEvidence: Codable, Sendable, Equatable {
+public struct ConfigurationSnapshot: Codable, Sendable, Equatable {
   public var id: String
   public var configuration: BuildConfiguration
   public var scope: CollectionScope
@@ -180,16 +180,16 @@ public struct ConfigurationEvidence: Codable, Sendable, Equatable {
   public var relationships: [Relationship]
   public var gaps: [CollectionGap]
   public var merges: [MergeRecord]
-  /// Out-of-scope compiler identities; unavailable only in schema 1 evidence.
+  /// Out-of-scope compiler identities; unavailable only in schema 1 snapshots.
   public var externalReferences: [String]? = nil
 }
 
 /// Reads schema 1.x and 2.x; new snapshots use schema 2.0.
-public struct EvidenceSnapshot: Codable, Sendable, Equatable {
+public struct InterfaceSnapshot: Codable, Sendable, Equatable {
   public var schemaVersion: String
-  public var configurations: [ConfigurationEvidence]
+  public var configurations: [ConfigurationSnapshot]
 
-  public init(configurations: [ConfigurationEvidence], schemaVersion: String = "2.0") throws {
+  public init(configurations: [ConfigurationSnapshot], schemaVersion: String = "2.0") throws {
     self.schemaVersion = schemaVersion
     self.configurations = configurations.sorted { $0.id < $1.id }
     try validate()
@@ -197,7 +197,7 @@ public struct EvidenceSnapshot: Codable, Sendable, Equatable {
 
   public func identity() throws -> String { try CanonicalJSON.key(self) }
 
-  public static func read(_ url: URL) throws -> EvidenceSnapshot {
+  public static func read(_ url: URL) throws -> InterfaceSnapshot {
     let snapshot = try JSONDecoder().decode(Self.self, from: Data(contentsOf: url))
     try snapshot.validate()
     return snapshot
@@ -206,26 +206,26 @@ public struct EvidenceSnapshot: Codable, Sendable, Equatable {
   public func validate() throws {
     guard schemaVersion.range(of: #"^[12]\.[0-9]+$"#, options: .regularExpression) != nil else {
       throw DistillerError(
-        .incompatibleSchema, "Unsupported evidence schema", context: ["schema": schemaVersion])
+        .incompatibleSchema, "Unsupported snapshot schema", context: ["schema": schemaVersion])
     }
     guard Set(configurations.map(\.id)).count == configurations.count else {
-      throw DistillerError(.invalidEvidence, "Duplicate configuration identities")
+      throw DistillerError(.invalidSnapshot, "Duplicate configuration identities")
     }
     for c in configurations {
       if schemaVersion.hasPrefix("2.")
         && (c.scope.includeSynthesized == nil || c.externalReferences == nil)
       {
         throw DistillerError(
-          .invalidEvidence, "Schema 2 requires synthesized-member policy and external references")
+          .invalidSnapshot, "Schema 2 requires synthesized-member policy and external references")
       }
       guard c.id == (try c.configuration.identity()),
         Set(c.symbols.map(\.id)).count == c.symbols.count
       else {
-        throw DistillerError(.invalidEvidence, "Invalid configuration or duplicate symbol identity")
+        throw DistillerError(.invalidSnapshot, "Invalid configuration or duplicate symbol identity")
       }
       let graphIDs = Set(c.graphs.map(\.id))
       guard graphIDs.count == c.graphs.count else {
-        throw DistillerError(.invalidEvidence, "Duplicate graph identities")
+        throw DistillerError(.invalidSnapshot, "Duplicate graph identities")
       }
       let fields =
         c.symbols.flatMap { Array($0.fields.values) }
@@ -236,14 +236,14 @@ public struct EvidenceSnapshot: Codable, Sendable, Equatable {
             || !field.sources.isEmpty
         else {
           throw DistillerError(
-            .invalidEvidence, "Field provenance does not resolve to a source graph")
+            .invalidSnapshot, "Field provenance does not resolve to a source graph")
         }
       }
       for merge in c.merges {
         guard ["duplicateGraph", "duplicateSymbol", "conflict"].contains(merge.kind),
           !merge.sources.isEmpty, Set(merge.sources).isSubset(of: graphIDs)
         else {
-          throw DistillerError(.invalidEvidence, "Invalid merge provenance")
+          throw DistillerError(.invalidSnapshot, "Invalid merge provenance")
         }
       }
       for s in c.symbols
@@ -251,13 +251,13 @@ public struct EvidenceSnapshot: Codable, Sendable, Equatable {
         != SymbolRecord.identity(
           module: s.module, language: s.language, precise: s.preciseIdentifier)
       {
-        throw DistillerError(.invalidEvidence, "Invalid symbol identity", context: ["symbol": s.id])
+        throw DistillerError(.invalidSnapshot, "Invalid symbol identity", context: ["symbol": s.id])
       }
     }
   }
 
-  public static func merge(_ snapshots: [EvidenceSnapshot]) throws -> EvidenceSnapshot {
-    var found: [String: ConfigurationEvidence] = [:]
+  public static func merge(_ snapshots: [InterfaceSnapshot]) throws -> InterfaceSnapshot {
+    var found: [String: ConfigurationSnapshot] = [:]
     let majors = Set(snapshots.map { $0.schemaVersion.split(separator: ".").first })
     guard majors.count <= 1 else {
       throw DistillerError(
@@ -282,7 +282,7 @@ public struct EvidenceSnapshot: Codable, Sendable, Equatable {
 
 public struct DistillerError: Error, Codable, Sendable, CustomStringConvertible {
   public enum Code: String, Codable, Sendable {
-    case usage, missingInput, invalidInput, invalidEvidence, incompatibleSchema, conflictingInput
+    case usage, missingInput, invalidInput, invalidSnapshot, incompatibleSchema, conflictingInput
     case processFailed, timeout, cancelled, unsupported, incomplete, io
   }
   public var code: Code

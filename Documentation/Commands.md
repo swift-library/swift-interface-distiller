@@ -32,11 +32,11 @@ summary. `--docs full` keeps all comment paragraphs; `--docs none` omits documen
 Standard requirements implied by observed Codable, Equatable, Hashable,
 RawRepresentable and CaseIterable conformances are collapsed in readable views.
 `--show-implied` expands the collected requirements in render, query and slice;
-JSON and the evidence view retain all collected symbols.
+JSON and the symbols view retain all collected symbols.
 
 Interface links target top-level declaration blocks. Members and nested declarations
 link to their containing block; standalone extension groups have their own anchors.
-The evidence view retains per-symbol anchors.
+The symbols view retains per-symbol anchors.
 
 For large APIs, `--by-module` writes `index.md` and linked module parts. Each part
 keeps top-level declaration boundaries and the same snapshot context. The index
@@ -50,7 +50,11 @@ interface-distiller render .build/api.json --by-module --output-dir .build/inter
 interface-distiller render .build/api.json --report .build/interface-size.json
 interface-distiller query .build/api.json members MyType --format swift --show-implied
 ```
-`--view evidence` preserves the detailed evidence view and its original content.
+`--view symbols` renders the snapshot identity, each configuration's build
+configuration and scope, and one block per symbol with its SHA-256 anchor,
+configuration, compiler identifier, declaration, documentation and references.
+It also lists expected and collected modules, collection gaps, external references
+and merge observations.
 The render result on stdout remains a JSON list of parts (or names and sizes when
 `--output-dir` is supplied). Part names are `part-000001.md`, `part-000002.md`, etc.
 A render byte budget never splits a type's members; an oversized declaration fails
@@ -88,7 +92,7 @@ symbol globs; exclusion wins. `--include-spi` and `--source-locations` are opt-i
 Synthesized per-conformer copies are excluded by default; `--include-synthesized`
 includes them and records that choice in scope. Protocol extension declarations
 and conformances remain in either scope. Empty library scopes return successful,
-empty evidence. Extraction includes the selected Apple platform's developer modules
+empty snapshots. Extraction includes the selected Apple platform's developer modules
 when present, including Testing and its Foundation overlay.
 
 Pre-generated graphs require their producer's configuration:

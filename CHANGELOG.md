@@ -4,6 +4,26 @@
   bundled command-line tool. The minimum Swift tools version remains 6.3.
 - Use Xcode 26.6 on macOS 26 as the single shared CI compiler configuration and
   update the shared workflows.
+- **Breaking:** name collected observations as interface snapshots and the detailed
+  Markdown rendering as the symbols view. Update consumers using this table:
+
+  | Removed name | Replacement |
+  | --- | --- |
+  | `EvidenceSnapshot` | `InterfaceSnapshot` |
+  | `ConfigurationEvidence` | `ConfigurationSnapshot` |
+  | `EvidenceField` | `ObservedField` |
+  | `SnapshotQuery.evidence` | `SnapshotQuery.configurationSnapshot` |
+  | `MarkdownRenderer.View.evidence` | `MarkdownRenderer.View.symbols` |
+  | `render --view evidence` | `render --view symbols` |
+  | `DistillerError.Code.invalidEvidence` / stderr `invalidEvidence` | `DistillerError.Code.invalidSnapshot` / stderr `invalidSnapshot` |
+  | `Documentation/Schema/Evidence.schema.json` | `Documentation/Schema/InterfaceSnapshot.schema.json` |
+  | `$defs/Evidence` | `$defs/ConfigurationSnapshot` |
+  | `https://swift-library.github.io/schemas/interface-evidence/2.0` | `https://swift-library.github.io/schemas/interface-snapshot/2.0` |
+
+  Rendered Markdown parts end with a single newline instead of a trailing blank
+  line, and the symbols view ends hard line breaks with a backslash instead of two
+  trailing spaces. The JSON format, `schemaVersion` 2.0 and existing snapshots are
+  unchanged; schema 1.x snapshots remain readable.
 
 ## 0.3.1
 

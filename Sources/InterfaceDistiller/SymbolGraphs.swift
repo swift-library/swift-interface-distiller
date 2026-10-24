@@ -56,7 +56,7 @@ public enum SymbolGraphNormalizer {
     scope: CollectionScope = .init(), expectedModules: [String] = [],
     packages: [PackageStructure] = [], inputDigest: String? = nil,
     gaps initialGaps: [CollectionGap] = []
-  ) throws -> EvidenceSnapshot {
+  ) throws -> InterfaceSnapshot {
     var graphs: [String: GraphSource] = [:]
     var candidates: [String: [SymbolRecord]] = [:]
     var relationships: [Relationship] = []
@@ -137,26 +137,26 @@ public enum SymbolGraphNormalizer {
         }
         let symbol = portableValue(
           original, root: input.sourceRoot, locations: scope.sourceLocations)
-        var fields: [String: EvidenceField] = [:]
+        var fields: [String: ObservedField] = [:]
         for (key, value) in symbol.object where key != "identifier" {
-          fields[key] = EvidenceField(value, sources: [graphID])
+          fields[key] = ObservedField(value, sources: [graphID])
         }
         for key in [
           "accessLevel", "spi", "availability", "docComment", "swiftGenerics", "swiftExtension",
           "functionSignature",
         ] where fields[key] == nil {
-          fields[key] = EvidenceField(
+          fields[key] = ObservedField(
             state: .notCollected, sources: [graphID], reason: "Field not reported by producer")
         }
-        fields["identifier"] = EvidenceField(original["identifier"], sources: [graphID])
+        fields["identifier"] = ObservedField(original["identifier"], sources: [graphID])
         if !scope.sourceLocations {
-          fields["location"] = EvidenceField(
+          fields["location"] = ObservedField(
             state: .notCollected, provenance: .policy, reason: "Source locations disabled")
         } else if symbol["location"]["uri"].string != nil {
           fields["location"]?.provenance = .derived
           fields["location"]?.reason = "Compiler location made relative to the declared source root"
         } else {
-          fields["location"] = EvidenceField(
+          fields["location"] = ObservedField(
             state: .unresolved, provenance: .derived,
             sources: [graphID], reason: "No location within the declared source root")
         }
@@ -165,7 +165,7 @@ public enum SymbolGraphNormalizer {
             || ["async", "isolated", "nonisolated", "sending", "actor"].contains(
               $0["spelling"].string ?? "")
         }
-        fields["reportedConcurrency"] = EvidenceField(
+        fields["reportedConcurrency"] = ObservedField(
           .array(attributes), state: attributes.isEmpty ? .notCollected : .present,
           provenance: .parsed, sources: [graphID],
           reason: "Attribute fragments and concurrency keywords; no negative isolation inference")
@@ -194,7 +194,7 @@ public enum SymbolGraphNormalizer {
         relationships.append(
           Relationship(
             module: module, language: language, kind: kind, source: source, target: target,
-            fields: extras.mapValues { EvidenceField($0, sources: [graphID]) }))
+            fields: extras.mapValues { ObservedField($0, sources: [graphID]) }))
       }
     }
     var symbols: [SymbolRecord] = []
@@ -238,7 +238,7 @@ public enum SymbolGraphNormalizer {
       gaps.append(.init(module, .notCollected, "Expected module has no supplied graph"))
     }
     let graphList = graphs.values.sorted { $0.id < $1.id }
-    let evidence = ConfigurationEvidence(
+    let configurationSnapshot = ConfigurationSnapshot(
       id: try configuration.identity(), configuration: configuration, scope: scope,
       inputDigest: try inputDigest ?? CanonicalJSON.key(graphList.map(\.id)),
       packages: packages.sorted { $0.identity.identity < $1.identity.identity },
@@ -246,7 +246,7 @@ public enum SymbolGraphNormalizer {
       symbols: symbols.sorted { $0.id < $1.id },
       relationships: try mergedRelationships(relationships),
       gaps: try uniqueSorted(gaps), merges: try uniqueSorted(merges), externalReferences: external)
-    return try EvidenceSnapshot(configurations: [evidence])
+    return try InterfaceSnapshot(configurations: [configurationSnapshot])
   }
 
   static func mergedRelationships(_ relationships: [Relationship]) throws -> [Relationship] {

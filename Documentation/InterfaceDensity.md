@@ -5,7 +5,7 @@ Measured 2026-10-15 from the recorded snapshots with renderer implementation
 docs and collapsed implied members in both. Source, generated Swift and JSON definitions are shared with
 [Interface size measurements](InterfaceSize.md). Canonical snapshots are unchanged
 for these two packages. `render --report` provides the current per-symbol byte
-accounting. Reference Markdown and per-symbol accounting are retained as run evidence.
+accounting. Reference Markdown and per-symbol accounting are retained as run outputs.
 
 Source origins come from a separate compiler extraction with locations, joined by
 module, language and precise identifier. Located declarations beneath Sources are
@@ -20,7 +20,7 @@ No compiler witness selection is inferred.
 
 Every interface code block has one top-level anchor. Member and nested-type links
 target that block. Standalone extension blocks retain anchors; extensions within
-a type's block share the type's destination. Evidence views keep per-symbol IDs.
+a type's block share the type's destination. The symbols view keeps per-symbol IDs.
 Each row measures the complete unsplit interface, including metadata and fences.
 The self-row was recollected at the new renderer implementation.
 
@@ -178,5 +178,5 @@ below half the tracked source size.
 
 No Equatable equality members, Hashable hash members, CaseIterable allCases or
 CodingKeys are present in these two default snapshots. Their zero rows reflect
-collected evidence. Public CodingKeys declarations remain visible in the regression
+the collected symbols. Public CodingKeys declarations remain visible in the regression
 fixture because that named type is not required by Codable.
