@@ -81,4 +81,3 @@ extension Array where Element == Item {
   public var names: [String] { get }
 }
 ```
-

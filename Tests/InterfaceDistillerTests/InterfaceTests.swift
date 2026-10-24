@@ -6,6 +6,29 @@ import Testing
 
 @testable import InterfaceDistiller
 
+@Test func renderedPartsEndWithASingleNewline() throws {
+  let snapshot = try fixtureSnapshot()
+  var emptyModule = snapshot
+  emptyModule.configurations[0].symbols = []
+  emptyModule.configurations[0].relationships = []
+  for snapshot in [snapshot, emptyModule, try InterfaceSnapshot(configurations: [])] {
+    for budget: Int? in [nil, 3000] {
+      let parts =
+        try MarkdownRenderer.render(snapshot, byteBudget: budget, view: .symbols)
+        + InterfaceRenderer.render(snapshot, byteBudget: budget)
+        + InterfaceRenderer.modules(snapshot, byteBudget: budget)
+      #expect(parts.allSatisfy { $0.markdown.hasSuffix("\n") && !$0.markdown.hasSuffix("\n\n") })
+    }
+  }
+}
+
+@Test func partEndingsKeepRenderedContent() {
+  #expect(markdownPartContent("    echo foo\\ \n\n") == "    echo foo\\ \n")
+  #expect(markdownPartContent("line  \n\n\n") == "line  \n")
+  #expect(markdownPartContent("header") == "header\n")
+  #expect(markdownPartContent("done\n") == "done\n")
+}
+
 @Test func readableAndSymbolsViewsMatchSnapshots() throws {
   for (view, name) in [(MarkdownRenderer.View.interface, "Interface"), (.symbols, "Symbols")] {
     let snapshot =

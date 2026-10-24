@@ -61,4 +61,3 @@ public protocol ParentCounter {
 /// Reports an integer expression.
 @freestanding(expression) public macro answer() -> Int
 ```
-

@@ -8,6 +8,14 @@ public struct MarkdownPart: Codable, Sendable {
   public var markdown: String
 }
 
+/// Ends a rendered part with exactly one newline. Only trailing blank separators are
+/// removed; trailing spaces belong to rendered content and are kept.
+func markdownPartContent(_ text: String) -> String {
+  var content = text
+  while content.hasSuffix("\n\n") { content.removeLast() }
+  return content.hasSuffix("\n") ? content : content + "\n"
+}
+
 public enum MarkdownRenderer {
   public enum View: String, Sendable { case interface, symbols }
 
@@ -118,7 +126,9 @@ public enum MarkdownRenderer {
       parts[destinations[key] ?? "part-000001.md", default: header] += content
     }
     if parts.isEmpty { parts["part-000001.md"] = header + "No configurations were collected.\n" }
-    return parts.sorted { $0.key < $1.key }.map { MarkdownPart(name: $0.key, markdown: $0.value) }
+    return parts.sorted { $0.key < $1.key }.map {
+      MarkdownPart(name: $0.key, markdown: markdownPartContent($0.value))
+    }
   }
 
   private static func block(

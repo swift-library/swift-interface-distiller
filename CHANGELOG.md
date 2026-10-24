@@ -20,8 +20,9 @@
   | `$defs/Evidence` | `$defs/ConfigurationSnapshot` |
   | `https://swift-library.github.io/schemas/interface-evidence/2.0` | `https://swift-library.github.io/schemas/interface-snapshot/2.0` |
 
-  The symbols view ends hard line breaks with a backslash instead of two trailing
-  spaces. The JSON format, `schemaVersion` 2.0 and existing snapshots are
+  Rendered Markdown parts end with a single newline instead of a trailing blank
+  line, and the symbols view ends hard line breaks with a backslash instead of two
+  trailing spaces. The JSON format, `schemaVersion` 2.0 and existing snapshots are
   unchanged; schema 1.x snapshots remain readable.
 
 ## 0.3.1

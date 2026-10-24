@@ -115,7 +115,8 @@ public enum InterfaceRenderer {
       }
       let addition = (section == block.heading ? "" : block.heading) + block.content
       if let budget = byteBudget, current.utf8.count + addition.utf8.count > budget {
-        parts.append(MarkdownPart(name: partName(parts.count + 1), markdown: current))
+        parts.append(
+          MarkdownPart(name: partName(parts.count + 1), markdown: markdownPartContent(current)))
         current = header
         section = ""
       }
@@ -127,7 +128,8 @@ public enum InterfaceRenderer {
         .usage, "Interface header exceeds the byte budget",
         context: ["minimumBytes": String(current.utf8.count)])
     }
-    parts.append(MarkdownPart(name: partName(parts.count + 1), markdown: current))
+    parts.append(
+      MarkdownPart(name: partName(parts.count + 1), markdown: markdownPartContent(current)))
     return parts
   }
 

@@ -112,6 +112,12 @@ private func impliedSnapshot() throws -> InterfaceSnapshot {
   #expect(parts.allSatisfy { $0.markdown.utf8.count <= 1400 })
   let index = try #require(parts.first).markdown
   for part in parts.dropFirst() { #expect(index.contains("(" + part.name + ")")) }
+  for module in ["Other", item.module] {
+    let moduleParts = parts.filter { $0.name.hasPrefix("module-" + module.lowercased() + "-") }
+    let bytes = moduleParts.reduce(0) { $0 + $1.markdown.utf8.count }
+    let declarations = snapshot.configurations[0].symbols.filter { $0.module == module }.count
+    #expect(index.contains("| \(module) | \(declarations) | \(bytes) |"))
+  }
   let all = parts.dropFirst().map(\.markdown).joined()
   for anchor in InterfaceRenderer.anchors(in: snapshot).values {
     #expect(all.components(separatedBy: "id=\"" + anchor + "\"").count == 2)
