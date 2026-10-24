@@ -22,7 +22,7 @@ def run(*args, code=0):
     return result
 
 
-assert run('--version').stdout.strip() == b'0.3.1'
+assert run('--version').stdout.strip() == b'0.4.0'
 config = OUT / 'configuration.json'
 config.write_bytes(run('configuration').stdout)
 snapshot = OUT / 'snapshot.json'
